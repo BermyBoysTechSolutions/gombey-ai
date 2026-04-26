@@ -1,0 +1,47 @@
+version: 1.1.2
+
+interface:
+  appTitle: "Gombey AI"
+  customLogo: "/images/gombey_logo.png"
+  favicon: "/images/gombey_logo.png"
+  privacyPolicy:
+    externalUrl: "https://gombey.tech/privacy"
+    openNewTab: true
+  termsOfService:
+    externalUrl: "https://gombey.tech/terms"
+    openNewTab: true
+  welcomeMessage: "Welcome to Gombey AI"
+  infoButton:
+    label: "Gombey Tech"
+    url: "https://gombey.tech"
+    openNewTab: true
+
+fileConfig:
+  endpoints:
+    openrouter:
+      disabled: false
+  serverFileSizeLimit: 104857600
+  avatarSizeLimit: 2097152
+
+memory:
+  external: false
+  low_confidence_score: 0.1
+
+endpoints:
+  custom:
+    - name: "Gombey AI"
+      apiKey: "${OPENROUTER_KEY}"
+      baseURL: "https://openrouter.ai/api/v1"
+      models:
+        default:
+          - "moonshotai/kimi-k2.6"
+          - "moonshotai/kimi-k1.5"
+          - "openai/gpt-4o"
+          - "google/gemini-pro-1.5"
+        fetch: true
+      titleConvo: true
+      titleModel: "moonshotai/kimi-k2.6"
+      summarize: true
+      summaryModel: "moonshotai/kimi-k2.6"
+      forcePrompt: true
+      modelDisplayLabel: "Gombey AI"

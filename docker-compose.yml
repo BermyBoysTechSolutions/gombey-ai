@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  api:
+    image: ghcr.io/danny-avila/librechat:latest
+    container_name: gombey-ai-portal
+    ports:
+      - "3080:3080"
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml
+      - ./images:/app/client/public/images
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mongodb:
+    image: mongo:6
+    container_name: gombey-ai-mongodb
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Caddy reverse proxy with SSL
+  # caddy:
+  #   image: caddy:2-alpine
+  #   container_name: gombey-ai-caddy
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  #   depends_on:
+  #     - api
+  #   restart: unless-stopped
+
+volumes:
+  mongodb_data:
+  # caddy_data:
+  # caddy_config:
