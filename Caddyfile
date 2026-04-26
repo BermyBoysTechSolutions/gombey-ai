@@ -1,0 +1,22 @@
+chat.gombeytech.com {
+    reverse_proxy api:3080
+    
+    # Automatic HTTPS via Let's Encrypt
+    tls admin@gombey.tech
+    
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        X-XSS-Protection "1; mode=block"
+    }
+    
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+    }
+    
+    # Compression
+    encode gzip
+}

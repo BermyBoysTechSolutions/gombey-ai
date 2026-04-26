@@ -1,0 +1,13 @@
+{
+  "name": "gombey-ai",
+  "version": "1.0.0",
+  "description": "Gombey AI - Private AI Chat for Your Business",
+  "author": "Gombey Tech LLC",
+  "license": "MIT",
+  "scripts": {
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "update": "docker-compose pull && docker-compose up -d"
+  }
+}
