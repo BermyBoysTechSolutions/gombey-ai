@@ -51,4 +51,4 @@ For true team workspaces (shared chats between users), LibreChat doesn't support
 
 ## Support
 
-Built by [Gombey Tech LLC](https://gombey.tech)
+Built by [Gombey Tech LLC](https://gombeytech.com)
