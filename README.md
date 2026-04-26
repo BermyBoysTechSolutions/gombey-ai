@@ -17,6 +17,32 @@ cp .env.example .env
 docker-compose up -d
 ```
 
+## Admin User Management
+
+Since `ALLOW_REGISTRATION=false`, new accounts must be created manually by the admin.
+
+### Create a new user account
+
+```bash
+# Use the helper script
+./scripts/create-user.sh username email@example.com password
+```
+
+### User Onboarding Flow
+
+1. **Customer pays you** (Stripe, PayPal, etc.)
+2. **You create their account** using the script above
+3. **Send them credentials** — they log in at `chat.gombeytech.com`
+4. **They start using Gombey AI**
+
+### Team Accounts
+
+For teams that want shared access:
+- **Option A**: Create one shared account (everyone uses same login)
+- **Option B**: Create individual accounts per team member (isolated chats)
+
+For true team workspaces (shared chats between users), LibreChat doesn't support this natively yet. Consider Option A for now.
+
 ## Configuration
 
 - `.env` - Environment variables
