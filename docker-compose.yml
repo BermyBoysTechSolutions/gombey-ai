@@ -13,6 +13,14 @@ services:
     volumes:
       - ./librechat.yaml:/app/librechat.yaml
       - ./images:/app/client/public/images
+      # White-label default logo/favicon assets with Gombey AI branding
+      - ./assets/logo.svg:/app/client/public/assets/logo.svg
+      - ./assets/logo.png:/app/client/public/assets/logo.png
+      - ./assets/icon-192x192.png:/app/client/public/assets/icon-192x192.png
+      - ./assets/maskable-icon.png:/app/client/public/assets/maskable-icon.png
+      - ./assets/apple-touch-icon-180x180.png:/app/client/public/assets/apple-touch-icon-180x180.png
+      - ./assets/favicon-16x16.png:/app/client/public/assets/favicon-16x16.png
+      - ./assets/favicon-32x32.png:/app/client/public/assets/favicon-32x32.png
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3080/health"]
