@@ -45,3 +45,18 @@ endpoints:
       summaryModel: "moonshotai/kimi-k2.6"
       forcePrompt: true
       modelDisplayLabel: "Gombey AI"
+
+mcpServers:
+  gdrive:
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - "@modelcontextprotocol/server-gdrive"
+    env:
+      GDRIVE_OAUTH_PATH: /app/gdrive/gcp-oauth.keys.json
+      GDRIVE_CREDENTIALS_PATH: /app/gdrive/credentials.json
+    title: Google Drive
+    description: Search and read Google Drive documents
+    startup: true
+    chatMenu: true
