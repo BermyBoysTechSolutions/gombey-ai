@@ -33,4 +33,32 @@ done
 find /app/client/dist -type f \( -name 'locales.*.js' -o -name 'index.*.js' \) -print0 2>/dev/null \
   | xargs -0 sed -i -e 's/Welcome back/Welcome back to Gombey AI/g' 2>/dev/null || true
 
+
+# Make the custom logo larger and readable in light mode while staying transparent in dark mode.
+for css in /app/client/dist/assets/index.*.css; do
+  [ -f "$css" ] || continue
+  grep -q 'Gombey AI custom logo sizing' "$css" && continue
+  cat >> "$css" <<'CSS'
+/* Gombey AI custom logo sizing/contrast */
+img[src*="gombey_logo"], img[src*="/assets/logo"] {
+  width: 260px !important;
+  height: 260px !important;
+  max-width: 260px !important;
+  max-height: 260px !important;
+  object-fit: contain !important;
+}
+html:not(.dark) img[src*="gombey_logo"], html:not(.dark) img[src*="/assets/logo"] {
+  border-radius: 32px !important;
+  background: linear-gradient(135deg, #0a0e18 0%, #1a2030 100%) !important;
+  padding: 16px !important;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.28) !important;
+}
+html.dark img[src*="gombey_logo"], html.dark img[src*="/assets/logo"], .dark img[src*="gombey_logo"], .dark img[src*="/assets/logo"] {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+CSS
+done
+
 echo "Gombey AI branding applied."

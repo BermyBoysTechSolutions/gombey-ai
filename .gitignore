@@ -1,0 +1,3 @@
+.env
+gdrive/credentials.json
+gdrive/gcp-oauth.keys.json

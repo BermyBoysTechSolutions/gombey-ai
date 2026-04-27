@@ -23,6 +23,7 @@ services:
       - ./assets/apple-touch-icon-180x180.png:/app/client/public/assets/apple-touch-icon-180x180.png
       - ./assets/favicon-16x16.png:/app/client/public/assets/favicon-16x16.png
       - ./assets/favicon-32x32.png:/app/client/public/assets/favicon-32x32.png
+      - ./gdrive:/app/gdrive:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3080/health"]
