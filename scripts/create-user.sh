@@ -18,7 +18,7 @@ PASSWORD=$3
 
 echo "Creating user: $USERNAME ($EMAIL)..."
 
-# Run user creation inside the LibreChat container
+# Run user creation inside the Gombey AI app container
 docker exec -i $CONTAINER_NAME node -e "
 const { User } = require('./api/models');
 const bcrypt = require('bcryptjs');

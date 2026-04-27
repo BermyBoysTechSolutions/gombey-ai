@@ -41,12 +41,12 @@ For teams that want shared access:
 - **Option A**: Create one shared account (everyone uses same login)
 - **Option B**: Create individual accounts per team member (isolated chats)
 
-For true team workspaces (shared chats between users), LibreChat doesn't support this natively yet. Consider Option A for now.
+For true team workspaces (shared chats between users), use Option A for now; full client workspaces can be added later if demand justifies it.
 
 ## Configuration
 
 - `.env` - Environment variables
-- `librechat.yaml` - Model and UI configuration
+- `librechat.yaml` - Gombey AI model and UI configuration
 - `docker-compose.yml` - Deployment orchestration
 
 ## Support
