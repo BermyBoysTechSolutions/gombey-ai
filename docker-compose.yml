@@ -10,7 +10,9 @@ services:
       - mongodb
     env_file:
       - .env
+    command: sh -c "sh /app/branding/apply-branding.sh && node api/server/index.js"
     volumes:
+      - ./branding:/app/branding:ro
       - ./librechat.yaml:/app/librechat.yaml
       - ./images:/app/client/public/images
       # White-label default logo/favicon assets with Gombey AI branding
