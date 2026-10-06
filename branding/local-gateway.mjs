@@ -6,6 +6,7 @@ const listenPort = Number(process.env.LISTEN_PORT || 11434);
 const upstreamBaseUrl = new URL(process.env.OLLAMA_UPSTREAM_URL || 'http://host.docker.internal:11434');
 const maxRequestBytes = Number(process.env.MAX_REQUEST_BYTES || 160 * 1024 * 1024);
 const maxExtractedChars = Number(process.env.MAX_EXTRACTED_CHARS || 250_000);
+const minimumOutputTokens = Number(process.env.MIN_OUTPUT_TOKENS || 8192);
 
 const hopByHopHeaders = new Set([
   'connection',
@@ -26,6 +27,68 @@ function writeJson(response, status, body) {
     'content-length': Buffer.byteLength(payload),
   });
   response.end(payload);
+}
+
+function summarizePayload(payload) {
+  const messages = Array.isArray(payload?.messages) ? payload.messages : [];
+  let fileCount = 0;
+  let textChars = 0;
+  const contentTypes = new Set();
+
+  for (const message of messages) {
+    if (typeof message?.content === 'string') {
+      textChars += message.content.length;
+      contentTypes.add('string');
+      continue;
+    }
+
+    if (!Array.isArray(message?.content)) {
+      continue;
+    }
+
+    for (const part of message.content) {
+      contentTypes.add(part?.type || 'unknown');
+      if (part?.type === 'file') {
+        fileCount += 1;
+      }
+      if (part?.type === 'text' && typeof part.text === 'string') {
+        textChars += part.text.length;
+      }
+    }
+  }
+
+  return {
+    model: payload?.model || null,
+    stream: payload?.stream === true,
+    maxTokens: payload?.max_tokens ?? payload?.max_completion_tokens ?? null,
+    messageCount: messages.length,
+    fileCount,
+    textChars,
+    contentTypes: [...contentTypes],
+  };
+}
+
+function updateStreamStats(stats, line) {
+  if (!line.startsWith('data: ') || line === 'data: [DONE]') {
+    return;
+  }
+
+  try {
+    const event = JSON.parse(line.slice(6));
+    const choice = event.choices?.[0];
+    const delta = choice?.delta || {};
+    if (typeof delta.content === 'string') {
+      stats.contentChars += delta.content.length;
+    }
+    if (typeof delta.reasoning === 'string') {
+      stats.reasoningChars += delta.reasoning.length;
+    }
+    if (choice?.finish_reason) {
+      stats.finishReason = choice.finish_reason;
+    }
+  } catch {
+    // Preserve the upstream stream even if a provider sends a non-JSON event.
+  }
 }
 
 async function readRequestBody(request) {
@@ -147,7 +210,16 @@ async function normalizePayload(payload) {
     });
   }
 
-  return { payload: { ...payload, messages }, stats };
+  const normalizedPayload = { ...payload, messages };
+  const requestedOutputTokens = Number(
+    normalizedPayload.max_tokens ?? normalizedPayload.max_completion_tokens,
+  );
+  if (!Number.isFinite(requestedOutputTokens) || requestedOutputTokens < minimumOutputTokens) {
+    normalizedPayload.max_tokens = minimumOutputTokens;
+    delete normalizedPayload.max_completion_tokens;
+  }
+
+  return { payload: normalizedPayload, stats };
 }
 
 function upstreamUrlFor(pathname, search) {
@@ -174,6 +246,7 @@ async function proxyRequest(request, response) {
       body = JSON.stringify(normalized.payload);
       stats = normalized.stats;
       headers.set('content-type', 'application/json');
+      console.log(`[local-gateway] request ${JSON.stringify({ ...summarizePayload(normalized.payload), extractedPdfCount: stats.pdfCount, extractedChars: stats.extractedChars })}`);
     }
   }
 
@@ -192,12 +265,32 @@ async function proxyRequest(request, response) {
   }
   response.writeHead(upstreamResponse.status, responseHeaders);
 
+  const streamStats = {
+    contentChars: 0,
+    reasoningChars: 0,
+    finishReason: null,
+  };
+  const isEventStream = (upstreamResponse.headers.get('content-type') || '').includes('text/event-stream');
+  let eventBuffer = '';
+
   if (upstreamResponse.body) {
     for await (const chunk of upstreamResponse.body) {
       response.write(chunk);
+      if (isEventStream) {
+        eventBuffer += new TextDecoder().decode(chunk);
+        const lines = eventBuffer.split('\n');
+        eventBuffer = lines.pop() || '';
+        for (const line of lines) {
+          updateStreamStats(streamStats, line.trimEnd());
+        }
+      }
     }
   }
   response.end();
+
+  if (isEventStream) {
+    console.log(`[local-gateway] stream ${JSON.stringify(streamStats)}`);
+  }
 
   if (stats.pdfCount > 0) {
     console.log(`[local-gateway] extracted ${stats.pdfCount} PDF attachment(s), ${stats.extractedChars} text characters`);
