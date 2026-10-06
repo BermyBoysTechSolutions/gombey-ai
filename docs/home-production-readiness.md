@@ -13,7 +13,7 @@ Last checked: 2026-10-06.
 - The running private containers are healthy: portal, Ollama, and MongoDB.
 - The private Ollama model is `gemma3:12b` in the current proof environment.
 - MongoDB and Ollama are not published on host ports; they are attached to the internal `gombey-private` network.
-- The public chat URL currently depends on a quick Cloudflare tunnel that is kept alive by a Mac LaunchAgent. Treat that as a pilot setup, not a production SLA.
+- The public chat URL currently depends on a quick Cloudflare tunnel that is kept alive by a Mac LaunchAgent. A named `gombey-chat` tunnel configuration exists but has no active connection or DNS cutover yet. Treat the quick-tunnel path as a pilot setup, not a production SLA.
 
 ## What “ready” means for the first pilot
 
