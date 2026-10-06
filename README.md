@@ -56,8 +56,16 @@ Since `ALLOW_REGISTRATION=false`, new accounts must be created manually by the a
 
 1. **Customer pays you** (Stripe, PayPal, etc.)
 2. **You create their account** using the script above
-3. **Send them credentials** — they log in at `chat.gombeytech.com`
-4. **They start using Gombey AI**
+3. **Seed approved onboarding files** without logging into their account manually:
+
+   ```bash
+   ./scripts/seed-user-files.sh username-or-email proof-fixtures/property-management-pilot
+   ```
+
+4. **Send them credentials** — they log in at `chat.gombeytech.com`
+5. **They attach the seeded files from My Files when starting the pilot**
+
+The seeding script runs locally as an operator action, targets exactly one username/email, skips duplicate filenames, and stores files in the persistent `uploads_data` volume. It does not create a global file pool or expose files to other users. These are account-owned files, not yet an automatically injected knowledge base for every conversation; a tenant-scoped Agent/RAG layer is the next product step for that behavior.
 
 ### Team Accounts
 

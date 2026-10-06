@@ -21,6 +21,7 @@ services:
       - ./assets/apple-touch-icon-180x180.png:/app/client/public/assets/apple-touch-icon-180x180.png
       - ./assets/favicon-16x16.png:/app/client/public/assets/favicon-16x16.png
       - ./assets/favicon-32x32.png:/app/client/public/assets/favicon-32x32.png
+      - uploads_data:/app/uploads
       - ./gdrive:/app/gdrive:ro
     restart: unless-stopped
     healthcheck:
@@ -58,5 +59,6 @@ services:
 
 volumes:
   mongodb_data:
+  uploads_data:
   # caddy_data:
   # caddy_config:
