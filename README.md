@@ -50,13 +50,16 @@ Since `ALLOW_REGISTRATION=false`, new accounts must be created manually by the a
 ```bash
 # Use the helper script
 ./scripts/create-user.sh username email@example.com password
+
+# Or create the account and seed the pilot files in one step
+./scripts/create-user.sh username email@example.com password proof-fixtures/property-management-pilot
 ```
 
 ### User Onboarding Flow
 
 1. **Customer pays you** (Stripe, PayPal, etc.)
-2. **You create their account** using the script above
-3. **Seed approved onboarding files** without logging into their account manually:
+2. **You create their account** using the script above; pass the fixture directory as the optional fourth argument to seed files immediately
+3. **For an existing account, seed approved onboarding files** without logging into their account manually:
 
    ```bash
    ./scripts/seed-user-files.sh username-or-email proof-fixtures/property-management-pilot
