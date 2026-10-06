@@ -5,7 +5,7 @@ This is the exact procedure for the privacy/model portion of the first Gombey AI
 ## Current home configuration
 
 - LibreChat uses the private configuration.
-- The API reaches the Mac's local Ollama through `host.docker.internal`.
+- The API reaches the Mac's local Ollama through the local document gateway, which converts PDF attachments to local text before forwarding them.
 - The default model is `gemma4:latest`, which has already returned a test response successfully.
 - LibreChat is configured to fetch the complete model list from the local Ollama service.
 - The current host Ollama model list includes `gemma4:latest`, `gemma4:12b`, `gemma3:12b`, `qwen3.5:9b`, `testornith:latest`, `testornith-fable:latest`, `huihui_ai/gemma-4-abliterated:latest`, `glm-ocr:latest`, and `nomic-embed-text:latest`.

@@ -1,0 +1,233 @@
+import http from 'node:http';
+import { URL } from 'node:url';
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+
+const listenPort = Number(process.env.LISTEN_PORT || 11434);
+const upstreamBaseUrl = new URL(process.env.OLLAMA_UPSTREAM_URL || 'http://host.docker.internal:11434');
+const maxRequestBytes = Number(process.env.MAX_REQUEST_BYTES || 160 * 1024 * 1024);
+const maxExtractedChars = Number(process.env.MAX_EXTRACTED_CHARS || 250_000);
+
+const hopByHopHeaders = new Set([
+  'connection',
+  'content-length',
+  'keep-alive',
+  'proxy-authenticate',
+  'proxy-authorization',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+]);
+
+function writeJson(response, status, body) {
+  const payload = JSON.stringify(body);
+  response.writeHead(status, {
+    'content-type': 'application/json; charset=utf-8',
+    'content-length': Buffer.byteLength(payload),
+  });
+  response.end(payload);
+}
+
+async function readRequestBody(request) {
+  const chunks = [];
+  let size = 0;
+
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > maxRequestBytes) {
+      const error = new Error(`request exceeds the ${maxRequestBytes} byte limit`);
+      error.statusCode = 413;
+      throw error;
+    }
+    chunks.push(chunk);
+  }
+
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+function decodeDataUrl(value, filename) {
+  if (typeof value !== 'string') {
+    throw new Error(`attached file ${filename} did not include file data`);
+  }
+
+  if (!value.startsWith('data:')) {
+    throw new Error(`attached file ${filename} is not embedded in the request`);
+  }
+
+  const commaIndex = value.indexOf(',');
+  if (commaIndex < 0) {
+    throw new Error(`attached file ${filename} has an invalid data URL`);
+  }
+
+  const metadata = value.slice(5, commaIndex);
+  const encoded = value.slice(commaIndex + 1);
+  if (!metadata.split(';').includes('base64')) {
+    throw new Error(`attached file ${filename} is not base64 encoded`);
+  }
+
+  return Buffer.from(encoded, 'base64');
+}
+
+async function extractPdfText(bytes) {
+  const loadingTask = getDocument({
+    data: new Uint8Array(bytes),
+    disableWorker: true,
+    useWorkerFetch: false,
+    isEvalSupported: false,
+    verbosity: 0,
+  });
+  const document = await loadingTask.promise;
+  const pages = [];
+
+  try {
+    for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+      const page = await document.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const pageText = content.items
+        .map((item) => ('str' in item ? item.str : ''))
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+
+      if (pageText) {
+        pages.push(`Page ${pageNumber}\n${pageText}`);
+      }
+    }
+  } finally {
+    await document.destroy();
+  }
+
+  return pages.join('\n\n').slice(0, maxExtractedChars).trim();
+}
+
+async function normalizeContent(content, stats) {
+  if (!Array.isArray(content)) {
+    return content;
+  }
+
+  const normalized = [];
+  for (const part of content) {
+    if (!part || part.type !== 'file') {
+      normalized.push(part);
+      continue;
+    }
+
+    const file = part.file || {};
+    const filename = file.filename || 'attached-document.pdf';
+    const fileData = file.file_data || file.data;
+    const bytes = decodeDataUrl(fileData, filename);
+    const text = await extractPdfText(bytes);
+
+    if (!text) {
+      throw new Error(`attached PDF ${filename} contains no extractable text`);
+    }
+
+    stats.pdfCount += 1;
+    stats.extractedChars += text.length;
+    normalized.push({
+      type: 'text',
+      text: `\n\n[Attached document: ${filename}]\n${text}\n[End attached document]`,
+    });
+  }
+
+  return normalized;
+}
+
+async function normalizePayload(payload) {
+  if (!payload || !Array.isArray(payload.messages)) {
+    return { payload, stats: { pdfCount: 0, extractedChars: 0 } };
+  }
+
+  const stats = { pdfCount: 0, extractedChars: 0 };
+  const messages = [];
+  for (const message of payload.messages) {
+    messages.push({
+      ...message,
+      content: await normalizeContent(message.content, stats),
+    });
+  }
+
+  return { payload: { ...payload, messages }, stats };
+}
+
+function upstreamUrlFor(pathname, search) {
+  const url = new URL(upstreamBaseUrl);
+  url.pathname = `${url.pathname.replace(/\/$/, '')}${pathname}`;
+  url.search = search;
+  return url;
+}
+
+async function proxyRequest(request, response) {
+  const requestUrl = new URL(request.url || '/', 'http://local-gateway');
+  const targetUrl = upstreamUrlFor(requestUrl.pathname, requestUrl.search);
+  const headers = new Headers(request.headers);
+  headers.delete('host');
+  headers.delete('content-length');
+
+  let body;
+  let stats = { pdfCount: 0, extractedChars: 0 };
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    body = await readRequestBody(request);
+    if ((headers.get('content-type') || '').includes('application/json') && body) {
+      const parsed = JSON.parse(body);
+      const normalized = await normalizePayload(parsed);
+      body = JSON.stringify(normalized.payload);
+      stats = normalized.stats;
+      headers.set('content-type', 'application/json');
+    }
+  }
+
+  const upstreamResponse = await fetch(targetUrl, {
+    method: request.method,
+    headers,
+    body,
+    signal: AbortSignal.timeout(15 * 60 * 1000),
+  });
+
+  const responseHeaders = {};
+  for (const [name, value] of upstreamResponse.headers) {
+    if (!hopByHopHeaders.has(name.toLowerCase())) {
+      responseHeaders[name] = value;
+    }
+  }
+  response.writeHead(upstreamResponse.status, responseHeaders);
+
+  if (upstreamResponse.body) {
+    for await (const chunk of upstreamResponse.body) {
+      response.write(chunk);
+    }
+  }
+  response.end();
+
+  if (stats.pdfCount > 0) {
+    console.log(`[local-gateway] extracted ${stats.pdfCount} PDF attachment(s), ${stats.extractedChars} text characters`);
+  }
+}
+
+const server = http.createServer(async (request, response) => {
+  if (request.method === 'GET' && request.url === '/health') {
+    writeJson(response, 200, { status: 'ok', mode: 'local-pdf-text-fallback' });
+    return;
+  }
+
+  try {
+    await proxyRequest(request, response);
+  } catch (error) {
+    const statusCode = error.statusCode || 502;
+    console.error(`[local-gateway] ${statusCode}: ${error.message}`);
+    if (!response.headersSent) {
+      writeJson(response, statusCode, {
+        error: {
+          message: error.message,
+          type: statusCode === 413 ? 'request_too_large' : 'local_document_processing_error',
+        },
+      });
+    } else {
+      response.destroy(error);
+    }
+  }
+});
+
+server.listen(listenPort, '0.0.0.0', () => {
+  console.log(`[local-gateway] listening on ${listenPort}; local upstream ${upstreamBaseUrl.origin}`);
+});

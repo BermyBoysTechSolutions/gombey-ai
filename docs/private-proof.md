@@ -10,7 +10,7 @@ The proof is intentionally narrow:
 2. A named local model can answer a chat request through its OpenAI-compatible API.
 3. The model can answer using a synthetic private-document fixture without an external provider.
 4. LibreChat is configured with one local endpoint and no external model provider.
-5. MongoDB and the private services use an internal Docker network. In isolated mode the API reaches Ollama on that network; in home host-local mode the API reaches the Mac's loopback Ollama through Docker's host gateway. The private config contains no external model provider.
+5. MongoDB and the private services use an internal Docker network. In isolated mode the gateway reaches Ollama on that network; in home host-local mode the gateway reaches the Mac's loopback Ollama through Docker's host gateway. The private config contains no external model provider.
 
 This is evidence for **local inference**, not a complete security certification. Host-local mode proves the model stays on the Mac but does not prove the stronger isolated-container network boundary. Backups, identity, physical access, patching, logging, and any later integrations still need a customer-specific review.
 
@@ -28,9 +28,9 @@ ollama list
 ./scripts/private-model-bootstrap.sh
 ```
 
-For the home test configuration, `OLLAMA_BASE_URL` points to `host.docker.internal`, so LibreChat can fetch every model shown by the Mac's `ollama list`. Open `http://localhost:3080` after the containers report healthy. Create a test user with `scripts/create-user.sh`, then use the **Gombey Local** endpoint and select a small model such as `gemma4:latest`.
+For the home test configuration, `OLLAMA_BASE_URL` points to the local document gateway. The gateway converts embedded PDF attachments to extracted text, then forwards the request to `host.docker.internal`, so LibreChat can fetch every model shown by the Mac's `ollama list` while avoiding Ollama's unsupported native PDF block. Open `http://localhost:3080` after the containers report healthy. Create a test user with `scripts/create-user.sh`, then use the **Gombey Local** endpoint and select a small model such as `gemma4:latest`.
 
-For an isolated customer deployment, change `OLLAMA_BASE_URL` to `http://ollama:11434/v1` before starting the API. The bootstrap script temporarily attaches only the Ollama container to Docker's default bridge so it can download the selected model, disconnects that route, and then starts the API. In that mode only models installed in the private Ollama volume are available.
+For an isolated customer deployment, keep `OLLAMA_BASE_URL` set to `http://local-gateway:11434/v1` and set `OLLAMA_UPSTREAM_URL` to `http://ollama:11434` before starting the API. The bootstrap script temporarily attaches only the Ollama container to Docker's default bridge so it can download the selected model, disconnects that route, and then starts the API. In that mode only models installed in the private Ollama volume are available, and PDF extraction remains on the private Docker network.
 
 ## What is not private mode
 
