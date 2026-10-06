@@ -36,11 +36,13 @@ for config in "$ROOT_DIR/librechat.yaml" "$ROOT_DIR/librechat.private.yaml"; do
     || fail "$config does not use the dedicated square favicon"
 done
 
-grep -Fq 'Gombey AI custom logo sizing/contrast' "$ROOT_DIR/branding/apply-branding.sh" \
-  || fail "startup branding CSS is missing"
-grep -Fq 'height: auto !important' "$ROOT_DIR/branding/apply-branding.sh" \
-  || fail "startup branding CSS can distort the horizontal wordmark"
-grep -Fq 'assets/logo.svg' "$ROOT_DIR/branding/apply-branding.sh" \
-  || fail "startup branding CSS does not match LibreChat's relative logo URL"
+[ -f "$ROOT_DIR/branding/gombey-branding.css" ] \
+  || fail "dedicated Gombey branding stylesheet is missing"
+grep -Fq 'gombey-branding.css?v=3' "$ROOT_DIR/branding/apply-branding.sh" \
+  || fail "startup script does not load the versioned branding stylesheet"
+grep -Fq 'assets/logo.svg' "$ROOT_DIR/branding/gombey-branding.css" \
+  || fail "branding stylesheet does not match LibreChat's relative logo URL"
+grep -Fq 'height: auto !important' "$ROOT_DIR/branding/gombey-branding.css" \
+  || fail "branding stylesheet can distort the horizontal wordmark"
 
 echo "PASS: canonical Gombey AI wordmark, square favicon, and proportional runtime styling are wired for cloud and private modes."
