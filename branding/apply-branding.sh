@@ -40,24 +40,36 @@ for css in /app/client/dist/assets/index.*.css; do
   grep -q 'Gombey AI custom logo sizing' "$css" && continue
   cat >> "$css" <<'CSS'
 /* Gombey AI custom logo sizing/contrast */
-img[src*="gombey_logo"], img[src*="/assets/logo"] {
+img[src*="gombey_logo"], img[src*="/assets/logo"], img[src*="assets/logo.svg"], img[src*="assets/logo.png"] {
   width: 260px !important;
   height: auto !important;
   max-width: min(260px, 72vw) !important;
   max-height: none !important;
   object-fit: contain !important;
   display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
-html:not(.dark) img[src*="gombey_logo"], html:not(.dark) img[src*="/assets/logo"] {
+html:not(.dark) img[src*="gombey_logo"], html:not(.dark) img[src*="/assets/logo"], html:not(.dark) img[src*="assets/logo.svg"], html:not(.dark) img[src*="assets/logo.png"] {
   border-radius: 18px !important;
   background: linear-gradient(135deg, #0a0e18 0%, #1a2030 100%) !important;
   padding: 14px 18px !important;
   box-shadow: 0 6px 30px rgba(0,0,0,0.28) !important;
 }
-html.dark img[src*="gombey_logo"], html.dark img[src*="/assets/logo"], .dark img[src*="gombey_logo"], .dark img[src*="/assets/logo"] {
+html.dark img[src*="gombey_logo"], html.dark img[src*="/assets/logo"], html.dark img[src*="assets/logo.svg"], html.dark img[src*="assets/logo.png"], .dark img[src*="gombey_logo"], .dark img[src*="/assets/logo"], .dark img[src*="assets/logo.svg"], .dark img[src*="assets/logo.png"] {
   background: transparent !important;
   box-shadow: none !important;
   padding: 0 !important;
+}
+/* LibreChat places the login wordmark in a fixed 40px wrapper. Let the
+   branded wordmark establish the wrapper height instead of shrinking it. */
+.mt-6.h-10.w-full.bg-cover:has(> img[src*="assets/logo.svg"]),
+.mt-6.h-10.w-full.bg-cover:has(> img[src*="assets/logo.png"]) {
+  height: auto !important;
+  min-height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 CSS
 done
