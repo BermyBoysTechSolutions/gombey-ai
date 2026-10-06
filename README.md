@@ -5,7 +5,7 @@ Private AI Chat for Your Business
 This repository supports two deliberately different deployment modes:
 
 - **Cloud/hybrid mode** uses the default `librechat.yaml` and OpenRouter.
-- **Private proof mode** uses `librechat.private.yaml` and a local Ollama model. It is the mode to use when the promise is that inference stays inside the customer's environment.
+- **Private proof mode** uses `librechat.private.yaml` and a local Ollama model. It has an isolated-container option for customer deployments and a host-local option for the Mac test environment.
 
 ## Quick Start
 
@@ -39,7 +39,7 @@ ollama list
 ./scripts/private-model-bootstrap.sh
 ```
 
-The proof checks that a local model answers successfully, the private LibreChat configuration contains no external model provider, and the app containers use an internal Docker network. The bootstrap script temporarily gives only the Ollama container outbound access to download the selected model, disconnects it from the default bridge, and then starts the API. See [`docs/private-proof.md`](docs/private-proof.md) for the exact boundary and remaining customer-specific checks.
+The proof checks that a local model answers successfully, the private LibreChat configuration contains no external model provider, and MongoDB/private services remain on an internal Docker network. The home test configuration points the API at the Mac's existing Ollama install, so all models returned by `ollama list` can be selected without downloading another copy. For an isolated customer deployment, point `OLLAMA_BASE_URL` back to `http://ollama:11434/v1` and use the bootstrap script to download the selected model into the private Ollama container. See [`docs/private-proof.md`](docs/private-proof.md) for the exact boundary and remaining customer-specific checks.
 
 ## Admin User Management
 
