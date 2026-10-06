@@ -34,7 +34,7 @@ find /app/client/dist -type f \( -name 'locales.*.js' -o -name 'index.*.js' \) -
   | xargs -0 sed -i -e 's/Welcome back/Welcome back to Gombey AI/g' 2>/dev/null || true
 
 
-# Make the custom logo larger and readable in light mode while staying transparent in dark mode.
+# Keep the horizontal Gombey AI wordmark proportional and readable in both themes.
 for css in /app/client/dist/assets/index.*.css; do
   [ -f "$css" ] || continue
   grep -q 'Gombey AI custom logo sizing' "$css" && continue
@@ -42,15 +42,16 @@ for css in /app/client/dist/assets/index.*.css; do
 /* Gombey AI custom logo sizing/contrast */
 img[src*="gombey_logo"], img[src*="/assets/logo"] {
   width: 260px !important;
-  height: 260px !important;
-  max-width: 260px !important;
-  max-height: 260px !important;
+  height: auto !important;
+  max-width: min(260px, 72vw) !important;
+  max-height: none !important;
   object-fit: contain !important;
+  display: block !important;
 }
 html:not(.dark) img[src*="gombey_logo"], html:not(.dark) img[src*="/assets/logo"] {
-  border-radius: 32px !important;
+  border-radius: 18px !important;
   background: linear-gradient(135deg, #0a0e18 0%, #1a2030 100%) !important;
-  padding: 16px !important;
+  padding: 14px 18px !important;
   box-shadow: 0 6px 30px rgba(0,0,0,0.28) !important;
 }
 html.dark img[src*="gombey_logo"], html.dark img[src*="/assets/logo"], .dark img[src*="gombey_logo"], .dark img[src*="/assets/logo"] {
