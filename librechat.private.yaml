@@ -1,0 +1,45 @@
+version: 1.1.2
+
+# This configuration deliberately contains one local model endpoint only.
+# Do not add remote model providers or tool integrations here unless the
+# deployment is explicitly reclassified as hybrid.
+interface:
+  appTitle: "Gombey AI Private"
+  customLogo: "/images/gombey_logo.png"
+  favicon: "/images/gombey_logo.png"
+  privacyPolicy:
+    externalUrl: "https://gombeytech.com/privacy"
+    openNewTab: true
+  termsOfService:
+    externalUrl: "https://gombeytech.com/terms"
+    openNewTab: true
+  welcomeMessage: "Welcome to your private Gombey AI workspace"
+  infoButton:
+    label: "Gombey Tech"
+    url: "https://gombeytech.com"
+    openNewTab: true
+
+fileConfig:
+  serverFileSizeLimit: 104857600
+  avatarSizeLimit: 2097152
+
+memory:
+  external: false
+  low_confidence_score: 0.1
+
+endpoints:
+  custom:
+    - name: "Gombey Local"
+      # Ollama ignores the value but LibreChat requires a non-empty key.
+      apiKey: "ollama"
+      baseURL: "${OLLAMA_BASE_URL}"
+      models:
+        default:
+          - "${LOCAL_MODEL}"
+        fetch: true
+      titleConvo: true
+      titleModel: "current_model"
+      summarize: false
+      summaryModel: "current_model"
+      forcePrompt: false
+      modelDisplayLabel: "Local model"

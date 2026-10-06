@@ -1,3 +1,6 @@
 .env
+.env.private
 gdrive/credentials.json
 gdrive/gcp-oauth.keys.json
+gdrive/*
+!gdrive/.gitkeep

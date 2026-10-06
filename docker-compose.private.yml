@@ -1,0 +1,37 @@
+services:
+  api:
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    networks:
+      - gombey_private
+
+  mongodb:
+    networks:
+      - gombey_private
+
+  # The model runtime lives inside the same private network as the app.
+  # Pull models before starting api with scripts/private-model-bootstrap.sh.
+  ollama:
+    image: ollama/ollama:latest
+    container_name: gombey-ai-ollama
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - gombey_private
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+networks:
+  gombey_private:
+    name: gombey-private
+    internal: true
+
+volumes:
+  ollama_models:
