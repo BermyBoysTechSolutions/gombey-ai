@@ -39,7 +39,7 @@ ollama list
 ./scripts/private-model-bootstrap.sh
 ```
 
-The proof checks that a local model answers successfully, the private LibreChat configuration contains no external model provider, and MongoDB/private services remain on an internal Docker network. The home test configuration points the API at the Mac's existing Ollama install, so all models returned by `ollama list` can be selected without downloading another copy. For an isolated customer deployment, point `OLLAMA_BASE_URL` back to `http://ollama:11434/v1` and use the bootstrap script to download the selected model into the private Ollama container. See [`docs/private-proof.md`](docs/private-proof.md) for the exact boundary and remaining customer-specific checks.
+The proof checks that a local model answers successfully, the private LibreChat configuration contains no external model provider, and MongoDB/private services remain on an internal Docker network. In home mode, the API points at a local document gateway, which converts PDF attachments to text before forwarding the request to the Mac's Ollama install; all models returned by `ollama list` remain available without downloading another copy. For an isolated customer deployment, keep the API pointed at the gateway, set `OLLAMA_UPSTREAM_URL=http://ollama:11434`, and use the bootstrap script to download the selected model into the private Ollama container. See [`docs/private-proof.md`](docs/private-proof.md) for the exact boundary and remaining customer-specific checks.
 
 ## Admin User Management
 

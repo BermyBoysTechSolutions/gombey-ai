@@ -12,7 +12,7 @@ Last checked: 2026-10-06.
 - The private proof script passed against local Ollama and the synthetic policy fixture.
 - The running private containers are healthy: portal, Ollama, and MongoDB.
 - The home test defaults to the host-local `gemma4:latest` model; LibreChat can see every model currently returned by the Mac's Ollama install.
-- MongoDB and the private service network remain internal. During the home test, the API reaches the Mac's Ollama through Docker's host gateway; the isolated Ollama container remains available for a later customer deployment.
+- MongoDB and the private service network remain internal. During the home test, the local document gateway reaches the Mac's Ollama through Docker's host gateway; the isolated Ollama container remains available for a later customer deployment.
 - The public chat URL currently depends on a quick Cloudflare tunnel that is kept alive by a Mac LaunchAgent. A named `gombey-chat` tunnel configuration exists but has no active connection or DNS cutover yet. Treat the quick-tunnel path as a pilot setup, not a production SLA.
 
 ## What “ready” means for the first pilot
@@ -106,7 +106,7 @@ Expected:
 - private proof reports the local model, synthetic document fact, no external provider in the private config, and an internal network;
 - the network reports `internal=true`.
 
-The current home configuration is **host-local mode**, not the stronger isolated-container mode: the model still stays on the Mac, but the API reaches it through `host.docker.internal`. Test it with a known fact from the synthetic fixture. Ask a question that cannot be answered from general knowledge and verify the exact fixture identifier appears. Also ask an unrelated question and check that the answer does not claim access to a source it did not receive.
+The current home configuration is **host-local mode**, not the stronger isolated-container mode: the model still stays on the Mac, and the local document gateway reaches it through `host.docker.internal`. Test it with a known fact from the synthetic fixture. Ask a question that cannot be answered from general knowledge and verify the exact fixture identifier appears. Also ask an unrelated question and check that the answer does not claim access to a source it did not receive.
 
 For a stronger proof, temporarily remove the Mac’s internet connection while keeping the local browser path available, then repeat the local synthetic test. If the local test cannot run without internet, record that as a gap instead of claiming local-only operation. Restore connectivity afterward.
 

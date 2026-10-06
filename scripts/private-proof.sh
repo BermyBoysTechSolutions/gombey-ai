@@ -39,7 +39,7 @@ LOCAL_MODEL="$(read_env_value LOCAL_MODEL)"
 [ -n "$LOCAL_MODEL" ] || fail "LOCAL_MODEL is missing from $ENV_FILE"
 
 case "$OLLAMA_BASE_URL" in
-  http://localhost:*|http://127.0.0.1:*|http://host.docker.internal:*|http://ollama:*) ;;
+  http://localhost:*|http://127.0.0.1:*|http://host.docker.internal:*|http://local-gateway:*|http://ollama:*) ;;
   *) fail "private proof only accepts a local Ollama URL, got: $OLLAMA_BASE_URL" ;;
 esac
 
@@ -104,6 +104,9 @@ case "$OLLAMA_BASE_URL" in
     ;;
   http://host.docker.internal:*|http://localhost:*|http://127.0.0.1:*)
     echo "  PASS: app runtime endpoint is host-local Ollama (${OLLAMA_BASE_URL})"
+    ;;
+  http://local-gateway:*)
+    echo "  PASS: app runtime endpoint is the local document gateway (${OLLAMA_BASE_URL})"
     ;;
   *)
     echo "  PASS: app runtime endpoint is local (${OLLAMA_BASE_URL})"
