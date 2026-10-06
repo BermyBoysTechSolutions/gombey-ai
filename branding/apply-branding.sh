@@ -30,48 +30,18 @@ fi
 for icon in favicon-16x16.png favicon-32x32.png icon-192x192.png maskable-icon.png apple-touch-icon-180x180.png; do
   [ -f "/app/client/public/assets/$icon" ] && cp "/app/client/public/assets/$icon" "/app/client/dist/assets/$icon" 2>/dev/null || true
 done
+
+# Load a versioned stylesheet after LibreChat's hashed bundle. This avoids
+# stale browser caches and lets the login wrapper grow with the wordmark.
+if [ -f /app/branding/gombey-branding.css ]; then
+  cp /app/branding/gombey-branding.css /app/client/dist/assets/gombey-branding.css 2>/dev/null || true
+  for html in /app/client/dist/*.html; do
+    [ -f "$html" ] || continue
+    grep -q 'gombey-branding.css' "$html" && continue
+    sed -i 's#</head>#<link rel="stylesheet" href="/assets/gombey-branding.css?v=3"></head>#' "$html" 2>/dev/null || true
+  done
+fi
 find /app/client/dist -type f \( -name 'locales.*.js' -o -name 'index.*.js' \) -print0 2>/dev/null \
   | xargs -0 sed -i -e 's/Welcome back/Welcome back to Gombey AI/g' 2>/dev/null || true
-
-
-# Keep the horizontal Gombey AI wordmark proportional and readable in both themes.
-for css in /app/client/dist/assets/index.*.css; do
-  [ -f "$css" ] || continue
-  grep -q 'Gombey AI custom logo sizing' "$css" && continue
-  cat >> "$css" <<'CSS'
-/* Gombey AI custom logo sizing/contrast */
-img[src*="gombey_logo"], img[src*="/assets/logo"], img[src*="assets/logo.svg"], img[src*="assets/logo.png"] {
-  width: 260px !important;
-  height: auto !important;
-  max-width: min(260px, 72vw) !important;
-  max-height: none !important;
-  object-fit: contain !important;
-  display: block !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-html:not(.dark) img[src*="gombey_logo"], html:not(.dark) img[src*="/assets/logo"], html:not(.dark) img[src*="assets/logo.svg"], html:not(.dark) img[src*="assets/logo.png"] {
-  border-radius: 18px !important;
-  background: linear-gradient(135deg, #0a0e18 0%, #1a2030 100%) !important;
-  padding: 14px 18px !important;
-  box-shadow: 0 6px 30px rgba(0,0,0,0.28) !important;
-}
-html.dark img[src*="gombey_logo"], html.dark img[src*="/assets/logo"], html.dark img[src*="assets/logo.svg"], html.dark img[src*="assets/logo.png"], .dark img[src*="gombey_logo"], .dark img[src*="/assets/logo"], .dark img[src*="assets/logo.svg"], .dark img[src*="assets/logo.png"] {
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-/* LibreChat places the login wordmark in a fixed 40px wrapper. Let the
-   branded wordmark establish the wrapper height instead of shrinking it. */
-.mt-6.h-10.w-full.bg-cover:has(> img[src*="assets/logo.svg"]),
-.mt-6.h-10.w-full.bg-cover:has(> img[src*="assets/logo.png"]) {
-  height: auto !important;
-  min-height: 40px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-CSS
-done
 
 echo "Gombey AI branding applied."
