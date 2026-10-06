@@ -6,7 +6,7 @@ version: 1.1.2
 interface:
   appTitle: "Gombey AI Private"
   customLogo: "/images/gombey_logo.png"
-  favicon: "/images/gombey_logo.png"
+  favicon: "/assets/favicon-32x32.png"
   privacyPolicy:
     externalUrl: "https://gombeytech.com/privacy"
     openNewTab: true
