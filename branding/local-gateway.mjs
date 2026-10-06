@@ -7,6 +7,11 @@ const upstreamBaseUrl = new URL(process.env.OLLAMA_UPSTREAM_URL || 'http://host.
 const maxRequestBytes = Number(process.env.MAX_REQUEST_BYTES || 160 * 1024 * 1024);
 const maxExtractedChars = Number(process.env.MAX_EXTRACTED_CHARS || 250_000);
 const minimumOutputTokens = Number(process.env.MIN_OUTPUT_TOKENS || 8192);
+const contextTokens = Number(process.env.OLLAMA_CONTEXT_TOKENS || 16384);
+
+if (upstreamBaseUrl.pathname === '/v1') {
+  upstreamBaseUrl.pathname = '';
+}
 
 const hopByHopHeaders = new Set([
   'connection',
@@ -229,6 +234,208 @@ function upstreamUrlFor(pathname, search) {
   return url;
 }
 
+function decodeImageDataUrl(value) {
+  if (typeof value !== 'string' || !value.startsWith('data:image/')) {
+    throw new Error('local image attachments must be embedded data URLs');
+  }
+
+  const commaIndex = value.indexOf(',');
+  if (commaIndex < 0 || !value.slice(0, commaIndex).split(';').includes('base64')) {
+    throw new Error('local image attachment has an invalid data URL');
+  }
+
+  return value.slice(commaIndex + 1);
+}
+
+function toOllamaMessage(message) {
+  const role = message.role === 'developer' ? 'system' : message.role || 'user';
+  const images = [];
+  let content = '';
+
+  if (typeof message.content === 'string') {
+    content = message.content;
+  } else if (Array.isArray(message.content)) {
+    const textParts = [];
+    for (const part of message.content) {
+      if (part?.type === 'text' && typeof part.text === 'string') {
+        textParts.push(part.text);
+      } else if (part?.type === 'image_url') {
+        images.push(decodeImageDataUrl(part.image_url?.url));
+      } else if (part?.type === 'file') {
+        throw new Error('local file attachments must be converted before model execution');
+      }
+    }
+    content = textParts.join('\n');
+  }
+
+  const converted = { role, content };
+  if (images.length > 0) {
+    converted.images = images;
+  }
+  if (message.name) {
+    converted.name = message.name;
+  }
+  if (Array.isArray(message.tool_calls)) {
+    converted.tool_calls = message.tool_calls;
+  }
+  return converted;
+}
+
+function nativeOptionsFor(payload) {
+  const options = {
+    ...(payload.options && typeof payload.options === 'object' ? payload.options : {}),
+    num_ctx: Math.max(Number(payload.options?.num_ctx) || 0, contextTokens),
+  };
+  const requestedOutputTokens = Number(
+    payload.max_tokens ?? payload.max_completion_tokens,
+  );
+  options.num_predict = Number.isFinite(requestedOutputTokens) && requestedOutputTokens > 0
+    ? requestedOutputTokens
+    : minimumOutputTokens;
+
+  for (const key of ['temperature', 'top_p', 'top_k', 'seed', 'repeat_penalty', 'stop']) {
+    if (payload[key] !== undefined) {
+      options[key] = payload[key];
+    }
+  }
+  return options;
+}
+
+function nativeUsage(nativeResponse) {
+  const promptTokens = nativeResponse.prompt_eval_count || 0;
+  const completionTokens = nativeResponse.eval_count || 0;
+  return {
+    prompt_tokens: promptTokens,
+    completion_tokens: completionTokens,
+    total_tokens: promptTokens + completionTokens,
+  };
+}
+
+function openAIResponseFromNative(nativeResponse, payload) {
+  const content = nativeResponse.message?.content || '';
+  return {
+    id: `chatcmpl-${Date.now().toString(36)}`,
+    object: 'chat.completion',
+    created: Math.floor(Date.now() / 1000),
+    model: nativeResponse.model || payload.model,
+    choices: [{
+      index: 0,
+      message: { role: 'assistant', content },
+      finish_reason: nativeResponse.done_reason === 'length' ? 'length' : 'stop',
+    }],
+    usage: nativeUsage(nativeResponse),
+  };
+}
+
+function writeOpenAIChunk(response, { id, model, created, delta, finishReason = null, usage }) {
+  const chunk = {
+    id,
+    object: 'chat.completion.chunk',
+    created,
+    model,
+    choices: [{ index: 0, delta, finish_reason: finishReason }],
+  };
+  if (usage) {
+    chunk.usage = usage;
+  }
+  response.write(`data: ${JSON.stringify(chunk)}\n\n`);
+}
+
+async function proxyNativeChat(response, payload, headers) {
+  const nativePayload = {
+    model: payload.model,
+    messages: payload.messages.map(toOllamaMessage),
+    stream: payload.stream === true,
+    think: false,
+    options: nativeOptionsFor(payload),
+  };
+  if (payload.keep_alive !== undefined) {
+    nativePayload.keep_alive = payload.keep_alive;
+  }
+
+  const nativeResponse = await fetch(upstreamUrlFor('/api/chat', ''), {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(nativePayload),
+    signal: AbortSignal.timeout(15 * 60 * 1000),
+  });
+
+  if (!nativeResponse.ok) {
+    const errorBody = await nativeResponse.text();
+    response.writeHead(nativeResponse.status, {
+      'content-type': nativeResponse.headers.get('content-type') || 'application/json; charset=utf-8',
+    });
+    response.end(errorBody);
+    return;
+  }
+
+  if (payload.stream !== true) {
+    const nativeBody = await nativeResponse.json();
+    const openAIResponse = openAIResponseFromNative(nativeBody, payload);
+    writeJson(response, 200, openAIResponse);
+    return;
+  }
+
+  const id = `chatcmpl-${Date.now().toString(36)}`;
+  const created = Math.floor(Date.now() / 1000);
+  const model = payload.model;
+  response.writeHead(200, {
+    'content-type': 'text/event-stream; charset=utf-8',
+    'cache-control': 'no-cache',
+    connection: 'keep-alive',
+    'x-accel-buffering': 'no',
+  });
+
+  let buffer = '';
+  let roleSent = false;
+  let finalResponse;
+  const decoder = new TextDecoder();
+  const processLine = (line) => {
+    if (!line.trim()) {
+      return;
+    }
+    const nativeChunk = JSON.parse(line);
+    const chunkContent = nativeChunk.message?.content || '';
+    if (!roleSent) {
+      writeOpenAIChunk(response, { id, model, created, delta: { role: 'assistant', content: '' } });
+      roleSent = true;
+    }
+    if (chunkContent) {
+      writeOpenAIChunk(response, { id, model, created, delta: { content: chunkContent } });
+    }
+    if (nativeChunk.done) {
+      finalResponse = nativeChunk;
+    }
+  };
+
+  for await (const chunk of nativeResponse.body || []) {
+    buffer += decoder.decode(chunk, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+    for (const line of lines) {
+      processLine(line);
+    }
+  }
+  buffer += decoder.decode();
+  if (buffer.trim()) {
+    processLine(buffer);
+  }
+  if (!roleSent) {
+    writeOpenAIChunk(response, { id, model, created, delta: { role: 'assistant', content: '' } });
+  }
+
+  writeOpenAIChunk(response, {
+    id,
+    model,
+    created,
+    delta: {},
+    finishReason: finalResponse?.done_reason === 'length' ? 'length' : 'stop',
+    usage: finalResponse ? nativeUsage(finalResponse) : undefined,
+  });
+  response.write('data: [DONE]\n\n');
+  response.end();
+}
+
 async function proxyRequest(request, response) {
   const requestUrl = new URL(request.url || '/', 'http://local-gateway');
   const targetUrl = upstreamUrlFor(requestUrl.pathname, requestUrl.search);
@@ -247,6 +454,18 @@ async function proxyRequest(request, response) {
       stats = normalized.stats;
       headers.set('content-type', 'application/json');
       console.log(`[local-gateway] request ${JSON.stringify({ ...summarizePayload(normalized.payload), extractedPdfCount: stats.pdfCount, extractedChars: stats.extractedChars })}`);
+
+      if (
+        request.method === 'POST' &&
+        requestUrl.pathname === '/v1/chat/completions' &&
+        Array.isArray(normalized.payload.messages)
+      ) {
+        await proxyNativeChat(response, normalized.payload, headers);
+        if (stats.pdfCount > 0) {
+          console.log(`[local-gateway] extracted ${stats.pdfCount} PDF attachment(s), ${stats.extractedChars} text characters`);
+        }
+        return;
+      }
     }
   }
 
@@ -299,7 +518,7 @@ async function proxyRequest(request, response) {
 
 const server = http.createServer(async (request, response) => {
   if (request.method === 'GET' && request.url === '/health') {
-    writeJson(response, 200, { status: 'ok', mode: 'local-pdf-text-fallback' });
+    writeJson(response, 200, { status: 'ok', mode: 'local-pdf-and-context-adapter' });
     return;
   }
 
