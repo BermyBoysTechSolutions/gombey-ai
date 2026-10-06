@@ -98,10 +98,20 @@ grep -q 'internal: true' <<<"$COMPOSE_CONFIG" \
 echo "[4/4] Proof result"
 echo "  PASS: model=${LOCAL_MODEL}"
 echo "  PASS: host-side proof request reached local Ollama (${PRIVATE_PROOF_BASE_URL})"
-echo "  PASS: private runtime endpoint is internal (${OLLAMA_BASE_URL})"
+case "$OLLAMA_BASE_URL" in
+  http://ollama:*)
+    echo "  PASS: app runtime endpoint is the isolated Ollama service (${OLLAMA_BASE_URL})"
+    ;;
+  http://host.docker.internal:*|http://localhost:*|http://127.0.0.1:*)
+    echo "  PASS: app runtime endpoint is host-local Ollama (${OLLAMA_BASE_URL})"
+    ;;
+  *)
+    echo "  PASS: app runtime endpoint is local (${OLLAMA_BASE_URL})"
+    ;;
+esac
 echo "  PASS: local model used the synthetic private document fixture"
 echo "  PASS: private config exposes no external model provider"
-echo "  PASS: app containers use an internal Docker network"
+echo "  PASS: MongoDB and the private service network remain internal"
 echo
 echo "Next: start the private UI with:"
 echo "  ./scripts/private-model-bootstrap.sh"
