@@ -7,6 +7,9 @@ services:
         condition: service_healthy
     networks:
       - gombey_private
+      # A separate host-facing network is required for Docker to publish the
+      # browser UI on the Mac while Ollama and MongoDB remain internal-only.
+      - gombey_frontdoor
 
   mongodb:
     networks:
@@ -32,6 +35,8 @@ networks:
   gombey_private:
     name: gombey-private
     internal: true
+  gombey_frontdoor:
+    name: gombey-frontdoor
 
 volumes:
   ollama_models:

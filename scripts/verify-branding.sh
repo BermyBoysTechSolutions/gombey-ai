@@ -40,5 +40,7 @@ grep -Fq 'Gombey AI custom logo sizing/contrast' "$ROOT_DIR/branding/apply-brand
   || fail "startup branding CSS is missing"
 grep -Fq 'height: auto !important' "$ROOT_DIR/branding/apply-branding.sh" \
   || fail "startup branding CSS can distort the horizontal wordmark"
+grep -Fq 'assets/logo.svg' "$ROOT_DIR/branding/apply-branding.sh" \
+  || fail "startup branding CSS does not match LibreChat's relative logo URL"
 
 echo "PASS: canonical Gombey AI wordmark, square favicon, and proportional runtime styling are wired for cloud and private modes."

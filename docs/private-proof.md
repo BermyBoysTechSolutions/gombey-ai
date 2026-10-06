@@ -10,7 +10,7 @@ The proof is intentionally narrow:
 2. A named local model can answer a chat request through its OpenAI-compatible API.
 3. The model can answer using a synthetic private-document fixture without an external provider.
 4. LibreChat is configured with one local endpoint and no external model provider.
-5. The Gombey API and MongoDB services share an internal Docker network with no default outbound route.
+5. The Gombey API reaches Ollama and MongoDB over an internal Docker network. The API also has a separate host-facing network solely so the browser UI can be published; the private config contains no external model provider.
 
 This is evidence for **local inference**, not a complete security certification. Backups, identity, physical access, patching, logging, and any later integrations still need a customer-specific review.
 
