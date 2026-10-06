@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   api:
     image: ghcr.io/danny-avila/librechat:latest
@@ -9,11 +7,11 @@ services:
     depends_on:
       - mongodb
     env_file:
-      - .env
+      - ${GOMBEY_ENV_FILE:-.env}
     command: sh -c "sh /app/branding/apply-branding.sh && node api/server/index.js"
     volumes:
       - ./branding:/app/branding:ro
-      - ./librechat.yaml:/app/librechat.yaml
+      - ./${LIBRECHAT_CONFIG_FILE:-librechat.yaml}:/app/librechat.yaml:ro
       - ./images:/app/client/public/images
       # White-label default logo/favicon assets with Gombey AI branding
       - ./assets/logo.svg:/app/client/public/assets/logo.svg

@@ -18,25 +18,31 @@ PASSWORD=$3
 
 echo "Creating user: $USERNAME ($EMAIL)..."
 
-# Run user creation inside the Gombey AI app container
-docker exec -i $CONTAINER_NAME node -e "
+# Pass values as container environment variables instead of interpolating them
+# into JavaScript. This prevents usernames, emails, or passwords from becoming
+# executable code inside the container.
+docker exec -i \
+    -e "GOMBEY_USERNAME=$USERNAME" \
+    -e "GOMBEY_EMAIL=$EMAIL" \
+    -e "GOMBEY_PASSWORD=$PASSWORD" \
+    "$CONTAINER_NAME" node <<'NODE'
 const { User } = require('./api/models');
 const bcrypt = require('bcryptjs');
 
 async function createUser() {
+  const { GOMBEY_USERNAME: username, GOMBEY_EMAIL: email, GOMBEY_PASSWORD: password } = process.env;
+
   try {
-    const hashedPassword = await bcrypt.hash('$PASSWORD', 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({
-      username: '$USERNAME',
-      email: '$EMAIL',
+      username,
+      email,
       password: hashedPassword,
       emailVerified: true,
       role: 'user'
     });
     await user.save();
-    console.log('User created successfully!');
-    console.log('Username: $USERNAME');
-    console.log('Email: $EMAIL');
+    console.log(`User created successfully: ${email}`);
   } catch (error) {
     if (error.code === 11000) {
       console.error('Error: User already exists (duplicate username or email)');
@@ -48,6 +54,6 @@ async function createUser() {
 }
 
 createUser();
-"
+NODE
 
 echo "Done! User can now log in at chat.gombeytech.com"
