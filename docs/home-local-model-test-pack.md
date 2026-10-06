@@ -11,6 +11,10 @@ This is the exact procedure for the privacy/model portion of the first Gombey AI
 - The current host Ollama model list includes `gemma4:latest`, `gemma4:12b`, `gemma3:12b`, `qwen3.5:9b`, `testornith:latest`, `testornith-fable:latest`, `huihui_ai/gemma-4-abliterated:latest`, `glm-ocr:latest`, and `nomic-embed-text:latest`.
 - `glm-ocr:latest` is an OCR-oriented model, not the recommended general chat model.
 
+## Important: the fixture files are not preloaded in the app
+
+The four fixture files live in this repository for you to upload manually. LibreChat will not display them in the chat until you attach them to a conversation. On the Mac, select them from `proof-fixtures/property-management-pilot/`; on the phone, copy or download them first if the phone cannot browse the Mac's repository. The evaluator sheet is intentionally separate and should not be uploaded.
+
 ## Model availability check
 
 On the Mac:
