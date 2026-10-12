@@ -38,9 +38,9 @@ if [ -f /app/branding/gombey-branding.css ]; then
   for html in /app/client/dist/*.html; do
     [ -f "$html" ] || continue
     if grep -q 'gombey-branding.css' "$html"; then
-      sed -i 's#href="/assets/gombey-branding.css?v=[^"]*"#href="/assets/gombey-branding.css?v=5"#' "$html" 2>/dev/null || true
+      sed -i 's#href="/assets/gombey-branding.css?v=[^"]*"#href="/assets/gombey-branding.css?v=6"#' "$html" 2>/dev/null || true
     else
-      sed -i 's#</head>#<link rel="stylesheet" href="/assets/gombey-branding.css?v=5"></head>#' "$html" 2>/dev/null || true
+      sed -i 's#</head>#<link rel="stylesheet" href="/assets/gombey-branding.css?v=6"></head>#' "$html" 2>/dev/null || true
     fi
   done
 fi

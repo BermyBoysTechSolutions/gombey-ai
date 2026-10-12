@@ -72,6 +72,21 @@ div.shadow-stroke:has(> svg.lucide-bot) > svg.lucide-bot {
   display: none !important;
 }
 
+/* Give the no-chat agent welcome screen a proper brand mark, not the compact
+   20px fallback used by history rows. The parent is LibreChat's size-10 avatar. */
+div.relative.size-10:has(> div.shadow-stroke > svg.lucide-feather) {
+  width: 56px !important;
+  height: 56px !important;
+  flex: 0 0 56px !important;
+}
+
+div.relative.size-10:has(> div.shadow-stroke > svg.lucide-feather) > div.shadow-stroke {
+  width: 56px !important;
+  height: 56px !important;
+  flex: 0 0 56px !important;
+  background-size: 56px 56px !important;
+}
+
 /* The model selector's fallback bot is an avatar, not a navigation control. */
 div.shadow-stroke:has(> svg.lucide-bot) {
   background-color: transparent !important;
