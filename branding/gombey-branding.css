@@ -1,4 +1,4 @@
-/* Gombey AI login branding. Loaded after LibreChat's hashed CSS bundle. */
+/* Gombey AI branding. Loaded after LibreChat's hashed CSS bundle. */
 
 img[src*="gombey_logo"],
 img[src*="/assets/logo"],
@@ -50,4 +50,33 @@ html.dark img[src*="assets/logo.png"],
   background: transparent !important;
   box-shadow: none !important;
   padding: 0 !important;
+}
+
+/* Replace LibreChat's default feather chat/agent identity marks with the
+   Gombey app icon. Keep functional navigation icons (including Agent Builder)
+   intact; only avatar and history-row marks are replaced. */
+div:has(> svg.lucide-feather) {
+  width: 20px !important;
+  height: 20px !important;
+  flex: 0 0 20px !important;
+  border-radius: 50% !important;
+  background-color: transparent !important;
+  background-image: url("/assets/gombey-agent-avatar.png") !important;
+  background-repeat: no-repeat !important;
+  background-size: 20px 20px !important;
+  background-position: center !important;
+}
+
+div:has(> svg.lucide-feather) > svg.lucide-feather,
+div.shadow-stroke:has(> svg.lucide-bot) > svg.lucide-bot {
+  display: none !important;
+}
+
+/* The model selector's fallback bot is an avatar, not a navigation control. */
+div.shadow-stroke:has(> svg.lucide-bot) {
+  background-color: transparent !important;
+  background-image: url("/assets/gombey-agent-avatar.png") !important;
+  background-repeat: no-repeat !important;
+  background-size: 24px 24px !important;
+  background-position: center !important;
 }

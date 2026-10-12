@@ -4,8 +4,8 @@
 
 set -eu
 
-BRAND_NAME="Gombey AI"
-BRAND_DESCRIPTION="Gombey AI - Private AI chat for your business"
+BRAND_NAME="${GOMBEY_BRAND_NAME:-Gombey AI}"
+BRAND_DESCRIPTION="${GOMBEY_BRAND_DESCRIPTION:-$BRAND_NAME - Private AI chat for your business}"
 
 TARGET_DIRS="/app/client/dist /app/client/public"
 
@@ -16,7 +16,7 @@ for dir in $TARGET_DIRS; do
       -e "s/LibreChat - An open source chat application with support for multiple AI models/$BRAND_DESCRIPTION/g" \
       -e "s/LibreChat/$BRAND_NAME/g" \
       -e "s/librechat/gombey-ai/g" \
-      -e "s/ChatGPT Clone/Gombey AI/g" 2>/dev/null || true
+      -e "s/ChatGPT Clone/$BRAND_NAME/g" 2>/dev/null || true
 done
 
 
@@ -27,7 +27,7 @@ fi
 if [ -f /app/client/public/assets/logo.svg ]; then
   cp /app/client/public/assets/logo.svg /app/client/dist/assets/logo.svg 2>/dev/null || true
 fi
-for icon in favicon-16x16.png favicon-32x32.png icon-192x192.png maskable-icon.png apple-touch-icon-180x180.png; do
+for icon in favicon-16x16.png favicon-32x32.png icon-192x192.png maskable-icon.png apple-touch-icon-180x180.png gombey-agent-avatar.png; do
   [ -f "/app/client/public/assets/$icon" ] && cp "/app/client/public/assets/$icon" "/app/client/dist/assets/$icon" 2>/dev/null || true
 done
 
@@ -37,11 +37,14 @@ if [ -f /app/branding/gombey-branding.css ]; then
   cp /app/branding/gombey-branding.css /app/client/dist/assets/gombey-branding.css 2>/dev/null || true
   for html in /app/client/dist/*.html; do
     [ -f "$html" ] || continue
-    grep -q 'gombey-branding.css' "$html" && continue
-    sed -i 's#</head>#<link rel="stylesheet" href="/assets/gombey-branding.css?v=3"></head>#' "$html" 2>/dev/null || true
+    if grep -q 'gombey-branding.css' "$html"; then
+      sed -i 's#href="/assets/gombey-branding.css?v=[^"]*"#href="/assets/gombey-branding.css?v=5"#' "$html" 2>/dev/null || true
+    else
+      sed -i 's#</head>#<link rel="stylesheet" href="/assets/gombey-branding.css?v=5"></head>#' "$html" 2>/dev/null || true
+    fi
   done
 fi
 find /app/client/dist -type f \( -name 'locales.*.js' -o -name 'index.*.js' \) -print0 2>/dev/null \
-  | xargs -0 sed -i -e 's/Welcome back/Welcome back to Gombey AI/g' 2>/dev/null || true
+  | xargs -0 sed -i -e "s/Welcome back/Welcome back to $BRAND_NAME/g" 2>/dev/null || true
 
 echo "Gombey AI branding applied."
