@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-CUSTOMER_ENV="$REPO_DIR/deploy/customer/.env"
+CUSTOMER_ENV="${GOMBEY_CUSTOMER_ENV_PATH:-$REPO_DIR/deploy/customer/.env}"
 
 if [[ $# -lt 2 || $# -gt 3 ]]; then
   echo "Usage: $0 <chat-domain> <ops-email> [brand-name]" >&2
@@ -31,6 +31,7 @@ if [[ -e "$CUSTOMER_ENV" ]]; then
   echo "Error: $CUSTOMER_ENV already exists; refusing to overwrite secrets." >&2
   exit 1
 fi
+mkdir -p "$(dirname "$CUSTOMER_ENV")"
 if ! command -v openssl >/dev/null 2>&1; then
   echo "Error: openssl is required to generate deployment secrets." >&2
   exit 1

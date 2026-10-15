@@ -3,10 +3,10 @@
 services:
   api:
     ports:
-      - "127.0.0.1:3083:3080"
+      - "127.0.0.1:${LOCAL_PORT:-3083}:3080"
     environment:
-      DOMAIN_CLIENT: http://localhost:3083
-      DOMAIN_SERVER: http://localhost:3083
+      DOMAIN_CLIENT: "http://localhost:${LOCAL_PORT:-3083}"
+      DOMAIN_SERVER: "http://localhost:${LOCAL_PORT:-3083}"
       ALLOW_REGISTRATION: ${LOCAL_BOOTSTRAP:-false}
     volumes:
       - type: bind

@@ -4,17 +4,21 @@ interface:
   appTitle: "${GOMBEY_BRAND_NAME}"
   customLogo: "/images/gombey_logo.png"
   favicon: "/assets/favicon-32x32.png"
-  customWelcome: "Welcome to your dedicated ${GOMBEY_BRAND_NAME} workspace."
+  modelSelect: true
+  customWelcome: "Welcome to your dedicated Gombey AI workspace."
+  # Keep member conversations private by disabling user-created share links.
+  # The staging and customer templates seed this for the default USER role.
+  sharedLinks: false
   privacyPolicy:
     externalUrl: "https://gombeytech.com/privacy"
     openNewTab: true
   termsOfService:
     externalUrl: "https://gombeytech.com/terms"
     openNewTab: true
+  # Preserve role-specific defaults: ADMIN can create/share; USER can use but
+  # cannot share, and neither role can publish an agent to the instance.
   agents:
     use: true
-    create: false
-    share: false
     public: false
   fileSearch: true
   fileCitations: true
@@ -44,3 +48,17 @@ endpoints:
     # Keep the pilot to a shared, document-grounded assistant; no autonomous actions yet.
     capabilities:
       - file_search
+
+modelSpecs:
+  prioritize: true
+  addedEndpoints:
+    - agents
+  list:
+    - name: gombey-staging-luna
+      label: GPT-6 Luna
+      description: Lower-cost default for routine staging tests.
+      default: true
+      showInMenu: true
+      preset:
+        endpoint: openAI
+        model: gpt-6-luna
