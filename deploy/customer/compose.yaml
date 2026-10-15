@@ -1,0 +1,172 @@
+name: ${COMPOSE_PROJECT_NAME:-gombey-customer}
+
+services:
+  api:
+    image: ${LIBRECHAT_IMAGE:-ghcr.io/librechat-ai/librechat:v0.8.8}
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      NODE_ENV: production
+      CONFIG_PATH: /app/librechat.yaml
+      DOMAIN_CLIENT: https://${SITE_DOMAIN:?Set SITE_DOMAIN in deploy/customer/.env}
+      DOMAIN_SERVER: https://${SITE_DOMAIN:?Set SITE_DOMAIN in deploy/customer/.env}
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+      MEILI_HOST: http://meilisearch:7700
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      RAG_API_URL: http://rag_api:8000
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODELS: ${OPENAI_MODELS}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      ANTHROPIC_MODELS: ${ANTHROPIC_MODELS}
+      GOOGLE_KEY: ${GOOGLE_KEY}
+      GOOGLE_MODELS: ${GOOGLE_MODELS}
+      OPENROUTER_KEY: ${OPENROUTER_KEY}
+      ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-false}
+      ALLOW_PASSWORD_RESET: ${ALLOW_PASSWORD_RESET:-false}
+      ALLOW_EMAIL_LOGIN: "true"
+      ALLOW_UNVERIFIED_EMAIL_LOGIN: "true"
+      TRUST_PROXY: "1"
+      NO_INDEX: "true"
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      CREDS_KEY: ${CREDS_KEY}
+      CREDS_IV: ${CREDS_IV}
+      APP_TITLE: ${GOMBEY_BRAND_NAME:-Gombey AI}
+      GOMBEY_BRAND_NAME: ${GOMBEY_BRAND_NAME:-Gombey AI}
+      GOMBEY_BRAND_DESCRIPTION: ${GOMBEY_BRAND_DESCRIPTION:-Dedicated AI workspace}
+    command: sh -c "sh /app/branding/apply-branding.sh && exec node api/server/index.js"
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml:ro
+      - ../../branding:/app/branding:ro
+      - ../../assets/logo.svg:/app/client/public/assets/logo.svg:ro
+      - ../../assets/logo.png:/app/client/public/assets/logo.png:ro
+      - ../../assets/icon-192x192.png:/app/client/public/assets/icon-192x192.png:ro
+      - ../../assets/gombey-agent-avatar.png:/app/client/public/assets/gombey-agent-avatar.png:ro
+      - ../../assets/maskable-icon.png:/app/client/public/assets/maskable-icon.png:ro
+      - ../../assets/apple-touch-icon-180x180.png:/app/client/public/assets/apple-touch-icon-180x180.png:ro
+      - ../../assets/favicon-16x16.png:/app/client/public/assets/favicon-16x16.png:ro
+      - ../../assets/favicon-32x32.png:/app/client/public/assets/favicon-32x32.png:ro
+      - ../../images/gombey_logo.png:/app/client/public/images/gombey_logo.png:ro
+      - app_data:/app/data
+      - uploads_data:/app/uploads
+    expose:
+      - "3080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      meilisearch:
+        condition: service_started
+      vectordb:
+        condition: service_healthy
+      rag_api:
+        condition: service_started
+    networks:
+      - edge
+      - private
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3080/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  caddy:
+    image: ${CADDY_IMAGE}
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - edge
+
+  mongodb:
+    image: ${MONGO_IMAGE}
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh \"mongodb://$${MONGO_INITDB_ROOT_USERNAME}:$${MONGO_INITDB_ROOT_PASSWORD}@127.0.0.1:27017/admin?authSource=admin\" --quiet --eval 'db.adminCommand(\"ping\").ok' | grep -q 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - private
+
+  meilisearch:
+    image: ${MEILI_IMAGE}
+    restart: unless-stopped
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+    volumes:
+      - meili_data:/meili_data
+    networks:
+      - private
+
+  vectordb:
+    image: ${VECTORDB_IMAGE}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - vector_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - private
+
+  rag_api:
+    image: ${RAG_API_IMAGE}
+    restart: unless-stopped
+    environment:
+      DB_HOST: vectordb
+      DB_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      RAG_PORT: "8000"
+      RAG_OPENAI_API_KEY: ${RAG_OPENAI_API_KEY}
+      RAG_OPENAI_BASEURL: ${RAG_OPENAI_BASEURL:-https://openrouter.ai/api/v1}
+      EMBEDDINGS_PROVIDER: openai
+      EMBEDDINGS_MODEL: ${EMBEDDINGS_MODEL:-openai/text-embedding-3-small}
+    depends_on:
+      vectordb:
+        condition: service_healthy
+    expose:
+      - "8000"
+    networks:
+      - private
+      - outbound
+
+networks:
+  edge:
+  private:
+    internal: true
+  outbound:
+
+volumes:
+  app_data:
+  uploads_data:
+  mongo_data:
+  meili_data:
+  vector_data:
+  caddy_data:
+  caddy_config:

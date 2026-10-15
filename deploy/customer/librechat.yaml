@@ -1,0 +1,46 @@
+version: 1.3.17
+
+interface:
+  appTitle: "${GOMBEY_BRAND_NAME}"
+  customLogo: "/images/gombey_logo.png"
+  favicon: "/assets/favicon-32x32.png"
+  customWelcome: "Welcome to your dedicated ${GOMBEY_BRAND_NAME} workspace."
+  privacyPolicy:
+    externalUrl: "https://gombeytech.com/privacy"
+    openNewTab: true
+  termsOfService:
+    externalUrl: "https://gombeytech.com/terms"
+    openNewTab: true
+  agents:
+    use: true
+    create: false
+    share: false
+    public: false
+  fileSearch: true
+  fileCitations: true
+  marketplace:
+    use: false
+
+fileConfig:
+  endpoints:
+    openAI:
+      disabled: false
+  serverFileSizeLimit: 52428800
+  avatarSizeLimit: 2097152
+
+endpoints:
+  custom:
+    - name: "OpenRouter"
+      apiKey: "${OPENROUTER_KEY}"
+      baseURL: "https://openrouter.ai/api/v1"
+      models:
+        default: ["openai/gpt-4o-mini"]
+        fetch: true
+      titleConvo: true
+      titleModel: "openai/gpt-4o-mini"
+      dropParams: ["stop"]
+      modelDisplayLabel: "OpenRouter"
+  agents:
+    # Keep the pilot to a shared, document-grounded assistant; no autonomous actions yet.
+    capabilities:
+      - file_search

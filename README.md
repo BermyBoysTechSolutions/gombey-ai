@@ -68,15 +68,11 @@ Since `ALLOW_REGISTRATION=false`, new accounts must be created manually by the a
 4. **Send them credentials** — they log in at `chat.gombeytech.com`
 5. **They attach the seeded files from My Files when starting the pilot**
 
-The seeding script runs locally as an operator action, targets exactly one username/email, skips duplicate filenames, and stores files in the persistent `uploads_data` volume. It does not create a global file pool or expose files to other users. These are account-owned files, not yet an automatically injected knowledge base for every conversation; a tenant-scoped Agent/RAG layer is the next product step for that behavior.
+The seeding script runs locally as an operator action, targets exactly one username/email, skips duplicate filenames, and stores files in the persistent `uploads_data` volume. It does not create a global file pool or expose files to other users. Those files remain account-owned in the Mac Mini demo. The separate customer pilot template in `deploy/customer/` adds a dedicated per-customer RAG store and admin-managed shared agent; it does not turn the existing Mac Mini demo into a team tenant.
 
-### Team Accounts
+### Customer Team Pilot
 
-For teams that want shared access:
-- **Option A**: Create one shared account (everyone uses same login)
-- **Option B**: Create individual accounts per team member (isolated chats)
-
-For true team workspaces (shared chats between users), use Option A for now; full client workspaces can be added later if demand justifies it.
+The existing Mac Mini demo remains a personal/testing instance; it is not the customer deployment. A separate deployment template now lives in `deploy/customer/` for one dedicated VPS and database per customer. It is intended to provide individual employee logins plus an admin-managed, read-only shared File Search agent. Gombey currently provisions employee accounts from the VPS; self-service invitations are not included. Employee chats remain private; shared agent knowledge is available only when using that agent, not automatically in every ordinary chat. The template is not yet production-validated: complete its account-isolation, shared-agent, backup/restore, and reboot checks before using real customer data.
 
 ## Configuration
 
