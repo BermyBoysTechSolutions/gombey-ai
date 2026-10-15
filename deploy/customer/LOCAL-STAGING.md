@@ -143,8 +143,10 @@ restore over the active staging database.
 Current validation evidence (2026-10-15):
 
 - The staging API and regular app/GPT-test/Ollama remained healthy through a
-  staging-only restart. Three synthetic accounts, one shared Luna agent, and
-  both member Viewer grants persisted.
+  controlled Colima restart. Ports 3080, 3081, 3082, and 3083 returned HTTP
+  200 afterward; the main app, GPT test, bridge, Ollama, staging API, Mongo,
+  and pgvector reported healthy. Three synthetic accounts, one shared Luna
+  agent, and both member Viewer grants persisted.
 - The admin's visible Share dialog shows full control for the synthetic admin
   and Viewer access for both QA members; member "View insights" is unchecked.
   The member accounts have not been interactively signed into because their
@@ -164,6 +166,11 @@ Current validation evidence (2026-10-15):
 - The staging Mongo root password was rotated and verified after a diagnostic
   output mistake. The value is kept only in the mode-600 staging environment
   file and its owner-only external backup.
+- An explicit Colima mount for the external SSD did not become visible inside
+  the VM (`df` still showed `/dev/root` at that path). The profile was returned
+  to its original default home-only mount configuration, and all Gombey
+  services were brought back healthy. Do not treat active staging data as
+  external-SSD-backed until a future mount is verified from inside the VM.
 
 Still outstanding: interactive sign-in as both members (their passwords are
 not available), model and document-retrieval checks (no customer-owned model or
