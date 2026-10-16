@@ -398,11 +398,18 @@ does **not** test the members' passwords, browser login, or full UI behavior.
 - The temporary UI account, synthetic private conversation, and file record
   are absent. Registration is currently `false`, the API is healthy on
   loopback port 3083, and the external SSD mount is confirmed.
+- The persisted shared agent is configured for `gpt-6-luna` on the OpenAI
+  endpoint and exposes only `file_search`; the customer config contains no
+  MCP server. Password reset and public sharing are disabled. This verifies
+  the configured model/tool boundary, not a real provider inference request.
 - The supported `npm run create-user` and `npm run reset-password` operator
-  commands are present in the pinned image; member provisioning is not
-  self-service. The production preflight correctly refuses the local sample
-  environment because it still has a sample hostname/email and placeholder
-  embeddings key. No real provider credential was entered to bypass that gate.
+  commands are present in the pinned image. In a live check, `create-user`
+  provisioned a verified `USER` account while public registration stayed off;
+  its exact synthetic account was then deleted, returning the database to
+  three users. Member provisioning is not self-service. The production
+  preflight correctly refuses the local sample environment because it still
+  has a sample hostname/email and placeholder embeddings key. No real provider
+  credential was entered to bypass that gate.
 
 Remaining before production-VPS testing: a real customer-owned model API key
 and embeddings key are still needed to verify actual model-generated answers,
