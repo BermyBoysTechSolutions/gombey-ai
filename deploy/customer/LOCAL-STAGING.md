@@ -511,3 +511,8 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
   and refuses non-interactive use. Five unit tests pass using fake keys only;
   the live staging `.env` hash is unchanged. Use a newly rotated, low-limit key,
   then recreate only `rag_api` using the local overlay command in README.md.
+- Added an optional `DeepSeek V4 Flash (OpenRouter test)` model spec for cheap
+  synthetic chat checks. The Codex in-app browser showed the option under
+  OpenRouter; GPT-6 Luna remained selected, and the persisted shared agent was
+  not changed. No request was sent because the OpenRouter profile must be
+  rotated first; the option requires each test user to supply their own key.

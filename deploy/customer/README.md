@@ -96,6 +96,10 @@ GOMBEY_LOCAL_DATA_ROOT="/Volumes/Mac Mini SSD/Gombey AI Local Staging" \
 ```
 
 Do not paste keys into chat, shell arguments, screenshots, or repository files.
+The local model menu includes an optional, non-default DeepSeek V4 Flash
+OpenRouter spec for synthetic checks; GPT-6 Luna remains the default and the
+shared knowledge agent remains pinned to Luna. Each test user must configure
+their own OpenRouter key before selecting the DeepSeek option.
 
 ### Validate and start the public deployment
 

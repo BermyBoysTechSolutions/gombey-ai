@@ -38,7 +38,9 @@ endpoints:
       apiKey: "${OPENROUTER_KEY}"
       baseURL: "https://openrouter.ai/api/v1"
       models:
-        default: ["openai/gpt-4o-mini"]
+        default:
+          - "openai/gpt-4o-mini"
+          - "deepseek/deepseek-v4-flash-0731"
         fetch: true
       titleConvo: true
       titleModel: "openai/gpt-4o-mini"
@@ -62,3 +64,12 @@ modelSpecs:
       preset:
         endpoint: openAI
         model: gpt-6-luna
+    - name: gombey-openrouter-deepseek-v4-flash
+      label: DeepSeek V4 Flash (OpenRouter test)
+      description: Optional low-cost model for synthetic checks; requires the user's own OpenRouter key and does not replace the shared GPT-6 Luna agent.
+      group: OpenRouter
+      authType: user_provided
+      showInMenu: true
+      preset:
+        endpoint: OpenRouter
+        model: deepseek/deepseek-v4-flash-0731
