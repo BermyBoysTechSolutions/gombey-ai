@@ -388,6 +388,11 @@ does **not** test the members' passwords, browser login, or full UI behavior.
   user-scoped file authorization, not binary upload or ingestion. Shared File
   Search upload/index/delete and admin/member retrieval plumbing were tested
   separately above with a deterministic lexical mock, not a semantic model.
+- Source inspection confirms ordinary attachment uploads are routed through
+  the selected model provider. That end-to-end private-attachment upload was
+  not exercised here because the customer staging instance has no usable
+  customer-owned provider credential; no fallback provider or personal plan
+  connection was substituted.
 - The first member-route test exposed that Express passed `next` as the third
   argument to LibreChat's basic-agent handler, unintentionally selecting its
   expanded configuration response. Added a fail-closed, version-pinned startup
@@ -415,6 +420,10 @@ does **not** test the members' passwords, browser login, or full UI behavior.
   passed `pg_restore --list`, and both app-data/upload tar files parsed. The
   separate sibling deployment remains stopped after its earlier successful
   isolated restore test.
+- Rechecked the three synthetic evaluation PDFs: 31, 36, and 31 pages, each
+  with more than 5,000 extractable words. First-page renders were legible, and
+  the workspace copies byte-match the copies in the external-SSD evaluation
+  folder. They are ready to reuse for the real-provider RAG run.
 
 Remaining before production-VPS testing: a real customer-owned model API key
 and embeddings key are still needed to verify actual model-generated answers,
