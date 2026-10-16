@@ -17,6 +17,15 @@ make the directories world-writable. This is needed when Colima creates a
 missing bind source as root. The helper does not make an unmounted `/Volumes`
 path external-SSD-backed.
 
+Colima normally mounts the home directory, not `/Volumes`. The tested local
+profile explicitly mounts both the home directory and `/Volumes` with
+`virtiofs`, so the configured `/Volumes/Mac Mini SSD/...` bind sources resolve
+to the physical external drive. When adding custom Colima mounts, retain the
+home-directory mount; mount the `/Volumes` parent rather than the SSD's
+space-containing name. Verify host-side write-through before relying on this
+storage location. Without that VM mount, Docker may silently use a same-named
+directory inside Colima instead.
+
 ## Prepare
 
 From the repository root, create a staging-only environment file. The init
@@ -358,3 +367,15 @@ does **not** test the members' passwords, browser login, or full UI behavior.
   and uploaded file are removed. Real embeddings quality, model-generated
   answers/citations through this deployment, and provider billing remain
   unverified until customer-owned test credentials are configured.
+- The initial `/Volumes` bind paths were only directories inside Colima because
+  that profile did not mount `/Volumes`. Stopped the dedicated staging project,
+  preserved a rollback archive on the external SSD, explicitly mounted the
+  host `/Volumes` parent while retaining the home mount, and restored the
+  staging data directories onto the physical SSD. Host-side files now show the
+  expected Mongo, Meilisearch, and pgvector data sizes; a VM-to-host write
+  probe passed. Mongo retained three QA users and one agent, while the file and
+  conversation collections remained empty. After that verification, removed
+  only the redundant internal copies of those five staging data roots; the
+  separate stopped isolation-test data and its existing external files were
+  left untouched. A mode-600 pre-mount rollback archive remains on the SSD,
+  outside the repository.
