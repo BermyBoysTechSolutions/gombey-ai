@@ -241,3 +241,33 @@ inference and is not available to client accounts.
   they were not uploaded to the customer staging app's persistent shared File
   Search index. The staging RAG/member retrieval test remains outstanding until
   a customer-owned model key and embeddings key are configured.
+
+## Synthetic member authorization checks (2026-10-16)
+
+The staging API was exercised as the two synthetic `USER` accounts using
+short-lived JWTs minted in memory by LibreChat's own token helper. The tokens
+were not printed or stored. This tests authorization after authentication; it
+does **not** test the members' passwords, browser login, or full UI behavior.
+
+- Both `qa-member-1` and `qa-member-2` can retrieve the shared
+  `Juniper & Slate Studio Workflow Assistant` basic view (HTTP 200), and both
+  are denied its expanded editor/configuration view (HTTP 403). The admin can
+  retrieve both views (HTTP 200). The agent is configured for `gpt-6-luna` and
+  has the File Search tool, but currently has zero source-file IDs attached.
+- Private conversation isolation passed in both directions: each member could
+  read their own temporary synthetic conversation (HTTP 200), while the other
+  member received HTTP 404. Both temporary conversations were deleted through
+  the owner-scoped endpoint and rechecked as unavailable (HTTP 404).
+- Both members' file and conversation list endpoints returned HTTP 200 with
+  zero records before/after the checks. This alone does not prove private-file
+  isolation because neither account had a file to test.
+- A temporary synthetic Markdown upload to Member 1 failed with HTTP 500 and
+  no file was persisted; the staging provider keys are placeholders and the
+  embeddings key is unset. Mongo still has zero file records. This did not
+  establish personal-file ownership or shared File Search behavior; those
+  checks still require a customer-owned provider and embeddings key.
+- No existing member password was reset or changed; the staging UI remains at
+  its login screen when no owner session is present.
+- The staging API container restarted once during this validation window with
+  exit status 0 (`OOMKilled=false`). It is healthy and returns HTTP 200 now, but
+  the restart cause was not established; investigate before production use.
