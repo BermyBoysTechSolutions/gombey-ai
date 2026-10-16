@@ -472,3 +472,25 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
 - A historical shared-vault note contains a pasted OpenRouter credential. It
   cannot be confirmed whether that value matches the current profile; treat the
   profile as potentially exposed and rotate it before further use.
+
+## Runtime revalidation and RAG healthcheck (2026-10-15)
+
+- Added a RAG API HTTP healthcheck against `/health` and changed the API startup
+  dependency to wait for `rag_api` to become healthy. Verified that the pinned
+  RAG image includes Python, `/health` returns `200 {"status":"UP"}`, and the
+  merged local Compose configuration validates. Recreated the RAG and API
+  services; both Docker healthchecks passed afterward.
+- The app remained available at loopback-only `http://127.0.0.1:3083/health`
+  (HTTP 200), and the native Codex browser remained on the signed-in new-chat
+  screen with GPT-6 Luna selected. Docker publishes only the API on
+  `127.0.0.1:3083`; MongoDB, PostgreSQL/pgvector, Meilisearch, and RAG have no
+  host-published ports.
+- Read-only database checks show one `ADMIN`, two `USER` accounts, and the
+  persisted Juniper & Slate agent configured for `gpt-6-luna` with only
+  `file_search`. It has zero attached files. The RAG `/ids` endpoint reports
+  zero records.
+- The mode-600 staging `.env` still contains placeholders for chat and
+  embeddings keys; no key value was printed. Thus health proves the RAG service
+  starts, not that real embeddings or provider-backed File Search work. The
+  synthetic Calendar MCP container remains on its separate Docker network and
+  is not connected to the customer agent.
