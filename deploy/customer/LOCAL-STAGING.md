@@ -10,6 +10,13 @@ memory caps. It must be used with `compose.yaml` and must not be combined with
 Override the local port with `LOCAL_PORT` when running a second isolated
 project; its default is `3083`.
 
+The local overlay runs a one-shot storage-permissions helper before the API.
+It grants the LibreChat runtime UID ownership of only the staging `app_data`
+and `uploads_data` bind roots; it does not recursively change existing files or
+make the directories world-writable. This is needed when Colima creates a
+missing bind source as root. The helper does not make an unmounted `/Volumes`
+path external-SSD-backed.
+
 ## Prepare
 
 From the repository root, create a staging-only environment file. The init
@@ -147,12 +154,24 @@ Current validation evidence (2026-10-15):
   200 afterward; the main app, GPT test, bridge, Ollama, staging API, Mongo,
   and pgvector reported healthy. Three synthetic accounts, one shared Luna
   agent, and both member Viewer grants persisted.
-- The admin's visible Share dialog shows full control for the synthetic admin
-  and Viewer access for both QA members; member "View insights" is unchecked.
-  The member accounts have not been interactively signed into because their
-  passwords are unavailable, so member-side UI behavior remains unverified.
+- The admin's earlier Share dialog showed owner access for the synthetic admin
+  and Viewer access for both QA members. A follow-up runtime API test replaced
+  the two direct member grants with one Viewer grant to the system `USER` role;
+  member "View insights" remains disabled and public access is off.
+- With the role-level grant active, both QA members can retrieve the shared
+  agent's basic view (HTTP 200) but cannot retrieve its expanded editor view
+  (HTTP 403); the admin can retrieve the expanded view (HTTP 200). The ACL now
+  has `principalType=role`, `principalId=USER`, and Viewer `VIEW` bit 1, with
+  no direct ACL rows for the two members. Requests used short-lived in-memory
+  test JWTs and a browser User-Agent. This verifies role authorization, not
+  password or interactive browser login.
+- Private file authorization was tested with one disposable synthetic text
+  record owned by `qa-member-1`: the owner saw it in `/api/files` and retrieved
+  its preview (HTTP 200); `qa-member-2` did not see it and received HTTP 403
+  for its preview. The record was deleted and the owner then received HTTP 404.
+  This verifies runtime file-ownership checks, but not file-upload ingestion.
 - The default USER role cannot create, share, or publicly share conversation
-  links. The shared agent's member grants are Viewer-only (`VIEW`, bit 1).
+  links. The shared agent grants are Viewer-only (`VIEW`, bit 1).
 - Mongo archive dry-run passed; PostgreSQL custom archive parsed with
   `pg_restore --list`; app-data/uploads tar archives are readable and currently
   contain no files. SHA-256 checksums passed from the external SSD backup.
@@ -239,8 +258,9 @@ inference and is not available to client accounts.
   involved. The synthetic event remains in that test sandbox.
 - These PDFs were chat attachments processed by the owner-only cloud test;
   they were not uploaded to the customer staging app's persistent shared File
-  Search index. The staging RAG/member retrieval test remains outstanding until
-  a customer-owned model key and embeddings key are configured.
+  Search index. A later local-only mock test exercised the staging RAG path, but
+  real semantic retrieval and customer-provider behavior still require a
+  customer-owned embeddings key and chat-model key.
 
 ## Synthetic member authorization checks (2026-10-16)
 
@@ -261,13 +281,80 @@ does **not** test the members' passwords, browser login, or full UI behavior.
 - Both members' file and conversation list endpoints returned HTTP 200 with
   zero records before/after the checks. This alone does not prove private-file
   isolation because neither account had a file to test.
-- A temporary synthetic Markdown upload to Member 1 failed with HTTP 500 and
-  no file was persisted; the staging provider keys are placeholders and the
-  embeddings key is unset. Mongo still has zero file records. This did not
-  establish personal-file ownership or shared File Search behavior; those
-  checks still require a customer-owned provider and embeddings key.
+- A temporary synthetic Markdown upload to Member 1 initially failed because
+  the Colima-created bind directory was root-owned and the non-root API could
+  not create `/app/uploads/temp/<user>`. The local overlay now runs a
+  network-isolated, one-shot helper that gives UID 1000 ownership of the two
+  staging directory roots. A follow-up synthetic text upload passed the file
+  system step but failed at vector embedding because `RAG_OPENAI_API_KEY` is a
+  placeholder. No file or agent association persisted; the upload directory is
+  empty. Real File Search ingestion still needs a customer-owned embeddings
+  key, and the model providers remain `user_provided` sentinels until the
+  customer supplies chat credentials.
 - No existing member password was reset or changed; the staging UI remains at
   its login screen when no owner session is present.
-- The staging API container restarted once during this validation window with
-  exit status 0 (`OOMKilled=false`). It is healthy and returns HTTP 200 now, but
-  the restart cause was not established; investigate before production use.
+- The staging API container was replaced by Compose during the validation
+  window and exited cleanly (exit status 0, `OOMKilled=false`). It is healthy
+  and returns HTTP 200; the evidence points to a normal container replacement,
+  not an OOM crash.
+
+## Local acceptance follow-up (2026-10-15)
+
+- The local storage-permissions helper completed successfully; `/app/data` and
+  `/app/uploads` are owned by the LibreChat runtime UID 1000 with mode 755.
+  A non-root write probe passed and its temporary directory was removed.
+- The customer Compose template now defaults
+  `SCHEDULES_SINGLE_PROCESS=true`, matching its one-API-replica-per-customer
+  design. After recreation, the scheduler engine logged that it started,
+  `/api/schedules` returned HTTP 200 for the admin, and the staging database
+  contained zero schedules. Scale-out remains unsupported until Redis Streams
+  are configured.
+- After the API restart, both member role tokens still retrieve the shared
+  agent (HTTP 200) and are denied its expanded editor (HTTP 403); the admin
+  editor remains available (HTTP 200). Both member file-list routes respond
+  HTTP 200. The Codex in-app browser still shows `GPT-6 Luna` selected.
+- The GPT-plan bridge unit suite passed 10/10. LibreChat's focused Jest tests
+  could not run from the production image because it does not contain Jest or
+  development dependencies.
+- The native in-app browser opened the File Search upload surface, but its
+  file chooser was not controllable through the available UI surface. The
+  equivalent local API upload test used a short-lived in-memory admin token
+  and synthetic content; it reached the RAG embedding request and failed with
+  the expected missing-key error. No token was printed or persisted.
+
+## Shared File Search and vector-deletion follow-up (2026-10-15)
+
+- A 31-page synthetic Operations Manual uploaded through the staging API and
+  indexed against a private-network-only deterministic lexical embedding mock.
+  The admin and a `USER` member each retrieved four relevant chunks (HTTP 200),
+  including the known internal-QA and written-approval facts. This validates
+  local upload/index/query wiring only; the mock is not a semantic embedding
+  model, and page-level citation metadata was not returned.
+- The first delete checks exposed a real scope mismatch: LibreChat v0.8.8 sent
+  vector deletion with only the uploader ID, while the shared vectors are owned
+  by the agent entity ID. The file records disappeared but 64 vector chunks
+  remained. Those exact synthetic vectors were removed through the RAG API with
+  the recorded agent scope; the pgvector embedding table returned to zero.
+- Added a version-pinned LibreChat vector CRUD override to the customer Compose
+  template. It reads `metadata.embeddedEntities` and deletes each recorded
+  shared-agent scope, fails closed if that scope is missing or the RAG service
+  is unavailable, and retains the file record for retry on failure. Repeating
+  the synthetic upload, admin/member retrieval, and normal LibreChat file-delete
+  flow returned HTTP 200 at each step; the Mongo file record and all pgvector
+  chunks were both removed. This patch must be revalidated before changing the
+  LibreChat image version.
+- After the final API recreation, both member accounts again received HTTP 200
+  for the shared agent and HTTP 403 for its expanded editor. Synthetic member
+  attempts to upload or remove source files both returned HTTP 403. No file
+  records or vector rows remained, and the shared agent had zero attached
+  files.
+- The role audit found `USER` can use and create schedules, and can use MCP
+  servers if one is configured; none are configured in this staging instance,
+  and the shared agent exposes only File Search. No schedules or external
+  actions were created. Decide before a customer deployment whether member
+  schedules should remain enabled or be disabled for the pilot.
+- No real API key or customer data was used. The RAG service has been restored
+  to its placeholder provider configuration, and the temporary mock container
+  and uploaded file are removed. Real embeddings quality, model-generated
+  answers/citations through this deployment, and provider billing remain
+  unverified until customer-owned test credentials are configured.

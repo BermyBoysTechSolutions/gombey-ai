@@ -26,6 +26,9 @@ services:
       ALLOW_EMAIL_LOGIN: "true"
       ALLOW_UNVERIFIED_EMAIL_LOGIN: "true"
       TRUST_PROXY: "1"
+      # This dedicated customer Compose project runs one API replica. If the
+      # deployment is scaled out, use Redis Streams instead of this assertion.
+      SCHEDULES_SINGLE_PROCESS: ${SCHEDULES_SINGLE_PROCESS:-true}
       NO_INDEX: "true"
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
@@ -37,6 +40,9 @@ services:
     command: sh -c "sh /app/branding/apply-branding.sh && exec node api/server/index.js"
     volumes:
       - ./librechat.yaml:/app/librechat.yaml:ro
+      # Shared File Search vectors are stored under the agent ID; upstream v0.8.8
+      # delete requests omit that entity scope and can orphan vector chunks.
+      - ./patches/librechat-vector-crud.js:/app/api/server/services/Files/VectorDB/crud.js:ro
       - ../../branding:/app/branding:ro
       - ../../assets/logo.svg:/app/client/public/assets/logo.svg:ro
       - ../../assets/logo.png:/app/client/public/assets/logo.png:ro

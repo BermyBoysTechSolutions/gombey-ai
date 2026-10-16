@@ -1,7 +1,33 @@
 # Safe Mac mini acceptance-test overlay. This is not the public VPS config.
 # Use this overlay with compose.yaml only (not compose.bootstrap.yaml).
 services:
+  storage-permissions:
+    # The Colima bind sources can be created as root-owned directories when the
+    # external volume is not mounted into the VM. Prepare only these staging
+    # directories so LibreChat's non-root UID can write uploads and app data.
+    image: ${LIBRECHAT_IMAGE:-ghcr.io/librechat-ai/librechat:v0.8.8}
+    user: "0:0"
+    restart: "no"
+    network_mode: "none"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - "mkdir -p /app/data /app/uploads && chown 1000:1000 /app/data /app/uploads"
+    volumes:
+      - type: bind
+        source: "${GOMBEY_LOCAL_DATA_ROOT:?Set GOMBEY_LOCAL_DATA_ROOT to the external SSD staging folder}/app_data"
+        target: /app/data
+        bind:
+          create_host_path: true
+      - type: bind
+        source: "${GOMBEY_LOCAL_DATA_ROOT:?Set GOMBEY_LOCAL_DATA_ROOT to the external SSD staging folder}/uploads_data"
+        target: /app/uploads
+        bind:
+          create_host_path: true
+
   api:
+    depends_on:
+      storage-permissions:
+        condition: service_completed_successfully
     ports:
       - "127.0.0.1:${LOCAL_PORT:-3083}:3080"
     environment:
