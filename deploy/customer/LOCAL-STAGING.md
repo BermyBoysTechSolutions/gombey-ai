@@ -173,13 +173,13 @@ Current validation evidence (2026-10-15):
   external-SSD-backed until a future mount is verified from inside the VM.
 
 Still outstanding: interactive sign-in as both members (their passwords are
-not available), model and document-retrieval checks (no customer-owned model or
-embeddings API keys are configured and no PDFs have been uploaded), and a
-public VPS/DNS/HTTPS test. The personal ChatGPT-plan bridge is not a customer
-provider credential and must not be used for these checks. The actual staging
-bind-mounted database is still inside Colima's VM disk; only the synthetic
-PDFs, backups, and sibling environment file are confirmed on the host-mounted
-external SSD.
+not available), persistent shared File Search/RAG checks in this customer
+staging deployment (no customer-owned provider or embeddings keys are
+configured), and a public VPS/DNS/HTTPS test. The owner-only ChatGPT-plan test
+below does not replace those checks and is not a customer provider credential.
+The actual staging bind-mounted database is still inside Colima's VM disk; only
+the synthetic PDFs, backups, and sibling environment file are confirmed on the
+host-mounted external SSD.
 
 ## Second-project isolation drill
 
@@ -211,3 +211,33 @@ firewall behavior.
 Use `docker compose ... down` to stop only this staging project. Do not use
 `down -v`, `docker system prune`, or broad Docker cleanup commands; the Mac
 contains other Gombey test data and persistent volumes.
+
+## Owner-only GPT/Luna document and agent-tool test (2026-10-15)
+
+This check used the separate Gombey AI GPT Test app on loopback port 3081. Its
+provider sends prompts and attached files to OpenAI through the owner's
+ChatGPT-plan bridge. Use only synthetic data there; this is not private/local
+inference and is not available to client accounts.
+
+- The model picker showed `gpt-6-luna` selected. The test app's context meter
+  showed approximately 36.6k of 947.6k tokens used (4%), not a nearly full
+  context window.
+- Attached the synthetic Delivery Records PDF (36 pages), Campaign Playbook
+  PDF (31 pages), and Operations Manual PDF (31 pages) directly to test-chat
+  messages. The assistant correctly answered the exact offer, budget, status,
+  approval, role, metric, and unknown-contact checks and supplied printed-page
+  citations. A cross-document test correctly applied the current two-gate
+  release policy over the retired rule and did not claim to publish or send a
+  follow-up.
+- Calculator tool call `1600/18600*100` returned 8.6021505; the assistant
+  reported 8.6% and correctly described the reserve as already inside the
+  approved total.
+- Calendar MCP read returned an empty list tagged `synthetic-sandbox-only`.
+  A clearly labeled no-attendee test event for 2026-10-16 14:00-14:30 Eastern
+  was created in the isolated `gombey-calendar-sandbox` and read back
+  successfully. No real Google/Outlook calendar, attendee, or invitation was
+  involved. The synthetic event remains in that test sandbox.
+- These PDFs were chat attachments processed by the owner-only cloud test;
+  they were not uploaded to the customer staging app's persistent shared File
+  Search index. The staging RAG/member retrieval test remains outstanding until
+  a customer-owned model key and embeddings key are configured.
