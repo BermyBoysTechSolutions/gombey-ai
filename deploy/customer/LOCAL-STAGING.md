@@ -410,6 +410,11 @@ does **not** test the members' passwords, browser login, or full UI behavior.
   preflight correctly refuses the local sample environment because it still
   has a sample hostname/email and placeholder embeddings key. No real provider
   credential was entered to bypass that gate.
+- Revalidated the retained external-SSD backups without restoring over any
+  live data: Mongo passed `mongorestore --dryRun`, the pgvector custom archive
+  passed `pg_restore --list`, and both app-data/upload tar files parsed. The
+  separate sibling deployment remains stopped after its earlier successful
+  isolated restore test.
 
 Remaining before production-VPS testing: a real customer-owned model API key
 and embeddings key are still needed to verify actual model-generated answers,
