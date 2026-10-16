@@ -80,6 +80,23 @@ docker compose --env-file deploy/customer/.env \
 
 The normal `.env` keeps `ALLOW_REGISTRATION=false`, and the normal Compose file does not publish the API port. Do not change those protections. The bootstrap overlay binds only to `127.0.0.1`; do not alter it to `0.0.0.0`.
 
+For local staging, chat-provider BYOK keys are entered by each authorized test
+user in LibreChat; do not put personal or future-client chat keys in the shared
+environment file. The separate server-side embeddings key is entered at a
+hidden prompt with `python3 scripts/set_rag_embeddings_key.py`. Use only a newly
+rotated, low-limit test key; the helper updates only `RAG_OPENAI_API_KEY`,
+requires an owner-owned mode-600 file, and never displays the value. Afterward,
+recreate only the local RAG API service for the key to take effect:
+
+```bash
+GOMBEY_LOCAL_DATA_ROOT="/Volumes/Mac Mini SSD/Gombey AI Local Staging" \
+  docker compose --env-file deploy/customer/.env \
+  -f deploy/customer/compose.yaml -f deploy/customer/compose.local.yaml \
+  up -d --force-recreate rag_api
+```
+
+Do not paste keys into chat, shell arguments, screenshots, or repository files.
+
 ### Validate and start the public deployment
 
 Validate the rendered Compose configuration before starting:

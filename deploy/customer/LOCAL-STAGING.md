@@ -505,3 +505,9 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
   because it still has a sample hostname/email and an embeddings-key
   placeholder. No credentials were printed or changed. This is an expected
   production gate, not a staging-health failure.
+- Added `scripts/set_rag_embeddings_key.py` as a secure local credential-entry
+  path for the remaining embeddings gate. It prompts with hidden input, changes
+  only `RAG_OPENAI_API_KEY` in an owner-owned mode-600 file using atomic replace,
+  and refuses non-interactive use. Five unit tests pass using fake keys only;
+  the live staging `.env` hash is unchanged. Use a newly rotated, low-limit key,
+  then recreate only `rag_api` using the local overlay command in README.md.
