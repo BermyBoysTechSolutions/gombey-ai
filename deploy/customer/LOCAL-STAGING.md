@@ -44,22 +44,16 @@ Set the data root before running any Compose commands below:
 export GOMBEY_LOCAL_DATA_ROOT="/Volumes/Mac Mini SSD/Gombey AI Local Staging"
 ```
 
-Important: this path is only on the external APFS SSD when the active Docker VM
-actually mounts that host directory. The current Mac uses Colima, whose active
-profile has no host mounts configured. In that state, this same-looking path
-exists only inside Colima's Linux disk, so the staging database is **not** on
-the external SSD. Verify both the mount source and `df -h` from inside the VM
-before treating the data as external-drive-backed. Do not move Colima's global
-Docker disk; that would affect every local container.
-
-To put staging data on the external SSD, schedule a Colima maintenance window,
-back up the staging databases and app files, then add a writable mount for
-`/Volumes/Mac Mini SSD` to `~/.colima/default/colima.yaml` and restart Colima.
-That restart stops every Docker workload in the profile, not just this staging
-project. After it returns, verify the mount from inside the VM, restore/copy the
-staging data into the host-backed folder, and only then bring staging back up.
-Until that maintenance is explicitly scheduled and verified, leave the current
-staging data untouched on Colima's VM disk.
+Storage verification (2026-10-15): the active Colima profile now mounts the
+host's `/Volumes` through `virtiofs`. The staging database, app-data, uploads,
+Meilisearch, and pgvector bind roots are under
+`/Volumes/Mac Mini SSD/Gombey AI Local Staging`; the host and API container both
+reported the external SSD's 1.8 TB filesystem, and the earlier VM-to-host
+write-through probe passed. This supersedes the old “not on the external SSD”
+warning. Recheck `df -h` and a harmless write-through probe after changing
+Colima mounts or restoring the stack; a path with the same spelling inside
+Colima is not proof of host storage. Do not move Colima's global Docker disk,
+which would affect every local container.
 
 The RAG service requires a separate embeddings API key. Use a disposable,
 customer-owned test key with a low spend limit before testing document
@@ -172,8 +166,9 @@ Current validation evidence (2026-10-15):
   (HTTP 403); the admin can retrieve the expanded view (HTTP 200). The ACL now
   has `principalType=role`, `principalId=USER`, and Viewer `VIEW` bit 1, with
   no direct ACL rows for the two members. Requests used short-lived in-memory
-  test JWTs and a browser User-Agent. This verifies role authorization, not
-  password or interactive browser login.
+  test JWTs and a browser User-Agent. At that point this verified role
+  authorization, not interactive login; the later browser sign-in result is
+  recorded in the Team-member acceptance follow-up below.
 - Private file authorization was tested with one disposable synthetic text
   record owned by `qa-member-1`: the owner saw it in `/api/files` and retrieved
   its preview (HTTP 200); `qa-member-2` did not see it and received HTTP 403
@@ -194,20 +189,17 @@ Current validation evidence (2026-10-15):
 - The staging Mongo root password was rotated and verified after a diagnostic
   output mistake. The value is kept only in the mode-600 staging environment
   file and its owner-only external backup.
-- An explicit Colima mount for the external SSD did not become visible inside
-  the VM (`df` still showed `/dev/root` at that path). The profile was returned
-  to its original default home-only mount configuration, and all Gombey
-  services were brought back healthy. Do not treat active staging data as
-  external-SSD-backed until a future mount is verified from inside the VM.
+- An initial Colima mount attempt did not expose the external SSD inside the
+  VM. That issue was later corrected and the restored staging bind roots were
+  verified against the external filesystem; see the storage and final team-
+  member follow-up notes below.
 
-Still outstanding: interactive sign-in as both members (their passwords are
-not available), persistent shared File Search/RAG checks in this customer
-staging deployment (no customer-owned provider or embeddings keys are
-configured), and a public VPS/DNS/HTTPS test. The owner-only ChatGPT-plan test
-below does not replace those checks and is not a customer provider credential.
-The actual staging bind-mounted database is still inside Colima's VM disk; only
-the synthetic PDFs, backups, and sibling environment file are confirmed on the
-host-mounted external SSD.
+Still outstanding: a customer-owned model API key and embeddings key for
+real-model answers, semantic retrieval, citations, and provider-billing
+verification in this customer staging deployment; then public VPS/DNS/HTTPS
+testing. The owner-only ChatGPT-plan test below does not replace those checks
+and is not a customer provider credential. The current staging bind-mounted
+data roots are verified on the external SSD, as recorded above.
 
 ## Second-project isolation drill
 
@@ -379,3 +371,45 @@ does **not** test the members' passwords, browser login, or full UI behavior.
   separate stopped isolation-test data and its existing external files were
   left untouched. A mode-600 pre-mount rollback archive remains on the SSD,
   outside the repository.
+
+## Team-member acceptance follow-up (2026-10-15)
+
+- A disposable browser member signed in through the actual local sign-in page
+  in the Codex in-app browser (not Chrome), saw `GPT-6 Luna`, and could select
+  the shared Juniper & Slate workflow agent. The member was logged out and the
+  temporary account was removed afterward.
+- Two separately authenticated `USER` members passed the API isolation checks:
+  both could read the shared agent's basic metadata, neither could read its
+  editor configuration or version history, and Member B received `404` for
+  Member A's synthetic private conversation. The conversation appeared in
+  Member A's list only.
+- A synthetic private-file metadata record appeared in Member A's file list,
+  not Member B's; Member B's attempt to preview it was denied. This checks
+  user-scoped file authorization, not binary upload or ingestion. Shared File
+  Search upload/index/delete and admin/member retrieval plumbing were tested
+  separately above with a deterministic lexical mock, not a semantic model.
+- The first member-route test exposed that Express passed `next` as the third
+  argument to LibreChat's basic-agent handler, unintentionally selecting its
+  expanded configuration response. Added a fail-closed, version-pinned startup
+  patch at `patches/librechat-agent-route.js` and re-ran member checks: basic
+  metadata contains no instructions/tools/actions/file configuration; the
+  dedicated expanded route and version history remain forbidden to members.
+  The patch survives API recreation and is idempotent.
+- The temporary UI account, synthetic private conversation, and file record
+  are absent. Registration is currently `false`, the API is healthy on
+  loopback port 3083, and the external SSD mount is confirmed.
+- The supported `npm run create-user` and `npm run reset-password` operator
+  commands are present in the pinned image; member provisioning is not
+  self-service. The production preflight correctly refuses the local sample
+  environment because it still has a sample hostname/email and placeholder
+  embeddings key. No real provider credential was entered to bypass that gate.
+
+Remaining before production-VPS testing: a real customer-owned model API key
+and embeddings key are still needed to verify actual model-generated answers,
+semantic retrieval, citations, and provider billing in this customer template.
+The current synthetic agent has no attached files and no MCP server or external
+action configured; this keeps its action boundary safe but does not yet verify
+a customer-specific calendar/MCP integration. One member completed interactive
+browser sign-in; the second member's login and isolation were validated through
+separate authenticated API requests. Public VPS/DNS/HTTPS, firewall, and cloud
+reboot/restore checks remain intentionally out of scope until local gates pass.
