@@ -494,3 +494,14 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
   starts, not that real embeddings or provider-backed File Search work. The
   synthetic Calendar MCP container remains on its separate Docker network and
   is not connected to the customer agent.
+- A second read-only audit confirmed the `.env` is Git-ignored, public
+  registration and password reset are both `false`, and the only host-published
+  mapping is API `127.0.0.1:3083`. App data, uploads, MongoDB, Meilisearch, and
+  pgvector are mounted from the external SSD. The database currently has zero
+  files, conversations, and schedules; RAG `/ids` also reports zero. The browser
+  currently has an admin session, so this observation is not counted as a member
+  UI login (the disposable member UI login is documented above).
+- `scripts/customer-preflight.sh` correctly refuses this local sample config
+  because it still has a sample hostname/email and an embeddings-key
+  placeholder. No credentials were printed or changed. This is an expected
+  production gate, not a staging-health failure.
