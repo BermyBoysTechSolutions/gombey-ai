@@ -455,3 +455,20 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
   the same OpenRouter key can call the configured embeddings model. Keep this
   separate from any future customer credentials. Do not start production VPS
   testing until those Gombey-side checks pass.
+
+### Follow-up test (2026-10-15)
+
+- A second one-line synthetic request returned the expected marker using the
+  saved OpenRouter profile and `deepseek/deepseek-v4-flash-0731`. The app-bundled
+  OpenClaw CLI completed inference; it did not report usage or cost for this
+  request. No tools, files, or customer data were involved.
+- The key remained inside OpenClaw and was not printed, exported, or copied to
+  Gombey. This is still an OpenClaw smoke test, not a Gombey/LibreChat provider
+  test; the Gombey staging config and GPT-6 Luna agent were not changed.
+- The Homebrew CLI (2026.7.1) rejects the current OpenClaw config. The bundled
+  CLI (2026.9.7) accepts it with a warning that the config was written by
+  2026.9.9, and the inference succeeded despite plugin warnings. Do not run
+  `openclaw doctor --fix` without reviewing its proposed changes.
+- A historical shared-vault note contains a pasted OpenRouter credential. It
+  cannot be confirmed whether that value matches the current profile; treat the
+  profile as potentially exposed and rotate it before further use.
