@@ -1,9 +1,6 @@
 chat.gombeytech.com {
     reverse_proxy api:3080
     
-    # Automatic HTTPS via Let's Encrypt
-    tls [CONTACT_REMOVED]
-    
     # Security headers
     header {
         Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
