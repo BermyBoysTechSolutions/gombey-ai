@@ -434,3 +434,24 @@ a customer-specific calendar/MCP integration. One member completed interactive
 browser sign-in; the second member's login and isolation were validated through
 separate authenticated API requests. Public VPS/DNS/HTTPS, firewall, and cloud
 reboot/restore checks remain intentionally out of scope until local gates pass.
+
+## OpenRouter smoke test via OpenClaw (2026-10-15)
+
+- The saved OpenClaw OpenRouter profile successfully completed one isolated
+  synthetic request using `deepseek/deepseek-v4-flash-0731`; it returned the
+  exact requested marker. The provider-reported cost was $0.000225192 for
+  12,084 input and 12 output tokens. No tools or customer documents were used.
+- This proves the OpenClaw profile can make an OpenRouter request, not that
+  LibreChat's OpenRouter endpoint in this customer deployment is configured or
+  working. The protected OpenClaw secret was not exported or copied; the
+  OpenClaw CLI treats secret-kind values as write-only. The staging UI still
+  shows the saved agent on GPT-6 Luna and its `.env` retains the documented
+  `user_provided`/placeholder provider settings. No Gombey provider settings
+  were changed and no key was persisted in this repo.
+- To run provider-backed Gombey chat and semantic-RAG acceptance, enter a
+  dedicated test API key into the staging provider setting/secret file through
+  the appropriate secure path, then re-run the documented synthetic upload,
+  citations, unsupported-answer, and deletion cases. Confirm separately whether
+  the same OpenRouter key can call the configured embeddings model. Keep this
+  separate from any future customer credentials. Do not start production VPS
+  testing until those Gombey-side checks pass.
