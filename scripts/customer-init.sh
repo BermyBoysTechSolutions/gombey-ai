@@ -27,7 +27,7 @@ if [[ ! "$BRAND_NAME" =~ ^[A-Za-z0-9][A-Za-z0-9\ .-]{0,47}$ ]]; then
   echo "Error: brand-name may contain only letters, numbers, spaces, periods, and hyphens." >&2
   exit 2
 fi
-if [[ -e "$CUSTOMER_ENV" ]]; then
+if [[ -e "$CUSTOMER_ENV" || -L "$CUSTOMER_ENV" ]]; then
   echo "Error: $CUSTOMER_ENV already exists; refusing to overwrite secrets." >&2
   exit 1
 fi
@@ -48,6 +48,8 @@ CREDS_KEY="$(openssl rand -hex 32)"
 CREDS_IV="$(openssl rand -hex 16)"
 
 umask 077
+TEMP_ENV="$(mktemp "${CUSTOMER_ENV}.tmp.XXXXXX")"
+trap 'if [[ -n "${TEMP_ENV:-}" ]]; then rm -f "$TEMP_ENV"; fi' EXIT
 {
   printf 'COMPOSE_PROJECT_NAME=%s\n' "$PROJECT_NAME"
   printf 'SITE_DOMAIN=%s\n' "$SITE_DOMAIN"
@@ -73,9 +75,16 @@ umask 077
   printf 'RAG_OPENAI_BASEURL=https://openrouter.ai/api/v1\n'
   printf 'EMBEDDINGS_PROVIDER=openai\nEMBEDDINGS_MODEL=openai/text-embedding-3-small\n'
   printf 'ALLOW_REGISTRATION=false\nALLOW_PASSWORD_RESET=false\n'
-} > "$CUSTOMER_ENV"
+} > "$TEMP_ENV"
 
-chmod 600 "$CUSTOMER_ENV"
+chmod 600 "$TEMP_ENV"
+if ! ln "$TEMP_ENV" "$CUSTOMER_ENV" 2>/dev/null; then
+  echo "Error: $CUSTOMER_ENV appeared during initialization; refusing to overwrite." >&2
+  exit 1
+fi
+rm -f "$TEMP_ENV"
+TEMP_ENV=""
+trap - EXIT
 echo "Created $CUSTOMER_ENV with unique secrets and restrictive file permissions."
 echo "Next: keep provider keys set to user_provided for per-user BYOK, or enter customer-owned shared keys in the file."
 echo "Set the separate customer-owned RAG_OPENAI_API_KEY, point DNS at the VPS, then follow deploy/customer/README.md."

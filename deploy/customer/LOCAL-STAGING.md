@@ -536,9 +536,12 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
   empty. No model inference, file ingestion, or provider spend occurred during
   this recheck. The production preflight correctly rejects the sample
   hostname/email and missing embeddings key.
-- Merged local Compose config validation, shell/Node syntax checks, and all six
-  credential-helper unit tests pass. The four retained 2026-10-15 backup
-  artifacts still match `SHA256SUMS.txt`; Mongo gzip and app-data/uploads tar
+- Merged local Compose config validation, shell/Node syntax checks, all six
+  credential-helper unit tests, and the customer-init regression tests pass.
+  The initializer test verifies mode-600 creation, distinct secrets, refusal to
+  overwrite, dangling-symlink rejection, and invalid-hostname rejection. The
+  four retained 2026-10-15 backup artifacts still match `SHA256SUMS.txt`; Mongo
+  gzip and app-data/uploads tar
   structure checks pass. PostgreSQL archive listing and the isolated restore
   drill are prior documented checks; neither was repeated here.
 - Prior acceptance evidence remains applicable: one disposable member passed

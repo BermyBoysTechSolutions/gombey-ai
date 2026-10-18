@@ -35,7 +35,19 @@ On the VPS, clone this repository into a customer-specific directory, then run:
 ./scripts/customer-init.sh chat.customer-domain.com ops@your-company.com
 ```
 
-The script creates a mode-600 `deploy/customer/.env` with new, per-customer secrets. It never prints them and refuses to overwrite an existing file. By default, the direct provider variables and `OPENROUTER_KEY` are `user_provided`: each employee enters their own API key in LibreChat, where the key is stored encrypted to that employee's account. To use a customer-owned shared chat key instead, replace `user_provided` with the actual customer key in the matching variable; that routes all users of that endpoint through the customer's account. Never use a Gombey-owned key for client usage.
+The script creates a mode-600 `deploy/customer/.env` with new, per-customer
+secrets. It never prints them and refuses to overwrite an existing file or
+symlink. The file is assembled in a mode-600 temporary file and linked into
+place without replacing a path that appears concurrently. Run
+`bash scripts/test_customer_init.sh` to check permissions, distinct generated
+secrets, invalid hostnames, existing files, and dangling symlinks.
+
+By default, the direct provider variables and `OPENROUTER_KEY` are
+`user_provided`: each employee enters their own API key in LibreChat, where the
+key is stored encrypted to that employee's account. To use a customer-owned
+shared chat key instead, replace `user_provided` with the actual customer key
+in the matching variable; that routes all users of that endpoint through the
+customer's account. Never use a Gombey-owned key for client usage.
 
 Document search needs a separate server-side embeddings key because LibreChat's RAG service cannot reuse an employee's private chat key. Add the customer's key to `RAG_OPENAI_API_KEY`; the default `RAG_OPENAI_BASEURL` is `https://openrouter.ai/api/v1` and the default embedding model is `openai/text-embedding-3-small`. If the customer wants another compatible embeddings service, set the base URL and model accordingly. Do not put keys in GitHub, tickets, screenshots, or outreach notes. A ChatGPT subscription is not an API key.
 
