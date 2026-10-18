@@ -532,10 +532,11 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
   zero files, conversations, schedules, MCP servers, actions, shared links,
   and RAG index IDs. Registration and password reset are both disabled.
 - The local `.env` remains Git-ignored and mode 600. Chat-provider settings
-  are placeholders/`user_provided`, and the server-side embeddings key is
-  empty. No model inference, file ingestion, or provider spend occurred during
-  this recheck. The production preflight correctly rejects the sample
-  hostname/email and missing embeddings key.
+  are placeholders/`user_provided`; the RAG container receives the sample
+  `RAG_OPENAI_API_KEY` placeholder, not a real embeddings credential. No model
+  inference, file ingestion, or provider spend occurred during this recheck.
+  The production preflight correctly rejects the sample hostname/email and
+  embeddings placeholder.
 - Merged local Compose config validation, shell/Node syntax checks, all six
   credential-helper unit tests, and the customer-init regression tests pass.
   The initializer test verifies mode-600 creation, distinct secrets, refusal to
