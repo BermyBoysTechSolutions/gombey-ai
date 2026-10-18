@@ -516,3 +516,39 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
   OpenRouter; GPT-6 Luna remained selected, and the persisted shared agent was
   not changed. No request was sent because the OpenRouter profile must be
   rotated first; the option requires each test user to supply their own key.
+
+## Local acceptance recheck (2026-10-18)
+
+- The customer staging API, RAG API, MongoDB, and pgvector containers are
+  healthy. The API returns HTTP 200 on `127.0.0.1:3083`; the RAG health route
+  returns HTTP 200 internally. Only the API is host-published, on loopback.
+  MongoDB, pgvector, uploads, and app data are mounted from the external SSD.
+- LibreChat is pinned to `ghcr.io/librechat-ai/librechat:v0.8.8`; the RAG
+  image is pinned by digest. The current UI model selector shows GPT-6 Luna.
+  The persisted shared agent uses `gpt-6-luna`, exposes only `file_search`,
+  and has no attached source-file IDs. Its `USER`-role grant is Viewer-only
+  (`permBits=1`).
+- The database contains one `ADMIN` and two `USER` accounts. It currently has
+  zero files, conversations, schedules, MCP servers, actions, shared links,
+  and RAG index IDs. Registration and password reset are both disabled.
+- The local `.env` remains Git-ignored and mode 600. Chat-provider settings
+  are placeholders/`user_provided`, and the server-side embeddings key is
+  empty. No model inference, file ingestion, or provider spend occurred during
+  this recheck. The production preflight correctly rejects the sample
+  hostname/email and missing embeddings key.
+- Merged local Compose config validation, shell/Node syntax checks, and all six
+  credential-helper unit tests pass. The four retained 2026-10-15 backup
+  artifacts still match `SHA256SUMS.txt`; Mongo gzip and app-data/uploads tar
+  structure checks pass. PostgreSQL archive listing and the isolated restore
+  drill are prior documented checks; neither was repeated here.
+- Prior acceptance evidence remains applicable: one disposable member passed
+  actual browser sign-in, and authenticated member tests verified shared-agent
+  viewer access plus private-chat and file metadata/preview isolation. No
+  existing password was changed for this recheck.
+
+Remaining hard gate: rotate the potentially exposed OpenRouter credential,
+then have the owner enter a fresh low-limit key through the staging account's
+provider-key UI and supply a separate embeddings key through the hidden-input
+helper. Run the single synthetic chat and full shared-document upload, semantic
+retrieval, citation, unsupported-answer, and deletion checks before any public
+VPS/DNS testing. Do not use the old OpenClaw profile until its key is rotated.

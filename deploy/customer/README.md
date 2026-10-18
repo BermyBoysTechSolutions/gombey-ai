@@ -82,11 +82,19 @@ The normal `.env` keeps `ALLOW_REGISTRATION=false`, and the normal Compose file 
 
 For local staging, chat-provider BYOK keys are entered by each authorized test
 user in LibreChat; do not put personal or future-client chat keys in the shared
-environment file. The separate server-side embeddings key is entered at a
-hidden prompt with `python3 scripts/set_rag_embeddings_key.py`. Use only a newly
-rotated, low-limit test key; the helper updates only `RAG_OPENAI_API_KEY`,
-requires an owner-owned mode-600 file, and never displays the value. Afterward,
-recreate only the local RAG API service for the key to take effect:
+environment file. In the current UI, use **Account menu → Settings → search
+“API key” → Data & Privacy → Provider API keys → OpenRouter → Update**. The
+OpenRouter key field is user-scoped; a chat request uses that account's key.
+When adding a new key, LibreChat currently defaults its saved key lifetime to
+12 hours. Use a freshly rotated, low-limit test key; do not reuse a key that may
+have appeared in a shared note. Never paste provider keys into chat, shell
+history, screenshots, or the repository.
+
+The separate server-side embeddings key is entered at a hidden prompt with
+`python3 scripts/set_rag_embeddings_key.py`. Use a newly rotated, low-limit
+customer-owned key; the helper updates only `RAG_OPENAI_API_KEY`, requires an
+owner-owned mode-600 file, and never displays the value. Afterward, recreate
+only the local RAG API service for the key to take effect:
 
 ```bash
 GOMBEY_LOCAL_DATA_ROOT="/Volumes/Mac Mini SSD/Gombey AI Local Staging" \
