@@ -88,7 +88,56 @@ class CustomerRagSmokeCliTests(unittest.TestCase):
             worker.join(timeout=2)
 
         self.assertNotEqual(result.returncode, 0, result.stdout)
-        self.assertIn("synthetic embed HTTP 500", result.stdout)
+        self.assertIn("synthetic embed HTTP 500; accepted=False", result.stdout)
+        self.assertIn("vector_absent=True", result.stdout)
+        self.assertEqual(Handler.delete_calls, 0)
+
+    def test_http_200_wrapper_with_rejected_embed_status_fails_closed(self) -> None:
+        class Handler(BaseHTTPRequestHandler):
+            delete_calls = 0
+
+            def log_message(self, *_args) -> None:
+                pass
+
+            def _reply(self, status: int, payload: bytes) -> None:
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(payload)))
+                self.end_headers()
+                self.wfile.write(payload)
+
+            def do_POST(self) -> None:
+                self._reply(200, b'{"status":false}')
+
+            def do_GET(self) -> None:
+                self._reply(200, b'{"ids":[]}')
+
+            def do_DELETE(self) -> None:
+                type(self).delete_calls += 1
+                self._reply(200, b'{"status":true}')
+
+        Handler.delete_calls = 0
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        env = os.environ.copy()
+        env["GOMBEY_RAG_SMOKE_URL"] = f"http://127.0.0.1:{server.server_port}"
+        try:
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT)],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
+                env=env,
+            )
+        finally:
+            server.shutdown()
+            server.server_close()
+            worker.join(timeout=2)
+
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("synthetic embed HTTP 200; accepted=False", result.stdout)
         self.assertIn("vector_absent=True", result.stdout)
         self.assertEqual(Handler.delete_calls, 0)
 
@@ -170,7 +219,7 @@ class CustomerRagSmokeCliTests(unittest.TestCase):
             worker.join(timeout=2)
 
         self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
-        self.assertIn("synthetic embed HTTP 200", result.stdout)
+        self.assertIn("synthetic embed HTTP 200; accepted=True", result.stdout)
         self.assertIn("own-scope ID check HTTP 200", result.stdout)
         self.assertIn("unrelated-scope ID check HTTP 200", result.stdout)
         self.assertIn("synthetic retrieval HTTP 200; marker_found=True", result.stdout)

@@ -1743,3 +1743,16 @@ applicable gates above have evidence.
 - This verifies current local deployment separation only; it does not prove
   member ACLs, provider billing, public firewall/DNS/TLS, or VPS exposure. No
   containers or data were modified by the isolation checks.
+
+## RAG smoke diagnostic hardening — 2026-10-28 10:37 EDT
+
+- Updated `scripts/customer-rag-smoke.py` to report whether the RAG API accepted
+  an embed, in addition to the HTTP status. This distinguishes HTTP 200 wrappers
+  with `status: false` from a successful ingestion without printing provider
+  response bodies or sensitive details.
+- Added a regression test for HTTP 200 with a rejected embed status; it confirms
+  the runner fails and does not issue a blind delete when the synthetic scope
+  is empty. All 16 tests across the RAG smoke CLI, fail-closed patch, and
+  embeddings-key helper suites pass; `git diff --check` is clean.
+- This is harness/test coverage only. No live provider request, customer data,
+  live Stripe, production website, DNS, or VPS was changed.

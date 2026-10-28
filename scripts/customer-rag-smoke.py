@@ -177,8 +177,11 @@ def main() -> int:
     ingest_succeeded = False
     try:
         status, result = embed()
-        print(f"synthetic embed HTTP {status}")
-        if status != 200 or not isinstance(result, dict) or not result.get("status"):
+        embed_accepted = (
+            status == 200 and isinstance(result, dict) and bool(result.get("status"))
+        )
+        print(f"synthetic embed HTTP {status}; accepted={embed_accepted}")
+        if not embed_accepted:
             return_code = 1
         else:
             return_code = 0
