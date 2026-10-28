@@ -893,3 +893,27 @@ applicable gates above have evidence.
 - Tests used synthetic-only fixtures. This does not prove a customer-owned
   provider account, a second member's provider billing, public VPS/DNS/TLS,
   or customer acceptance. No VPS, DNS, billing, or production data changed.
+
+## Billing-flow recheck — 2026-10-28
+
+- A fresh read-only review of live Stripe confirms the active kickoff links
+  collect setup installments only. They do not create a subscription or save
+  the payment method for later use. The separate monthly subscription links
+  are inactive; each requires payment-method collection, starts a 30-day
+  trial, and cancels at trial end if no method is available. Thus, recurring
+  billing requires a separate, customer-authorized subscription checkout; it
+  is not automatic continuation of the setup payment.
+- Stripe Tax Settings remain pending, with no head-office address and zero
+  active tax registrations. Automatic tax being enabled on a link does not
+  establish tax collection. The owner/accountant must determine tax obligations
+  and confirm registrations before any live billing is represented as tax-ready.
+- Updated `docs/STRIPE-BILLING-TEST-PLAN.md` to test the actual two-checkout
+  flow and remove assumptions about a future subscription schedule. A dedicated
+  Stripe sandbox is still required to test trial timing, launch-discount term,
+  payment collection, failure, cancellation, and tax behavior.
+- Prepared customer-facing clarification in the separate website branch
+  `codex/gombey-billing-clarity-2026-10-28`, based on the current offer source.
+  It is not deployed. Keep publication gated on sandbox validation and making
+  the intended monthly enrollment flow available in Stripe.
+- No live Stripe objects, tax settings, website deployment, customer data,
+  VPS, or DNS were changed.
