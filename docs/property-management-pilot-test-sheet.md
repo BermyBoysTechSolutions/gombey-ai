@@ -1,4 +1,12 @@
-# Property-management pilot test sheet
+# Historical synthetic fixture — not an approved current niche
+
+This evaluator sheet belongs to the archived Mac/Ollama property-management
+test pack. It is fictional test data, not a customer workflow, current offer,
+or evidence of production readiness. Do not upload this answer key with source
+documents. Current MVP acceptance criteria are in
+[`deploy/customer/PILOT-SCOPE-AND-ACCEPTANCE.md`](../deploy/customer/PILOT-SCOPE-AND-ACCEPTANCE.md).
+
+## Property-management pilot test sheet (archived)
 
 This file is the evaluator's sheet. Do **not** upload it with the source documents because it contains the expected answers. Upload only the four files in `proof-fixtures/property-management-pilot/`.
 

@@ -1,4 +1,14 @@
-# Gombey AI: at-home production-readiness checklist
+# Archived historical checklist — not current MVP status
+
+This document records an October 6 local Ollama/property-management pilot
+draft. Its baseline, proposed niche, pricing, and public-tunnel assumptions
+have been superseded. It is retained only as historical local-test context;
+do not use it to scope or price a customer engagement. The current source of
+truth is [`mvp-readiness-2026-10-27.md`](mvp-readiness-2026-10-27.md),
+[`deploy/customer/PILOT-SCOPE-AND-ACCEPTANCE.md`](../deploy/customer/PILOT-SCOPE-AND-ACCEPTANCE.md),
+and [`docs/STRIPE-BILLING-TEST-PLAN.md`](STRIPE-BILLING-TEST-PLAN.md).
+
+## Gombey AI: at-home production-readiness checklist (archived)
 
 Use this checklist to decide whether Gombey AI is ready for a tightly scoped paid pilot. It is not a security certification. Do not put real tenant, client, health, financial, or credential data into the system until the relevant checks pass.
 
@@ -15,9 +25,11 @@ Last checked: 2026-10-06.
 - MongoDB and the private service network remain internal. During the home test, the local document gateway reaches the Mac's Ollama through Docker's host gateway; the isolated Ollama container remains available for a later customer deployment.
 - The public chat URL currently depends on a quick Cloudflare tunnel that is kept alive by a Mac LaunchAgent. A named `gombey-chat` tunnel configuration exists but has no active connection or DNS cutover yet. Treat the quick-tunnel path as a pilot setup, not a production SLA.
 
-## What “ready” means for the first pilot
+## Historical workflow example (not the selected current niche)
 
-The first pilot should be one workflow for a small property-management company:
+This draft used a small property-management company as an example. That niche
+was not approved as the current outreach target, and this example is not the
+current Cloud Workspace acceptance checklist:
 
 > Turn a maintenance request into a clean work-order summary, identify missing information, draft the tenant reply, surface the relevant approved procedure, and flag emergencies for human escalation.
 
@@ -183,14 +195,19 @@ Expected: the local app recovers, the public URL recovers, and the documented re
 
 Do not call the system “secure” in a broad sense. Say exactly what is proven: model runtime, network path, account boundary, storage, backups, and operational controls.
 
-### 9. Package the first paid pilot — 20 minutes
+### 9. Historical pilot packaging notes — 20 minutes
 
-Prepare a one-page pilot agreement with:
+The following was an early draft and is superseded by the current pilot scope
+worksheet and Stripe billing plan. Do not reuse the old price or terms. The
+current tier, signed proposal, and billing milestones must agree before any
+customer commitment.
+
+The old worksheet was intended to include:
 
 - one property-management workflow;
 - one named customer owner;
 - synthetic or narrowly approved data for the first week;
-- 30-day founding pilot price: `$1,000`;
+- the then-proposed price and pilot duration;
 - what Gombey supplies and what the customer supplies;
 - response-time and support boundaries;
 - the success measures above;
@@ -212,9 +229,11 @@ Stop and fix the issue before outreach if any of these occur:
 - you cannot explain where prompts, files, embeddings, logs, and backups live;
 - you are tempted to test with real customer data because the synthetic test is inconvenient.
 
-## First proof to complete before the first sale
+## Historical proof concept (not current go/no-go evidence)
 
-The smallest credible proof is not a general-purpose AI assistant. It is one repeatable property-management workflow with synthetic data:
+The earlier proof concept used one repeatable property-management workflow
+with synthetic data. It does not establish current niche fit or customer
+readiness:
 
 1. pass the local private proof;
 2. run ten fictional maintenance requests;

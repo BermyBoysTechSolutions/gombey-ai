@@ -2,10 +2,17 @@
 
 Private AI Chat for Your Business
 
+> **Deployment boundary:** The repository-root Compose setup and the Mac Mini
+> instance are development/demo environments, not customer onboarding or a
+> production service. For the current paid Cloud Workspace scope, use
+> [`deploy/customer/README.md`](deploy/customer/README.md) and the evidence in
+> [`docs/mvp-readiness-2026-10-27.md`](docs/mvp-readiness-2026-10-27.md).
+> Do not load customer data into the Mac demo.
+
 This repository supports two deliberately different deployment modes:
 
 - **Cloud/hybrid mode** uses the default `librechat.yaml` and OpenRouter.
-- **Private proof mode** uses `librechat.private.yaml` and a local Ollama model. It has an isolated-container option for customer deployments and a host-local option for the Mac test environment.
+- **Legacy private proof mode** uses `librechat.private.yaml` and local Ollama for synthetic experiments. It is not the production customer template or proof that a Mac Studio, DGX Spark, or other workstation offer has passed workload, access, backup, and recovery acceptance.
 
 ## Quick Start
 
@@ -41,9 +48,12 @@ ollama list
 
 The proof checks that a local model answers successfully, the private LibreChat configuration contains no external model provider, and MongoDB/private services remain on an internal Docker network. In home mode, the API points at a local document gateway, which converts PDF attachments to text before forwarding the request to the Mac's Ollama install; all models returned by `ollama list` remain available without downloading another copy. For an isolated customer deployment, keep the API pointed at the gateway, set `OLLAMA_UPSTREAM_URL=http://ollama:11434`, and use the bootstrap script to download the selected model into the private Ollama container. See [`docs/private-proof.md`](docs/private-proof.md) for the exact boundary and remaining customer-specific checks.
 
-## Admin User Management
+## Local synthetic-demo account management
 
-Since `ALLOW_REGISTRATION=false`, new accounts must be created manually by the admin.
+The scripts below manage accounts in the repository-root Mac demo only. Use
+them for disposable synthetic tests; they are not the customer provisioning
+procedure. Customer accounts belong in a fresh dedicated deployment from
+`deploy/customer/` after its production acceptance gates pass.
 
 ### Create a new user account
 
@@ -55,24 +65,26 @@ Since `ALLOW_REGISTRATION=false`, new accounts must be created manually by the a
 ./scripts/create-user.sh username email@example.com password proof-fixtures/property-management-pilot
 ```
 
-### User Onboarding Flow
+### Synthetic test flow
 
-1. **Customer pays you** (Stripe, PayPal, etc.)
-2. **You create their account** using the script above; pass the fixture directory as the optional fourth argument to seed files immediately
-3. **For an existing account, seed approved onboarding files** without logging into their account manually:
+1. Create a disposable test account using the script above.
+2. To seed that same test account with the legacy fictional property-management fixture, pass the fixture directory as the optional fourth argument.
+3. For an existing synthetic account, seed the fixture with:
 
    ```bash
    ./scripts/seed-user-files.sh username-or-email proof-fixtures/property-management-pilot
    ```
 
-4. **Send them credentials** — they log in at `chat.gombeytech.com`
-5. **They attach the seeded files from My Files when starting the pilot**
+4. Sign in only at the local loopback URL documented for the selected demo stack.
+5. Attach the synthetic files from My Files when running the old local-model test.
 
-The seeding script runs locally as an operator action, targets exactly one username/email, skips duplicate filenames, and stores files in the persistent `uploads_data` volume. It does not create a global file pool or expose files to other users. Those files remain account-owned in the Mac Mini demo. The separate customer pilot template in `deploy/customer/` adds a dedicated per-customer RAG store and admin-managed shared agent; it does not turn the existing Mac Mini demo into a team tenant.
+The seeding script runs locally as an operator action, targets exactly one username/email, skips duplicate filenames, and stores files in the persistent `uploads_data` volume. It does not create a global file pool. The property-management files are legacy synthetic fixtures, not the selected current outreach niche or a customer offer. The customer template uses a dedicated per-customer RAG store and admin-managed shared agent; it does not turn the Mac demo into a team tenant.
 
-### Customer Team Pilot
+### Current customer deployment boundary
 
-The existing Mac Mini demo remains a personal/testing instance; it is not the customer deployment. A separate deployment template now lives in `deploy/customer/` for one dedicated VPS and database per customer. It is intended to provide individual employee logins plus an admin-managed, read-only shared File Search agent. Gombey currently provisions employee accounts from the VPS; self-service invitations are not included. Employee chats remain private; shared agent knowledge is available only when using that agent, not automatically in every ordinary chat. The template is not yet production-validated: complete its account-isolation, shared-agent, backup/restore, and reboot checks before using real customer data.
+The Mac Mini demo remains a personal/testing instance; it is not the customer deployment. The current public packages are Cloud Workspace, Workspace Appliance, and Private Local AI. The first paid Cloud scope is a dedicated deployment per customer with up to five named accounts, an admin-managed shared File Search agent, and customer-owned model and embeddings billing. Gombey provisions employee accounts; self-service invitations are not included. Member chats remain private, and shared knowledge is used only when a member selects the shared agent.
+
+Loopback tests have verified role boundaries, member File Search answers/citations with temporary test credentials, separate local deployment stores, and encrypted backup/restore on synthetic data. This is not production approval: persistent customer-owned embeddings configuration, visible-browser acceptance, Stripe test-mode billing, and public VPS/DNS/TLS/firewall/reboot/off-host-restore checks remain open. See the current readiness record before any customer data is accepted.
 
 ## Configuration
 

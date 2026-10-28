@@ -538,3 +538,39 @@ applicable gates above have evidence.
   not a member-authenticated LibreChat agent chat, citation/UI proof, a
   customer-owned billing test, or proof of isolation between separate customer
   deployments. The first go/no-go gate below remains open.
+
+## Member File Search and documentation reconciliation (2026-10-28)
+
+- A disposable synthetic member on the isolated restore copy and another on
+  primary loopback staging each completed an authenticated agent-chat API
+  request with File Search using DeepSeek V4 Flash. Both received HTTP 200
+  streams, the expected Alder & Finch v6 HOLD/approval facts, and source
+  citations. The primary member's unsupported annual-revenue question was
+  answered as unspecified rather than invented. These were sequential API
+  harness tests, not visible-browser acceptance or a simultaneous two-member
+  session.
+- To run these synthetic checks, the user's OpenClaw OpenRouter credential was
+  supplied only as a temporary runtime override to the RAG process; it was not
+  written to a repository or `.env`. Both disposable accounts and their
+  provider-key/chat records were removed, and the agent was restored to GPT-6
+  Luna. Each RAG process was returned to its saved environment configuration.
+  No customer data was used.
+- Persistent embeddings are still not ready: the primary staging `.env` has
+  the placeholder, and the restore copy's configured embeddings credential
+  returns HTTP 401. A fresh low-limit key must be entered through the hidden
+  `scripts/set_rag_embeddings_key.py` helper before persistent File Search or
+  customer data use. The helper prompt has been opened for owner input but no
+  key has been entered.
+- Stripe account discovery still returns only the live Gombey Tech account;
+  no sandbox was connected and no billing objects were created. A read-only
+  Hostinger VPS inventory request timed out after 300 seconds; no VPS state or
+  order was changed. The available TinyFish browser profile has no signed-in
+  sites, so it was not used to access Hostinger or the local app.
+- The root README now distinguishes the Mac demo from customer onboarding,
+  and the October 6 property-management/Ollama checklist and evaluator files
+  are labeled historical. The property-management test fixture is not the
+  approved current outreach niche or customer offer.
+- Regression tests passed on the current branch: customer init, customer
+  preflight, encrypted-backup safety, and all 11 Python unit tests. Test-only
+  bytecode caches were removed. No product code, live Stripe state, DNS, or VPS
+  was modified.

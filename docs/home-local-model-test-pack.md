@@ -1,4 +1,14 @@
-# Home local-model test pack
+# Archived local-model test pack — historical only
+
+This pack documents an October 2026 Mac/Ollama test using fictional
+property-management data. It is not the current Cloud Workspace deployment,
+does not establish the current outreach niche, and must not be used as a
+customer onboarding guide. The model inventory below is a historical snapshot;
+verify current machine state before any local test. See
+[`mvp-readiness-2026-10-27.md`](mvp-readiness-2026-10-27.md) and the current
+customer deployment docs for current scope and gates.
+
+## Home local-model test pack (archived)
 
 This is the exact procedure for the privacy/model portion of the first Gombey AI proof.
 
@@ -8,7 +18,7 @@ This is the exact procedure for the privacy/model portion of the first Gombey AI
 - The API reaches the Mac's local Ollama through the local document gateway, which converts PDF attachments to local text before forwarding them.
 - The default model is `gemma4:latest`, which has already returned a test response successfully.
 - LibreChat is configured to fetch the complete model list from the local Ollama service.
-- The current host Ollama model list includes `gemma4:latest`, `gemma4:12b`, `gemma3:12b`, `qwen3.5:9b`, `testornith:latest`, `testornith-fable:latest`, `huihui_ai/gemma-4-abliterated:latest`, `glm-ocr:latest`, and `nomic-embed-text:latest`.
+- The 2026-10-06 host Ollama inventory included `gemma4:latest`, `gemma4:12b`, `gemma3:12b`, `qwen3.5:9b`, `testornith:latest`, `testornith-fable:latest`, `huihui_ai/gemma-4-abliterated:latest`, `glm-ocr:latest`, and `nomic-embed-text:latest`; this is not a current inventory.
 - `glm-ocr:latest` is an OCR-oriented model, not the recommended general chat model.
 
 ## Important: how the fixture files enter the app
