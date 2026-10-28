@@ -43,6 +43,15 @@ record, not in this reusable source file.
 
 ## Delivery and customer handoff
 
+- Follow the billing milestones and consent language in section 6 of
+  `PILOT-SCOPE-AND-ACCEPTANCE.md`. The second setup installment and monthly
+  subscription are separate checkouts; the setup payment does not enroll the
+  customer or authorize reuse of its payment method. A separately authorized
+  subscription starts its 30-day trial when checkout completes, so the first
+  charge is 30 days after delivery only if the customer enrolls at accepted
+  delivery. Do not send a live recurring link until the documented Stripe
+  sandbox, discount-scope, and tax gates pass.
+
 - Walk the owner through admin access, member provisioning/revocation requests,
   approving/updating source documents, and selecting the shared agent.
 - Walk members through their own sign-in, provider-key ownership (if BYOK),

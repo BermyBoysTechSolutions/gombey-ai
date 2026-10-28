@@ -161,11 +161,12 @@ following cloud-workspace gates pass.
    hardware and connector-dependent work remains acceptance-gated. Do not
    advertise a connector as included unless one named integration passes
    authorization, data-path, and acceptance tests.
-4. Run a Stripe test-mode rehearsal: kickoff payment, accepted-delivery
-   payment, saved payment method and explicit recurring-charge consent, first
-   subscription charge 30 days after delivery, founding discount, and
-   transition to standard price. Live catalog entries alone do not automate
-   this lifecycle.
+4. Run a Stripe sandbox rehearsal: kickoff and accepted-delivery setup
+   installments, a separate subscription checkout completed at delivery,
+   explicit consent and payment-method collection, a 30-day trial starting at
+   checkout, first charge at trial end, founding discount, and transition to
+   standard price. Do not promise delivery-plus-30-day billing unless checkout
+   completes at delivery; live setup-payment links do not enroll a subscription.
 5. Verify a real customer VPS: DNS, HTTPS/TLS, reboot persistence, restricted
    network exposure, backup, restore, and the same account-isolation checks.
    Purchase/production setup requires owner approval of exact plan and spend,
@@ -249,7 +250,7 @@ after the corresponding implementation and acceptance test.
 | Private Local AI: customer workstation, local inference for accepted workflow | No offered Mac Studio, DGX Spark, or Strix Halo system has passed acceptance. Mac mini/Ollama tests do not prove another workstation or blanket privacy. | Procure/commission the selected system; benchmark agreed workload; inspect telemetry, embeddings, connectors, backups, remote support, and every data path. |
 | Private Local AI: 10 users, three agents, two workflows, up to two connectors | Current template exposes one shared File Search agent and no MCP connector. | Build/configure each scoped workflow and connector; test ten-user roles, local model behavior, and write-action approval. |
 | Private Local AI: monitoring, updates, backup/restore, policy review, training, five support hours | Not verified on the advertised hardware. | Deliver and test the operating controls and support process on the commissioned system. |
-| Billing: 50% kickoff, 50% accepted delivery, monthly starts 30 days after delivery, 12-month launch rate | Live catalog contains corresponding products, installment prices, recurring prices, and coupons. No customer billing artifacts or charges were created. | Rehearse kickoff/delivery invoices, saved-method consent, 30-day delayed start, discount duration, and renewal in Stripe test mode before automating or promising it. |
+| Billing: 50% kickoff, 50% accepted delivery, separate customer-authorized subscription with a 30-day trial, 12-month launch rate | Live catalog contains setup installments, recurring prices, coupons, three active setup-only links, and three inactive monthly links. No customer billing artifacts or charges were created. | Rehearse the separate subscription checkout, payment-method consent, trial end, discount duration, renewal, product-specific coupon eligibility, and tax in a Stripe sandbox. First charge is delivery + 30 days only if checkout completes at delivery. |
 
 ## Separate offer gates
 
@@ -276,21 +277,23 @@ applicable gates above have evidence.
 
 ## Stripe sandbox rehearsal plan (2026-10-27)
 
-- Added `docs/STRIPE-BILLING-TEST-PLAN.md`. It specifies a sandbox-only
-  rehearsal for the 50% kickoff invoice, 50% accepted-delivery invoice,
-  explicit consent and saved payment method, monthly charge 30 days after
-  accepted delivery, launch-rate period, and standard-price renewal.
+- Added `docs/STRIPE-BILLING-TEST-PLAN.md`. The original 2026-10-27 draft
+  assumed a monthly charge 30 days after accepted delivery. That timing
+  assumption was corrected on 2026-10-28: the separate subscription checkout's
+  30-day trial starts when the customer completes that checkout. Delivery + 30
+  days is accurate only when subscription checkout is completed at delivery.
+  The current sandbox-only rehearsal is in `docs/STRIPE-BILLING-TEST-PLAN.md`.
 - Stripe's connected account access in this session was live-only; no test
   customer or billing objects were created and no live billing settings
   changed. Pricing and active tier names were reconciled to the current
   Cloud Workspace / Workspace Appliance / Private Local AI offer above; use
   that signed offer and a matching sandbox catalog for the rehearsal.
-- The recommended test uses a future-start subscription schedule or an
-  equivalent Stripe-supported deferred start, then advances a test clock to
-  verify the first charge and launch-to-standard transition. Exact invoice
-  dates and amounts must pass before this is described as automated. Gombey
-  currently has no billing webhook integration; pilot billing remains
-  operator-managed until that exists and is tested.
+- The earlier future-start schedule approach is superseded by the separately
+  authorized subscription checkout and trial described in the current test
+  plan. Exact invoice dates and amounts must pass in a dedicated sandbox
+  before this is described as ready. Gombey currently has no billing webhook
+  integration; pilot billing remains operator-managed until that exists and is
+  tested.
 
 ## Stripe account and live-link recheck (2026-10-28)
 
@@ -934,3 +937,18 @@ applicable gates above have evidence.
   requires the staging administrator to sign in.
 - No live billing, customer data, production website, VPS, DNS, or deployment
   state was changed.
+
+## Billing source-of-truth alignment — 2026-10-28 05:05 EDT
+
+- Corrected the pilot acceptance worksheet and operations handoff: setup
+  installments are separate from subscription enrollment; the customer must
+  complete and authorize a separate subscription checkout. Its 30-day trial
+  starts at checkout, so delivery-plus-30-day billing is true only if enrollment
+  happens on the delivery-acceptance date.
+- Updated the current go/no-go checklist to test that exact timing, product-
+  specific launch eligibility, and tax behavior in a dedicated Stripe sandbox.
+  The account connection still exposes only the live Gombey Tech account; no
+  sandbox or live billing object was created or changed.
+- Current live monthly links remain inactive, launch coupons lack product
+  restrictions, and Tax has zero active registrations. These are hard no-go
+  conditions for live charges. No production or customer state changed.
