@@ -63,6 +63,27 @@ payment details during Checkout](https://docs.stripe.com/checkout/save-during-pa
 [Setup Intents](https://docs.stripe.com/payments/setup-intents), and
 [off-session payments](https://docs.stripe.com/payments/off-session-payments).
 
+### Checkout disclosure checklist (draft, review before live use)
+
+The kickoff checkout and signed proposal should state, in plain language:
+
+- The exact deposit charged now and the remaining setup amount, which is due
+  only after the customer accepts delivery.
+- The monthly launch amount, the number of paid periods at that amount, the
+  later standard monthly amount, and the expected first charge date (30 days
+  after accepted delivery).
+- That the saved method may be charged off-session for the delivery installment
+  and recurring service; that a bank may still require authentication; and how
+  the customer can update their method, cancel, or resolve a failed payment.
+- That model-provider/API usage is billed separately by the customer's chosen
+  provider and is not included in Gombey's platform subscription.
+- The specific project/tier and agreement version. Preserve the customer's
+  affirmative consent with the associated Stripe Customer and proposal.
+
+This is a disclosure checklist, not a legal contract. Have the merchant's
+legal/tax advisor review the actual wording and cancellation terms before live
+use.
+
 ## Sandbox prerequisites
 
 - Use a dedicated Stripe sandbox/test mode, never Live mode.

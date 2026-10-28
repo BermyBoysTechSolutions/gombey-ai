@@ -1593,6 +1593,10 @@ applicable gates above have evidence.
   installment, create one subscription on that same customer with a 30-day
   trial. This remains a proposed sandbox test, not a live configuration;
   Gombey has no billing/webhook code to automate the delivery transition.
+- Added a checkout-disclosure checklist for the setup balance, launch and
+  renewal prices, first-charge date, off-session consent, failure/cancellation
+  path, and separately billed provider usage. It is a draft checklist, not a
+  legal contract; legal/tax review is still required before live use.
 - No Stripe settings, links, prices, invoices, subscriptions, tax settings,
   website, VPS, or DNS were modified. The dedicated Stripe sandbox and tax
   review remain prerequisites to a live charge.
