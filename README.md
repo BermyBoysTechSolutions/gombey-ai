@@ -103,9 +103,10 @@ workspace runs from where model inference runs:
 
 `deploy/customer/` currently provides the dedicated Cloud Workspace template.
 The Appliance and Private Local AI tiers require commissioning and acceptance
-on the actual selected hardware; see the tier-specific open gates in the
-[readiness record](docs/mvp-readiness-2026-10-27.md). This is a delivery-status
-distinction, not a change to the intended tier mapping.
+on the actual selected hardware; follow the [hardware-tier acceptance
+checklist](deploy/customer/HARDWARE-TIER-ACCEPTANCE.md) and the tier-specific
+open gates in the [readiness record](docs/mvp-readiness-2026-10-27.md). This is
+a delivery-status distinction, not a change to the intended tier mapping.
 
 Loopback tests have verified role boundaries, member File Search answers/citations with temporary test credentials, separate local deployment stores, and encrypted backup/restore on synthetic data. This is not production approval: persistent customer-owned embeddings configuration, visible-browser acceptance, Stripe test-mode billing, and public VPS/DNS/TLS/firewall/reboot/off-host-restore checks remain open. See the current readiness record before any customer data is accepted.
 
