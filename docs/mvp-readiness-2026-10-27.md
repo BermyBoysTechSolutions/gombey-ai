@@ -1935,3 +1935,43 @@ applicable gates above have evidence.
   unknown facts, and does not prove citations in the browser UI. Keep those
   acceptance items open. No upload, vector mutation, customer data, provider
   request, billing, public deployment, DNS, or VPS change occurred.
+
+## Member-side shared File Search, citations, and abstention — 2026-10-28 12:14 EDT
+
+- In isolated Chromium, a disposable `USER` opened the shared, read-only
+  Juniper & Slate agent from the member UI. For this test only, the agent's
+  provider/model was temporarily switched from `openAI` / `gpt-6-luna` to
+  `OpenRouter` / `qwen/qwen3.5-9b`; its instructions, `file_search` tool, and
+  three attached PDFs were unchanged. After the checks, provider/model were
+  restored and read back as `openAI` / `gpt-6-luna`.
+- The member saved the current owner-authorized OpenRouter key through the
+  normal per-user UI with the displayed 12-hour expiry. Three synthetic
+  member turns each showed `Searched your files` / `Ran File Search`:
+  - Beacon Trail Coffee returned the campaign name, Q2 dates, 8.1% baseline,
+    and 6.7% target with the Campaign Playbook and Delivery Records cited.
+  - The Alder & Finch release question returned `HOLD`, identified Jamie
+    Rivera's missing written approval, and treated the reserved date as
+    tentative. The answer displayed source titles and page-level citations to
+    the Operations Manual and Delivery Records.
+  - The deliberately absent public street address was answered “Not specified”
+    without inventing an address, with the relevant source titles shown.
+- Read-only staging configuration showed the chat completion used OpenRouter
+  Qwen 3.5 9B, while query/document embeddings use `text-embedding-3-small`
+  through the OpenRouter base URL. In-memory equality comparison confirmed the
+  staging RAG credential matched the authorized OpenClaw OpenRouter credential;
+  no credential value was printed. This is cloud processing: member prompts,
+  retrieval queries, and retrieved passages go to OpenRouter. It is not a
+  local-only privacy path.
+- Deleted the disposable member with LibreChat's supported deletion CLI after
+  stopping only primary staging's API. The CLI retained transaction history.
+  A post-restart Mongo check found no matching user, provider-key, conversation,
+  or message records. The shared agent remains on GPT-6 Luna with only
+  `file_search` and its same three attached files; primary staging health is
+  HTTP 200 and Docker reports healthy. The exact temporary credential file and
+  isolated browser session were removed/reset.
+- This closes a member-side Qwen File Search answer, visible-citation, and
+  unsupported-fact abstention check for the attached synthetic corpus. It does
+  not yet close a second-member File Search/provider-billing check, customer
+  document removal/reindex acceptance, billing rehearsal, or production VPS
+  acceptance. No customer data, production deployment, DNS, Stripe write, or
+  VPS was involved.

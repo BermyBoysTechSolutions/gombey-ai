@@ -1081,3 +1081,33 @@ confirmed revoked and replaced.
   answer and visible source citations, test a genuinely absent fact for
   abstention, and finish member-side file removal/reindex acceptance. Direct
   retrieval results do not substitute for these UI acceptance checks.
+
+## Member-side shared File Search UI acceptance (2026-10-28)
+
+- A disposable `USER` used the shared Juniper & Slate agent in isolated
+  Chromium. For the synthetic checks only, the shared agent was temporarily
+  routed to the member's UI-saved `OpenRouter` Qwen 3.5 9B key; its GPT-6 Luna
+  provider/model was restored afterward.
+- Three separate member chats invoked File Search and returned grounded
+  answers: Beacon Trail's Renewal Rhythm campaign dates/churn target; Alder &
+  Finch's HOLD state pending Jamie Rivera's written approval; and an explicit
+  “Not specified” response for an absent public street address. The UI showed
+  source filenames, and the cross-document release answer included page-level
+  citations. The answer-key facts were verified against the exact older PDF
+  corpus attached to this agent, not the newer generated corpus.
+- This was cloud inference, not local-only processing. Qwen chat and the RAG
+  `text-embedding-3-small` model both route through OpenRouter. A read-only,
+  in-memory comparison confirmed the RAG embedding credential matched the
+  authorized OpenClaw OpenRouter credential; no key value was printed. The
+  member prompt, vector-search query, and retrieved passages are sent to
+  OpenRouter during this workflow.
+- The disposable member was removed with LibreChat's supported deletion CLI;
+  transaction history was retained. Mongo checks found zero related user,
+  provider-key, conversation, and message records. The temporary credential
+  file and browser session were removed, the shared agent was restored to
+  `openAI` / `gpt-6-luna` with three files and only `file_search`, and staging
+  returned to HTTP 200 / Docker healthy.
+- Still open: repeat shared File Search for a second member with that member's
+  own provider key, verify file removal/reindex and old-fact invalidation, and
+  complete production VPS acceptance. No customer data, live Stripe write,
+  production deployment, DNS, or VPS was involved.
