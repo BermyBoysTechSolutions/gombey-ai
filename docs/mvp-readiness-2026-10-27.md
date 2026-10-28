@@ -132,27 +132,36 @@ after the corresponding implementation and acceptance test.
   three-redemption limit per coupon. The website's “first three deployments”
   cap is therefore enforced globally by the operator, not by a single Stripe
   limit.
-- The current setup reduction is $505 per tier, not the earlier requested
-  $1,000; the current monthly rates are also discounted for 12 months, whereas
-  an earlier direction said to leave monthly rates unchanged. The current
-  public/catalog tier labels are descriptive, not Plus/Pro/Max. These are
-  unresolved pricing/positioning decisions; do not alter live prices until the
-  owner confirms which direction is current. The current live catalog and
-  production page remain aligned on descriptive names and amounts; current
-  website copy edits are only a separate branch draft.
+- The current offer is the Cloud Workspace / Workspace Appliance / Private
+  Local AI catalog and its published prices above. The latest “Gombey AI
+  Economics” thread reconciled Stripe to the public offer and archived the
+  earlier Plus/Pro/Max catalog. Treat older Plus/Pro/Max and $1,000 setup-only
+  discount directions as historical, not the active offer.
+- On 2026-10-27, the capability-bounded copy from website commit `dec345b` was
+  promoted to Vercel production deployment `dpl_6vwirUwoQtYfnwfngaj1pmq6XtCN`.
+  A post-deploy HTTP 200 check confirmed the revised boundaries and all setup
+  and monthly amounts remained unchanged.
+- The three active Stripe product descriptions were updated to match the
+  bounded scope: no base connector/autonomous writes, customer-owned provider
+  billing, ordinary-chat retrieval limitation, and acceptance-gated hardware,
+  backup, monitoring, and restore claims. Product names, prices, coupons,
+  checkout/payment links, invoices, subscriptions, and charges were not
+  changed or created in this update.
 - Stripe currently has three active descriptive products and 15 active prices,
   including setup installments and recurring prices, plus three 12-month
-  coupons with per-coupon redemption caps. No active subscriptions, invoices,
-  or payment links were created. The connector exposed only the live account;
-  test-mode access was not available, so deferred billing and consent have not
-  been rehearsed.
+  coupons with per-coupon redemption caps. The latest Stripe work reported no
+  active subscriptions or payment links; no invoice or charge was created in
+  this update. The connector exposed only the live account; test-mode access
+  was not available, so deferred billing and saved-payment-method consent have
+  not been rehearsed. The first-three-deployments limit remains manually
+  enforced across the three coupons.
 
 | Public claim | Current evidence | Gate still open |
 |---|---|---|
 | Cloud: dedicated VPS per customer | Separate Compose project, secrets, database, network, and storage were tested locally. | Public VPS, DNS/TLS, firewall, reboot, and restore acceptance. |
 | Cloud: up to 5 named accounts with admin/member roles | Five total accounts (one admin, four members) were provisioned on isolated restore with public registration disabled. One disposable member passed interactive shared-agent and privacy checks; a second member still needs provider-backed retrieval. | Repeat grounded retrieval with the intended customer-owned provider key, verify key isolation/revocation, and rehearse account recovery. |
 | Cloud: one workflow, one custom agent, shared knowledge | One synthetic shared File Search agent and admin-managed Viewer access are configured. Local lexical-mock upload/index/query/delete plumbing passed. | Real customer-template semantic retrieval/citations with a member account and customer-owned model + embeddings credentials. |
-| Cloud: one supported read-only connector | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. The website-source draft removes connectors from base Cloud scope. | Ensure production copy no longer claims a connector, or fully acceptance-test one named integration before including it. |
+| Cloud: one supported read-only connector | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. The production copy now excludes connectors from base Cloud scope. | Keep connectors out of the base offer until a named integration passes compatibility, permission, and data-path acceptance tests. |
 | Cloud: managed hosting, updates, backups, restore checks | Encrypted local snapshot and isolated full restore passed. New deployment wording requires a per-customer backup/recovery plan. | Secure/remove legacy plaintext test snapshots; define cadence/retention and portable key escrow; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
 | Cloud: setup guide, onboarding, 1.5 support hours and 2-business-day response | Reusable pilot scope/acceptance worksheet and operator handoff runbook are now in `deploy/customer/`. | Rehearse onboarding, support intake/time tracking, response target, and recovery on a real deployment. |
 | Cloud: customer-owned provider billing | One disposable user's Qwen chat succeeded with that user's own key; a second user without a key was denied rather than inheriting it. | Verify a member's grounded chat end-to-end and confirm actual usage appears in the intended provider account. |
@@ -231,5 +240,19 @@ applicable gates above have evidence.
 - Local regression checks passed again: customer init, customer preflight,
   7 embeddings-key helper tests, and 4 RAG fail-closed patch tests. Shared-doc
   semantic retrieval remains blocked while RAG is stopped and the embeddings
-  key is a placeholder. No production VPS or Stripe live/test objects were
-  changed.
+  key is a placeholder. No production VPS was created or changed. The website
+  promotion and product-description updates are recorded above; Stripe prices,
+  coupons, and customer billing objects were not changed.
+
+## OpenRouter credential checkpoint (2026-10-27)
+
+- The active staging `.env` is owner-owned and mode `600`, but both
+  `OPENROUTER_KEY` and `RAG_OPENAI_API_KEY` remain placeholders. The staging
+  RAG API is stopped; no provider request was made after the credential was
+  disabled.
+- The OpenClaw `openrouter:default.json` credential file inspected for the
+  requested test has an April 12, 2026 modification time, so it is not
+  independently verified as the user's newly rotated key. It was not used.
+  Do not reuse it; the replacement must be entered through the intended
+  provider-specific secure path, and the prior key's revocation must be
+  confirmed before any further provider call.

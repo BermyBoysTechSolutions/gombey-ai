@@ -755,3 +755,25 @@ confirmed revoked and replaced.
 - Current local tests pass: customer init, customer preflight, 7 embeddings-key
   helper tests, and 4 fail-closed RAG patch tests. No production VPS, DNS/TLS,
   Stripe sandbox objects, live billing changes, or customer data were involved.
+
+## MVP follow-up — current public offer and credential checkpoint (2026-10-27)
+
+- The capability-bounded website copy from `gombeytech-site` commit `dec345b`
+  is now live at `https://gombeytech.com` (Vercel deployment
+  `dpl_6vwirUwoQtYfnwfngaj1pmq6XtCN`). A post-promotion HTTP 200 check found
+  the revised exclusions and confirmed the displayed prices did not change.
+- The three active Stripe product descriptions were updated to the same
+  bounded scope. Product names, prices, coupons, payment links, invoices,
+  subscriptions, and charges were not changed or created in this update.
+- Staging's protected `.env` remains mode `600`; its `OPENROUTER_KEY` and
+  `RAG_OPENAI_API_KEY` entries are placeholders. The staging RAG API is still
+  stopped, so no model or embedding request has been made since the credential
+  containment work.
+- The OpenClaw OpenRouter credential file inspected for the requested test is
+  dated 2026-04-12, not a verified replacement. It was not read into output or
+  used. The owner-reported rotated key has not been found in the staging
+  provider or embeddings slots, and its revocation remains unverified. Do not
+  reuse the old credential. Resume only after a fresh key is entered through
+  the secure provider/hidden-input path and the expected account is confirmed.
+- The production VPS gate and Stripe test-mode delayed-subscription/consent
+  rehearsal remain open. No customer data or billing event was created.
