@@ -243,22 +243,36 @@ separately quoted and acceptance-gated.
   generated synthetic settings, in addition to its existing loopback-overlay
   validation. `git diff --check` and the session-helper syntax check passed.
   These are configuration/unit checks; no running service was restarted.
+- Fresh continuation check on 2026-10-28: the clean candidate's owner-only
+  (`0600`) environment supplied an authorized OpenRouter test credential to
+  its persistent RAG service. The synthetic embed → own-scope retrieval →
+  unrelated-scope isolation → scoped delete check passed, and the marker was
+  verified absent afterward. The candidate currently contains one synthetic
+  admin, one synthetic member, one shared File Search agent, and three
+  synthetic long-form PDFs; it has no saved per-user provider keys. This closes
+  the candidate's local RAG connectivity check, not customer-owned billing or
+  production credential readiness.
+- The 16 Python tests, 10 Node tests, customer-init/preflight/backup safety
+  scripts, all three pairwise deployment-isolation checks, and the fail-closed
+  upload integration passed again. The integration returned HTTP 500 for a
+  synthetic upload against an unreachable loopback embeddings endpoint and
+  confirmed zero vectors; its disposable project, volume, and networks were
+  removed. Candidate login/health and the other two staging login routes remain
+  HTTP 200. No existing app data, account, agent, file, provider setting,
+  billing object, or production service was changed.
 
 ## Remaining go/no-go gates for the cloud workspace
 
 1. Repeat grounded retrieval/citation as a second member with the agreed
    customer-owned provider/embedding credentials. Confirm the result and usage
    appear under the intended customer billing account. Do not use Gombey's or
-   the owner's subscription/API credentials for customer traffic. The latest
-   synthetic request to the normal candidate RAG service failed at the
-   OpenRouter embeddings call with HTTP 401 (`Missing Authentication header`).
-   A sanitized runtime check confirms that this container still has the
-   template placeholder, so this is an expected unconfigured-credential
-   failure, not evidence of an application-code or offer mismatch. Its health
-   endpoint still returns HTTP 200, which only proves the service starts. No
-   working embeddings credential is configured on this persistent stack; enter
-   a fresh authorized test/customer credential through the protected setup path
-   and rerun the member flow before passing this gate.
+   the owner's subscription/API credentials for customer traffic. The clean
+   candidate's persistent RAG service now passes a synthetic embed/retrieve/
+   delete smoke with the owner's authorized test key, but that does not confirm
+   customer-owned billing, member-visible citations, or production credential
+   readiness. For a paid deployment, enter the customer's own chat and
+   embeddings credentials through the protected setup path and verify usage in
+   the customer's provider account. Keep this separate from the local smoke.
 2. Decide whether model keys are per-member BYOK or customer-managed centrally,
    then test the chosen flow end-to-end for both members.
 3. Keep connectors outside the base Cloud offer. The current shared agent has
@@ -2819,3 +2833,37 @@ applicable gates above have evidence.
   password, provider credential, or customer data was used, and no service was
   restarted. The Compose mount is validated statically; a full deployment
   recreation remains unperformed to avoid disrupting the active candidate.
+
+## Fresh local pre-VPS continuation — 2026-10-28
+
+- The candidate's existing mode-`0600` external-SSD environment now contains
+  the authorized test embeddings credential. `scripts/customer-rag-smoke.py`
+  passed against the persistent candidate RAG service: synthetic embedding,
+  own-scope ID check, unrelated-scope check, exact-marker retrieval, scoped
+  deletion, and post-delete absence all returned expected results. The key
+  value was not displayed; no test vector remained.
+- Confirmed the clean candidate still contains one synthetic `ADMIN`, one
+  synthetic `USER`, one shared File Search agent routed to the low-cost Qwen
+  test model, and the three Juniper & Slate test PDFs. It has zero saved
+  per-user provider keys. The agent, corpus, users, and conversations were
+  inspected only; none were modified.
+- Re-ran customer-init, customer-preflight/production Compose validation,
+  encrypted-backup safety, all 16 Python tests, all 10 Node tests, and
+  `git diff --check`; all passed. All three pairwise isolation checks among
+  primary staging, restored backup, and candidate passed: separate networks
+  and storage, blocked cross-project service DNS/TCP, and no host-published
+  database/search/vector/RAG ports.
+- The first fail-closed integration invocation correctly stopped because the
+  clean repository has no private `deploy/customer/.env`. It was rerun with
+  the candidate's external-SSD environment path (without copying it into Git),
+  while the script overrode embeddings to an intentionally invalid key and an
+  unreachable loopback URL. The synthetic upload returned HTTP 500, zero
+  vectors were stored, and the disposable Compose containers, volume, and
+  networks were removed.
+- Candidate `/health` and `/login` plus the staging and restore `/login` routes
+  returned HTTP 200 after the test. This is local staging evidence only; it
+  does not replace customer-owned provider billing, Stripe sandbox/deferred
+  billing, public VPS/DNS/TLS/firewall/restore acceptance, or hardware
+  commissioning. The owner's intended tier ladder remains VPS/cloud,
+  SER5/cloud, then customer workstation/local inference; it is intentional,
+  not a mismatch.
