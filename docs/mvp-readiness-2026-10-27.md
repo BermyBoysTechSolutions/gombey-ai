@@ -1792,3 +1792,23 @@ applicable gates above have evidence.
   prefixes returned no matching tracked path; only `.env.example` templates
   are tracked. No dedicated secret scanner is installed, so this is not a
   comprehensive secret-history audit. No credential values were printed.
+
+## Resumed MVP preflight — 2026-10-28 10:49 EDT
+
+- Re-ran the RAG smoke CLI suite (5), fail-closed patch suite (4), and secure
+  embeddings-key helper suite (7); all 16 Python tests passed. Customer init,
+  customer preflight, and encrypted-backup safety scripts passed as well.
+- Candidate and isolated restore Compose configurations both render cleanly
+  with their local-only overlays. The candidate's current API is healthy at
+  `127.0.0.1:3085`; MongoDB, Meilisearch, pgvector, and RAG are not published
+  on host ports. Candidate login returns HTTP 200. GPT-6 Luna remains the
+  configured default; Qwen and DeepSeek are optional test choices.
+- The candidate environment file is owner-only mode 600, but its RAG embeddings
+  value is still a setup placeholder. The hidden-input helper is waiting and
+  targets this candidate environment. No key value was read, copied, or
+  printed. A healthy RAG container does not validate provider authentication;
+  shared File Search/citation acceptance still needs fresh secure key entry,
+  an isolated RAG restart, and member-side retrieval tests.
+- Stripe account discovery still returns only the live Gombey Tech account;
+  no sandbox is connected. No Stripe object/settings, public site, DNS, VPS,
+  customer data, or model-provider request was changed in this check.
