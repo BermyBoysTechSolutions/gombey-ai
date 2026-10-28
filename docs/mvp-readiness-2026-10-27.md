@@ -2923,6 +2923,14 @@ applicable gates above have evidence.
   schedules, and a member agent-create attempt are denied (HTTP 403). Agent
   count remained one. The `ADMIN` role still retains those management
   capabilities. These were API-level checks, not browser automation.
+- Tested the seven existing synthetic conversations across the admin and both
+  members: each owner retrieved their conversation (HTTP 200), while the other
+  two accounts received HTTP 404. Message contents were not logged. Admin file
+  and shared-agent file listings each contain the three intentionally shared
+  PDFs; member personal-file and agent-file listings are empty. Members can
+  still access the shared assistant's attached-file references (preview returns
+  ready metadata, with no extracted text in this provider-backed storage), as
+  intended for the team knowledge agent.
 - This role profile is persisted in the staging database; the customer
   onboarding runbook still requires applying and verifying it on each fresh
   customer database after the first admin is provisioned. No global YAML
