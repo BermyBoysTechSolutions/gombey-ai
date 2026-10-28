@@ -2308,7 +2308,11 @@ applicable gates above have evidence.
   running local inference. Private Local AI names the three workstation
   options and states that hardware is separately quoted and performance is
   benchmark-dependent. No product/price activation state was changed in this
-  read-back.
+  read-back. The product display titles were still the internal descriptive
+  names, so they were aligned with the previously requested customer-facing
+  tier names: Gombey AI Plus (VPS/cloud), Gombey AI Pro (SER5/cloud), and
+  Gombey AI Max (local hardware). A final live read-back confirmed all three
+  remain active and all 15 active prices remain attached to the same products.
 - Read back all 15 active Stripe Prices: each tier has four one-time prices
   (standard and launch totals split into 50% kickoff and 50% delivery), plus
   one standard monthly recurring Price. Kickoff/delivery amounts reconcile to
