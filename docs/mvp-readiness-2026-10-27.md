@@ -3264,3 +3264,45 @@ applicable gates above have evidence.
   tax treatment, sandbox billing rehearsal, or customer-owned model/embedding
   billing proof. Do not send live payment links or load customer data until
   those applicable gates pass.
+
+## Further continuation — 2026-10-28
+
+- Re-ran `scripts/customer-rag-smoke.py` inside the already-running primary
+  staging RAG container. Synthetic embedding, scoped ID lookup, unrelated
+  scope isolation, exact-marker retrieval, cleanup, and post-delete absence
+  all passed (HTTP 200). This used one tiny synthetic document and the
+  staging service's existing embeddings credential; no secret was printed,
+  no app account/file/agent was changed, and no stack was restarted.
+- This is RAG API lifecycle evidence, not the remaining LibreChat
+  shared-agent deletion/member-visible stale-fact test, and does not prove a
+  customer's provider billing. The clean branch candidate's embeddings field
+  remains a placeholder and needs the protected setup path before a persistent
+  candidate provider test.
+- A fresh Stripe account listing still exposes only the live Gombey Tech
+  account. The Stripe account-management authorization page was opened in the
+  Codex browser to let the owner add/connect a sandbox; no sandbox or live
+  billing object was created or changed. Billing rehearsal remains gated on
+  that sandbox, and the live tax setup still requires the owner's
+  accountant-confirmed business/tax details.
+
+## Long-corpus retrieval regression and bounded fix — 2026-10-28
+
+- The three generated synthetic PDFs were embedded together in primary local
+  staging and tested using the same strategy as LibreChat File Search: issue a
+  scoped query for each attached file, merge `(passage, distance)` results,
+  sort by ascending distance, and cap the model context. At the previous
+  ten-passage merged limit, early/mid-corpus facts were omitted. With a
+  twenty-passage limit, all five expected-fact probes passed across all three
+  documents; the two previously difficult campaign facts ranked 11 and 19.
+  Shared-agent scope isolation passed and all three temporary test file IDs
+  were deleted and verified absent.
+- Updated the customer template's LibreChat startup patch to raise both
+  per-file search depth and merged model context from 10 to 20, with
+  fail-closed source-shape checks. The patch was tested in-memory against the
+  actual pinned candidate LibreChat bundle; it changed exactly one of each
+  target, was idempotent, and made no runtime/container changes. Six patch
+  unit tests pass.
+- This is a retrieval API regression, not yet a member-visible GPT-6 Luna
+  response test with these new PDFs. The larger context can increase prompt
+  size; validate with the chosen customer model before offering long-document
+  performance as a guarantee. No customer material was used.

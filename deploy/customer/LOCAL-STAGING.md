@@ -1206,3 +1206,38 @@ confirmed revoked and replaced.
   placeholder. This proves the candidate RAG code path with synthetic data,
   not a customer-owned embeddings credential, the member File Search UI, or
   uploaded-file removal/reindex through LibreChat.
+
+## Primary staging RAG lifecycle smoke rerun — 2026-10-28
+
+- Re-ran `scripts/customer-rag-smoke.py` inside the already-running primary
+  staging RAG service. Synthetic embedding, own-scope ID lookup,
+  unrelated-scope isolation, and exact-marker retrieval all returned HTTP
+  200; cleanup returned HTTP 200 and the post-cleanup check confirmed the
+  synthetic vector was absent.
+- The probe used one tiny synthetic document and the staging service's
+  existing embeddings credential. No credential value was read into output,
+  no LibreChat account/file/agent was changed, and no stack was restarted.
+- This confirms the RAG service lifecycle only. It does not verify deletion
+  through LibreChat's shared-agent file-management route, member-visible stale
+  answer invalidation, or customer-owned production billing. Those acceptance
+  checks remain open.
+
+## Long synthetic corpus merged-context check — 2026-10-28
+
+- Embedded the generated 33/31/33-page Juniper & Slate PDFs together into a
+  unique synthetic RAG entity, then ran five file-search probes against all
+  three attached-file scopes and reproduced LibreChat's distance-sorted
+  merged-context window.
+- Ten passages omitted the early and middle campaign facts; twenty passages
+  included every expected fact (campaign ranks 11 and 19, latest campaign
+  rank 4, operations approval rank 1, workflow version-control rank 1).
+  Unrelated-entity retrieval did not expose the target fact. All three
+  temporary file IDs were deleted and verified absent.
+- Updated the deployment startup patch so the pinned LibreChat source raises
+  both per-file retrieval depth and final merged passage cap to twenty. The
+  actual pinned candidate bundle was checked in memory; the exact two source
+  patterns matched once each and the transformation was idempotent. No app
+  container was patched or restarted. Six source-shape/unit tests pass.
+- This is not yet the member-visible answer-quality test with GPT-6 Luna, and
+  the larger context may increase prompt usage. Keep the new long-corpus UI
+  test open before declaring large-document behavior production-ready.

@@ -1,32 +1,48 @@
 const fs = require('node:fs');
 
 const sourcePath = '/app/packages/api/dist/index.cjs';
-const searchDepthPattern = /(file_id:\s*file\.file_id,\s*query,\s*k:\s*)(\d+)/g;
+const perFileDepthPattern = /(file_id:\s*file\.file_id,\s*query,\s*k:\s*)(\d+)/g;
+const mergedContextLimitPattern =
+  /(const formattedResults = validResults\.flatMap\([\s\S]*?\.sort\(\(a, b\) => a\.distance - b\.distance\)\.slice\(0,\s*)(\d+)(\))/g;
+const VERIFIED_LIMITS = new Set([10, 20]);
+const TARGET_LIMIT = 20;
 
-function patchSource(source) {
-  const matches = [...source.matchAll(searchDepthPattern)];
+function replaceVerifiedLimit(source, pattern, label) {
+  const matches = [...source.matchAll(pattern)];
   if (matches.length !== 1) {
     throw new Error(
-      `Expected one upstream per-file File Search depth; found ${matches.length}. ` +
+      `Expected one upstream ${label}; found ${matches.length}. ` +
         'Refusing to start with an unverified retrieval implementation.',
     );
   }
 
-  const currentDepth = Number(matches[0][2]);
-  if (currentDepth === 10) {
-    return { source, changed: false };
-  }
-  if (currentDepth !== 5) {
+  const currentLimit = Number(matches[0][2]);
+  if (!VERIFIED_LIMITS.has(currentLimit)) {
     throw new Error(
-      `Expected the pinned upstream File Search depth to be 5 or 10; found ${currentDepth}. ` +
+      `Expected the pinned upstream ${label} to be 10 or 20; found ${currentLimit}. ` +
         'Refusing to apply an unverified patch.',
     );
   }
+  if (currentLimit === TARGET_LIMIT) {
+    return { source, changed: false };
+  }
 
   return {
-    source: source.replace(searchDepthPattern, (_match, prefix) => `${prefix}10`),
+    source: source.replace(pattern, (_match, prefix, _limit, suffix) =>
+      `${prefix}${TARGET_LIMIT}${typeof suffix === 'string' ? suffix : ''}`,
+    ),
     changed: true,
   };
+}
+
+function patchSource(source) {
+  const perFile = replaceVerifiedLimit(source, perFileDepthPattern, 'per-file File Search depth');
+  const merged = replaceVerifiedLimit(
+    perFile.source,
+    mergedContextLimitPattern,
+    'merged File Search context limit',
+  );
+  return { source: merged.source, changed: perFile.changed || merged.changed };
 }
 
 function main() {
@@ -37,8 +53,8 @@ function main() {
   }
   process.stdout.write(
     result.changed
-      ? 'Raised per-file File Search candidates to 10; merged context remains capped at 10.\n'
-      : 'Per-file File Search candidate depth already set to 10.\n',
+      ? 'Raised per-file File Search candidates and merged model context to 20 passages.\n'
+      : 'Per-file File Search depth and merged context limit already set to 20.\n',
   );
 }
 
