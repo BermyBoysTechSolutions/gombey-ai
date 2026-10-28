@@ -2466,3 +2466,20 @@ applicable gates above have evidence.
   active registration. No tax configuration or payment behavior was changed;
   owner/accountant tax review and a dedicated Stripe sandbox rehearsal remain
   open before sending live links.
+
+## Local regression and RAG failure-path integration — 2026-10-28 15:38 EDT
+
+- Re-ran customer initialization, customer preflight, encrypted-backup safety,
+  RAG fail-closed patch, File Search retrieval-depth patch, embeddings-key
+  setter, and customer RAG smoke CLI tests. All passed.
+- Ran `scripts/test_rag_fail_closed_integration.sh` against a new disposable
+  Compose project using a deliberately invalid test key and loopback-only
+  provider URL. The synthetic upload failed closed with HTTP 500 and the vector
+  store held zero rows. The test confirmed and removed its containers, network,
+  and volume; its temporary mode-600 config on the external SSD was also
+  removed. No external provider request, customer document, or live billing
+  operation was involved.
+- This adds current evidence for the RAG failure path; it does not prove a
+  successful customer-owned provider transaction, public VPS acceptance, or
+  live billing readiness. The connected Stripe session still exposes only
+  live mode, and live tax setup remains unresolved as recorded above.
