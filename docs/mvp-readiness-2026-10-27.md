@@ -747,3 +747,39 @@ applicable gates above have evidence.
 - Hostinger's read-only VPS inventory call timed out after five minutes. No
   Hostinger resource, DNS, or billing change was made. Stripe and tax gates are
   unchanged; this does not make the MVP production-ready.
+- Commit `e457e3d` was pushed to
+  `codex/gombey-mvp-preflight-2026-10-27`; no merge, PR, VPS, or site deployment
+  was made.
+
+## 2026-10-28: long-document synthetic corpus
+
+- Generated three fictional creative-agency PDFs for staging-only retrieval tests:
+  a 33-page operations manual, a 31-page set of 30 campaign briefs, and a
+  33-page workflow/SOP manual. Every body page has substantive searchable text;
+  visual samples and text extraction were checked.
+- The 1,034-line answer key records the full ground truth and source page for
+  all 94 sections. It is evaluator-only and must never be uploaded to an agent.
+- A disposable USER received all three PDFs as user-owned, indexed test files.
+  Using the normal agent chat API with its supported `text` and `files` fields,
+  DeepSeek V4 Flash answered the final-page JS-C30 check correctly: date,
+  $7,475 cap, Caleb Ward, 1,483 add-to-cart target, and the day-pass/private-
+  office restriction, with citations to Campaign Briefs p.31 and Operations
+  Manual p.16. It also distinguished internal QA from the named client's
+  release approval. The earlier JS-C12 midpoint retrieval and missing-artist-
+  arrival abstention also passed with citations.
+- This verifies member-owned attachments and a low-cost File Search turn; it
+  does **not** verify that these sources are attached to the admin-owned shared
+  agent, that both members can retrieve the shared corpus, or the visible
+  browser workflow. No shared-agent source was modified and no access-control
+  bypass was used. The ordinary USER role still cannot create or edit a shared
+  agent.
+- Cleanup was verified: deleting the temporary OpenRouter user key returned
+  HTTP 204; deleting the exact disposable USER account returned HTTP 200, and
+  its prior session then returned HTTP 401. Its local credential file and
+  in-memory test key/session were removed. The staging API and RAG services
+  remain running; no customer deployment, VPS, Stripe object, or public site
+  was changed.
+- Remaining corpus step: use the authorized staging admin to attach only the
+  three numbered PDFs to a separate shared File Search test agent, then repeat
+  the key retrieval and abstention checks as two distinct members and verify
+  private-chat/file isolation. Keep the answer key out of the agent.
