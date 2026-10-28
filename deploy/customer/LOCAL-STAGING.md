@@ -1188,3 +1188,21 @@ confirmed revoked and replaced.
   OpenRouter. No customer data, live Stripe write, public deployment, DNS, or
   VPS was involved. File removal/reindex and production VPS acceptance remain
   open.
+
+## Candidate RAG key-isolated lifecycle smoke — 2026-10-28
+
+- A disposable RAG container joined the clean candidate's existing private
+  pgvector network and outbound provider network. The approved OpenRouter
+  credential was passed only in the temporary process environment; it was not
+  written to the checkout, a candidate env file, or the persistent RAG
+  container. A one-input synthetic embeddings probe returned HTTP 200 with
+  1,536 dimensions.
+- `scripts/customer-rag-smoke.py` passed end to end against that temporary
+  service: embed accepted; scoped IDs were correct; an unrelated entity could
+  not see the file; exact-marker retrieval succeeded; scoped deletion returned
+  HTTP 200; and post-delete lookup confirmed the vector was absent.
+- The temporary container was removed and the normal candidate stack remained
+  healthy. Its persistent RAG service is still unconfigured with the template
+  placeholder. This proves the candidate RAG code path with synthetic data,
+  not a customer-owned embeddings credential, the member File Search UI, or
+  uploaded-file removal/reindex through LibreChat.

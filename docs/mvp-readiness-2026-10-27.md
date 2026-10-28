@@ -15,6 +15,15 @@ of their infrastructure.
 Do not accept customer data or promise a production deployment until the
 following cloud-workspace gates pass.
 
+## Owner-confirmed offer ladder (2026-10-28)
+
+The intended progression is a dedicated VPS with cloud inference at the entry
+tier; an on-site Beelink SER5 workspace that still uses cloud inference at the
+middle tier; and a workload-benchmarked Mac Studio, DGX Spark, or Strix
+Halo-based workstation for local inference at the highest tier. This is the
+intended product design, not a tier mismatch. Device cost and scope remain
+separately quoted and acceptance-gated.
+
 ## Verified locally
 
 - The customer deployment preflight now fails closed on a missing or
@@ -2082,3 +2091,21 @@ applicable gates above have evidence.
   already-tested shared agent uses its separate 31/36/31-page synthetic
   corpus. Do not treat the new corpus as platform-tested until attached to a
   separate evaluation agent and verified through the member UI.
+
+## Candidate RAG credential-isolated smoke follow-up — 2026-10-28
+
+- A disposable RAG container joined only the candidate's existing private and
+  outbound Docker networks. The owner-authorized OpenRouter key was injected
+  into that temporary container from memory, not saved to a file or the
+  candidate's persistent RAG service. A single synthetic embeddings-provider
+  probe returned HTTP 200 with 1,536 dimensions.
+- The candidate lifecycle smoke passed: embedding accepted; own-scope ID check
+  passed; unrelated-scope check did not expose the synthetic file; retrieval
+  returned the exact marker; scoped deletion returned HTTP 200; and a follow-up
+  ID check confirmed the vector was absent. The disposable container was
+  removed afterward.
+- The regular candidate RAG container remains healthy but uses its template
+  placeholder. A customer deployment still needs its own embeddings credential
+  entered through the protected setup path. This test used synthetic data and
+  does not verify customer-owned credentials, uploaded-file deletion/reindex
+  through the visible app, or member-side shared-agent UX on this candidate.
