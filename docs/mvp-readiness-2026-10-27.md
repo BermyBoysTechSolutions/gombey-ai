@@ -93,6 +93,29 @@ current local customer template and acceptance record. “Not verified” means
 the claim must not be presented as already proven; it may still be deliverable
 after the corresponding implementation and acceptance test.
 
+### Read-only public pricing and Stripe reconciliation (2026-10-27)
+
+- The public page and the connected live Gombey Tech catalog currently agree
+  on descriptive tier names and prices: Cloud Workspace ($2,500 standard /
+  $1,995 founding setup; $399 standard / $349 founding monthly), Workspace
+  Appliance ($4,500 / $3,995 setup; $699 / $599 monthly), and Private Local AI
+  ($7,500 / $6,995 setup; $1,499 / $1,299 monthly).
+- The Stripe setup prices are split into 50% kickoff and 50% delivery prices.
+  Three recurring coupons provide the monthly reductions for 12 months, with a
+  three-redemption limit per coupon. The website's “first three deployments”
+  cap is therefore enforced globally by the operator, not by a single Stripe
+  limit.
+- The current setup reduction is $505 per tier, not the earlier requested
+  $1,000; the current monthly rates are also discounted for 12 months, whereas
+  an earlier direction said to leave monthly rates unchanged. The current
+  public/catalog tier labels are descriptive, not Plus/Pro/Max. These are
+  unresolved pricing/positioning decisions; do not mutate the live catalog or
+  public site until the owner confirms which direction is current.
+- The connected Stripe integration exposes only a live Gombey Tech account;
+  it does not expose a separate test-mode/sandbox account. Stripe CLI is not
+  installed. No subscription start-date/consent lifecycle has been rehearsed,
+  and no live catalog changes were made during this audit.
+
 | Public claim | Current evidence | Gate still open |
 |---|---|---|
 | Cloud: dedicated VPS per customer | Separate Compose project, secrets, database, network, and storage were tested locally. | Public VPS, DNS/TLS, firewall, reboot, and restore acceptance. |
