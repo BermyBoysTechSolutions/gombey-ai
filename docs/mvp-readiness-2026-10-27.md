@@ -726,3 +726,24 @@ applicable gates above have evidence.
   acceptance is still required, and explicit approval of customer hostname and
   VPS spend before public DNS/TLS/firewall/reboot/backup acceptance. No
   customer data or live payment should be used before those gates pass.
+
+## Production Compose resource guardrails (2026-10-28)
+
+- Closed a local/production configuration gap: the customer production Compose
+  template now carries the per-service memory ceilings already exercised by
+  local staging (API 2 GiB, MongoDB 1 GiB, Meilisearch 512 MiB, pgvector 1 GiB,
+  RAG API 1 GiB). The local overlay inherits the same values rather than
+  maintaining a second copy.
+- Hardened production preflight to reject missing or changed limits, and added
+  a regression check that the local overlay preserves the limits, exposes the
+  API only on loopback, and omits public Caddy.
+- `customer-preflight`, `customer-init`, backup-safety, and all 11 Python unit
+  tests passed. Read-only runtime checks still pass for both local projects;
+  login routes on 3083/3084 return HTTP 200 and the primary containers report
+  the expected memory limits. No inference or customer data was used.
+- The 5.5-GiB aggregate container ceiling leaves nominal room on the documented
+  8-GiB VPS target, but is not a load/concurrency guarantee. A cloud VPS load,
+  reboot, TLS, firewall, and backup/restore acceptance run remains required.
+- Hostinger's read-only VPS inventory call timed out after five minutes. No
+  Hostinger resource, DNS, or billing change was made. Stripe and tax gates are
+  unchanged; this does not make the MVP production-ready.

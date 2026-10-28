@@ -65,6 +65,13 @@ It checks that the template placeholders are gone, registration and password res
 
 Create a DNS `A` record for the chat hostname pointing to the VPS IPv4 address. Open inbound TCP 80/443 and UDP 443; restrict SSH to the operator's IP where practical. Make sure the VPS has at least 8 GB RAM for this cloud-model stack. A small VPS is not suitable for running a frontier local model.
 
+The production Compose file applies the same per-container memory ceilings used
+by the local acceptance stack: API 2 GiB, MongoDB 1 GiB, Meilisearch 512 MiB,
+PostgreSQL/pgvector 1 GiB, and RAG API 1 GiB (5.5 GiB total). The remainder on
+an 8-GiB host is reserved for the OS, Docker, and Caddy. These limits are
+guardrails, not proof of a safe user/concurrency limit; monitor memory and run
+a workload-specific load test before onboarding real users or large corpora.
+
 ### Create the first administrator safely
 
 The first account on this unscoped, dedicated instance becomes its administrator. Do not expose an open signup page to the public. Instead, use the bootstrap Compose overlay, which publishes the API only on the VPS loopback interface and enables signup only for this temporary phase:

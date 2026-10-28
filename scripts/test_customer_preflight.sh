@@ -49,6 +49,39 @@ chmod 600 "$VALID_ENV.tmp"
 mv "$VALID_ENV.tmp" "$VALID_ENV"
 GOMBEY_CUSTOMER_ENV_PATH="$VALID_ENV" bash "$PREFLIGHT_SCRIPT" >/dev/null
 
+# Ensure the loopback-only Mac staging overlay inherits the same resource
+# ceilings and never publishes the API beyond localhost.
+GOMBEY_LOCAL_DATA_ROOT="$TEST_ROOT/local-data" docker compose \
+  --env-file "$VALID_ENV" \
+  -f "$SCRIPT_DIR/../deploy/customer/compose.yaml" \
+  -f "$SCRIPT_DIR/../deploy/customer/compose.local.yaml" \
+  config --format json |
+python3 -c '
+import json
+import sys
+
+services = json.load(sys.stdin)["services"]
+expected_memory = {
+    "api": 2 * 1024**3,
+    "mongodb": 1 * 1024**3,
+    "meilisearch": 512 * 1024**2,
+    "vectordb": 1 * 1024**3,
+    "rag_api": 1 * 1024**3,
+}
+for name, expected in expected_memory.items():
+    try:
+        actual_memory = int(services.get(name, {}).get("mem_limit"))
+    except (TypeError, ValueError):
+        actual_memory = None
+    if actual_memory != expected:
+        raise SystemExit(f"local Compose memory ceiling mismatch for {name}")
+api_ports = services["api"].get("ports", [])
+if len(api_ports) != 1 or api_ports[0].get("host_ip") != "127.0.0.1":
+    raise SystemExit("local Compose API must publish only on loopback")
+if "caddy" in services:
+    raise SystemExit("local Compose must not include the public Caddy service")
+'
+
 BAD_SECRET_ENV="$TEST_ROOT/bad-secret.env"
 sed 's/^JWT_SECRET=.*/JWT_SECRET=short/' "$VALID_ENV" > "$BAD_SECRET_ENV"
 chmod 600 "$BAD_SECRET_ENV"

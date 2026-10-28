@@ -26,8 +26,9 @@ This procedure runs the customer template as a separate, loopback-only Docker
 Compose project. It does not turn the Mac mini into a public VPS and does not
 validate DNS, public HTTPS, firewall rules, or cloud-provider networking.
 
-The local overlay publishes only `127.0.0.1:3083`, disables Caddy, and applies
-memory caps. It must be used with `compose.yaml` and must not be combined with
+The local overlay publishes only `127.0.0.1:3083` and disables Caddy. It inherits
+the per-service memory ceilings in `compose.yaml`. It must be used with that
+file and must not be combined with
 `compose.bootstrap.yaml` (that cloud bootstrap overlay uses port 3080).
 Override the local port with `LOCAL_PORT` when running a second isolated
 project; its default is `3083`.

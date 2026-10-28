@@ -77,6 +77,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    # Match the locally exercised staging ceilings. These are guardrails, not
+    # a concurrency or capacity guarantee; run a customer-specific load test.
+    mem_limit: 2g
 
   caddy:
     image: ${CADDY_IMAGE}
@@ -113,6 +116,7 @@ services:
       retries: 12
     networks:
       - private
+    mem_limit: 1g
 
   meilisearch:
     image: ${MEILI_IMAGE}
@@ -124,6 +128,7 @@ services:
       - meili_data:/meili_data
     networks:
       - private
+    mem_limit: 512m
 
   vectordb:
     image: ${VECTORDB_IMAGE}
@@ -141,6 +146,7 @@ services:
       retries: 12
     networks:
       - private
+    mem_limit: 1g
 
   rag_api:
     image: gombey-ai/rag-api-fail-closed:0.8.8-gombey1
@@ -179,6 +185,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
+    mem_limit: 1g
 
 networks:
   edge:

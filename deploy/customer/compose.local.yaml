@@ -48,7 +48,6 @@ services:
         target: /app/uploads
         bind:
           create_host_path: true
-    mem_limit: 2g
 
   # Caddy is for public HTTPS deployments; do not bind host ports 80/443 here.
   caddy:
@@ -62,7 +61,6 @@ services:
         target: /data/db
         bind:
           create_host_path: true
-    mem_limit: 1g
 
   meilisearch:
     volumes:
@@ -71,7 +69,6 @@ services:
         target: /meili_data
         bind:
           create_host_path: true
-    mem_limit: 512m
 
   vectordb:
     volumes:
@@ -80,7 +77,5 @@ services:
         target: /var/lib/postgresql/data
         bind:
           create_host_path: true
-    mem_limit: 1g
 
   rag_api:
-    mem_limit: 1g

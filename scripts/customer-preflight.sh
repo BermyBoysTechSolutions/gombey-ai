@@ -93,6 +93,26 @@ if published != {"caddy"}:
     print("Customer deployment preflight failed: only Caddy may publish host ports.", file=sys.stderr)
     raise SystemExit(1)
 
+expected_memory = {
+    "api": 2 * 1024**3,
+    "mongodb": 1 * 1024**3,
+    "meilisearch": 512 * 1024**2,
+    "vectordb": 1 * 1024**3,
+    "rag_api": 1 * 1024**3,
+}
+for name, expected in expected_memory.items():
+    service = services.get(name, {})
+    try:
+        actual_memory = int(service.get("mem_limit"))
+    except (TypeError, ValueError):
+        actual_memory = None
+    if actual_memory != expected:
+        print(
+            f"Customer deployment preflight failed: {name} must have a {expected}-byte memory ceiling.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
 ports = services["caddy"].get("ports", [])
 allowed = {(80, 80, "tcp"), (443, 443, "tcp"), (443, 443, "udp")}
 actual = set()
