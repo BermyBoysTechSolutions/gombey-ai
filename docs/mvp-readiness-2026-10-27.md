@@ -28,9 +28,10 @@ following cloud-workspace gates pass.
 - The customer Compose template parses successfully; the sample `.env` emits
   expected warnings for unset provider fields. A real API credential and live
   provider response are not validated by that parse check.
-- A separate local staging deployment is loopback-only. Local browser checks
-  covered an admin and member, shared-agent Viewer access, private member
-  chats/files, and denial of member edits to shared-agent instructions/source.
+- A separate local staging deployment is loopback-only. A disposable member
+  completed an interactive browser login and shared-agent Viewer/private-data
+  checks; the temporary account was deleted after approval. Role/API tests also
+  verified a member cannot edit the shared agent or its source files.
 - On the isolated restore copy, LibreChat's supported `npm run create-user`
   command provisioned two additional synthetic `USER` accounts: the instance
   now has one `ADMIN` and four `USER` accounts (five total) while
@@ -44,7 +45,7 @@ following cloud-workspace gates pass.
 - `scripts/customer-backup.sh` now refuses plaintext output, writes a checksummed
   AES-256/PBKDF2 archive, and pauses only the target deployment's app/RAG/search
   writers during capture. Safety tests pass. A fresh encrypted backup was
-  restored into a second loopback-only deployment; the Mongo account/agent/file/
+  restored into a second loopback-only deployment; Mongo account/agent/file/
   conversation counts matched, pgvector restored 102 rows, Meilisearch and RAG
   were healthy, and the native browser showed the restored login page.
 - The tested backup key is in this Mac user's login Keychain, not on the
@@ -65,8 +66,17 @@ following cloud-workspace gates pass.
 - The RAG upload failure path is now fail-closed: an isolated synthetic upload
   with a loopback-only unavailable embeddings endpoint returned HTTP 500 and
   left zero vectors in its dedicated disposable database. Four exact-match,
-  idempotency, and source-drift unit tests pass. The active staging RAG service
-  is healthy and its existing 101 synthetic vectors were unchanged.
+  idempotency, and source-drift unit tests pass. A corrected isolated
+  integration runner was also verified. The active staging RAG service is
+  healthy and its 101 existing synthetic vectors were unchanged.
+- A staging embeddings credential was printed by an earlier diagnostic and
+  must be treated as compromised. No provider request was made after that
+  diagnostic. Revoke and replace it before further embeddings-backed tests;
+  never copy the value into this document or chat. The credential was disabled
+  in the active staging and restore environment files; the active staging RAG
+  service was stopped, and the restore project's stateless RAG container was
+  removed. Application and database services remain running; document search
+  is paused until a fresh key is supplied.
 
 ## Remaining go/no-go gates for the cloud workspace
 
@@ -79,9 +89,10 @@ following cloud-workspace gates pass.
    then test the chosen flow end-to-end for both members.
 3. Reconcile the public site's read-only-connector claim. The current shared
    agent has File Search only; no MCP/calendar/CRM integration or write-action
-   workflow has passed acceptance. Either scope the connector out of the first
-   contract or implement and test one named read-only connector before selling
-   it as included.
+   workflow has passed acceptance. A local website-source draft removes the
+   connector from the base Cloud offer and gates hardware-specific claims; it
+   is not deployed. Do not advertise a connector as included unless one named
+   integration passes authorization, data-path, and acceptance tests.
 4. Run a Stripe test-mode rehearsal: kickoff payment, accepted-delivery
    payment, saved payment method and explicit recurring-charge consent, first
    subscription charge 30 days after delivery, founding discount, and
@@ -115,21 +126,25 @@ after the corresponding implementation and acceptance test.
   $1,000; the current monthly rates are also discounted for 12 months, whereas
   an earlier direction said to leave monthly rates unchanged. The current
   public/catalog tier labels are descriptive, not Plus/Pro/Max. These are
-  unresolved pricing/positioning decisions; do not mutate the live catalog or
-  public site until the owner confirms which direction is current.
-- The connected Stripe integration exposes only a live Gombey Tech account;
-  it does not expose a separate test-mode/sandbox account. Stripe CLI is not
-  installed. No subscription start-date/consent lifecycle has been rehearsed,
-  and no live catalog changes were made during this audit.
+  unresolved pricing/positioning decisions; do not alter live prices until the
+  owner confirms which direction is current. The current live catalog and
+  production page remain aligned on descriptive names and amounts; current
+  website copy edits are only a separate branch draft.
+- Stripe currently has three active descriptive products and 15 active prices,
+  including setup installments and recurring prices, plus three 12-month
+  coupons with per-coupon redemption caps. No active subscriptions, invoices,
+  or payment links were created. The connector exposed only the live account;
+  test-mode access was not available, so deferred billing and consent have not
+  been rehearsed.
 
 | Public claim | Current evidence | Gate still open |
 |---|---|---|
 | Cloud: dedicated VPS per customer | Separate Compose project, secrets, database, network, and storage were tested locally. | Public VPS, DNS/TLS, firewall, reboot, and restore acceptance. |
-| Cloud: up to 5 named accounts with admin/member roles | The operator command provisioned five total accounts (one admin, four members) on isolated restore while public registration stayed disabled; two members have passed shared-agent role and private chat/file authorization checks. | Sign in as the two newly provisioned members and verify shared-agent access, private chats/files, and access revocation; document the invite/reset/revocation procedure. |
+| Cloud: up to 5 named accounts with admin/member roles | Five total accounts (one admin, four members) were provisioned on isolated restore with public registration disabled. One disposable member passed interactive shared-agent and privacy checks; a second member still needs provider-backed retrieval. | Repeat grounded retrieval with the intended customer-owned provider key, verify key isolation/revocation, and rehearse account recovery. |
 | Cloud: one workflow, one custom agent, shared knowledge | One synthetic shared File Search agent and admin-managed Viewer access are configured. Local lexical-mock upload/index/query/delete plumbing passed. | Real customer-template semantic retrieval/citations with a member account and customer-owned model + embeddings credentials. |
-| Cloud: one supported read-only connector | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. | Connect and acceptance-test one named read-only connector, including customer authorization and data-path review. |
-| Cloud: managed hosting, updates, backups, restore checks | Encrypted local snapshot and isolated full restore passed. | Secure/remove legacy plaintext test snapshots; define cadence/retention and portable key escrow; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
-| Cloud: setup guide, onboarding, 1.5 support hours and 2-business-day response | Operator setup and technical runbooks exist. | Produce customer handoff/training materials and an operational support intake, time tracking, and response process. |
+| Cloud: one supported read-only connector | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. The website-source draft removes connectors from base Cloud scope. | Ensure production copy no longer claims a connector, or fully acceptance-test one named integration before including it. |
+| Cloud: managed hosting, updates, backups, restore checks | Encrypted local snapshot and isolated full restore passed. New deployment wording requires a per-customer backup/recovery plan. | Secure/remove legacy plaintext test snapshots; define cadence/retention and portable key escrow; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
+| Cloud: setup guide, onboarding, 1.5 support hours and 2-business-day response | Reusable pilot scope/acceptance worksheet and operator handoff runbook are now in `deploy/customer/`. | Rehearse onboarding, support intake/time tracking, response target, and recovery on a real deployment. |
 | Cloud: customer-owned provider billing | One disposable user's Qwen chat succeeded with that user's own key; a second user without a key was denied rather than inheriting it. | Verify a member's grounded chat end-to-end and confirm actual usage appears in the intended provider account. |
 | Appliance: standard Beelink SER5 included, on-site workspace, primary data hosted there | No SER5 has been commissioned for acceptance. | Confirm hardware SKU/cost; test install, storage, network/power failure, remote recovery, security, backup, and restore on the actual device. |
 | Appliance: 10 users, three custom agents, one connector/tool | Current customer template has one shared agent and no MCP connector. Two-member authorization has passed. | Seed/configure three agents; test ten accounts; connect the named tool and enforce human approval for writes. |
@@ -138,7 +153,7 @@ after the corresponding implementation and acceptance test.
 | Private Local AI: customer workstation, local inference for accepted workflow | No offered Mac Studio, DGX Spark, or Strix Halo system has passed acceptance. Mac mini/Ollama tests do not prove another workstation or blanket privacy. | Procure/commission the selected system; benchmark agreed workload; inspect telemetry, embeddings, connectors, backups, remote support, and every data path. |
 | Private Local AI: 10 users, three agents, two workflows, up to two connectors | Current template exposes one shared File Search agent and no MCP connector. | Build/configure each scoped workflow and connector; test ten-user roles, local model behavior, and write-action approval. |
 | Private Local AI: monitoring, updates, backup/restore, policy review, training, five support hours | Not verified on the advertised hardware. | Deliver and test the operating controls and support process on the commissioned system. |
-| Billing: 50% kickoff, 50% accepted delivery, monthly starts 30 days after delivery, 12-month launch rate | Live catalog has matching products/prices/coupons; no links, invoices, subscriptions, or charges were created. | Rehearse the complete deferred subscription and consent flow in Stripe test mode. Current Stripe connector exposes only the live account. |
+| Billing: 50% kickoff, 50% accepted delivery, monthly starts 30 days after delivery, 12-month launch rate | Live catalog contains corresponding products, installment prices, recurring prices, and coupons. No customer billing artifacts or charges were created. | Rehearse kickoff/delivery invoices, saved-method consent, 30-day delayed start, discount duration, and renewal in Stripe test mode before automating or promising it. |
 
 ## Separate offer gates
 

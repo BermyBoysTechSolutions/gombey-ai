@@ -1,0 +1,92 @@
+# Cloud Workspace operations handoff
+
+This runbook is for the first dedicated customer deployment. It does not
+replace the deployment README, a customer contract, or the required VPS
+acceptance checks. Fill in customer-specific values in the operator's secured
+record, not in this reusable source file.
+
+## Before kickoff
+
+- Confirm the signed scope, customer admin, up to five named accounts, selected
+  workflow, acceptance questions, approved files, and prohibited data.
+- Confirm the customer controls and pays for the selected chat-model account
+  and a separate embeddings account/key. Do not request secrets in chat/email;
+  use the hidden-input helper or the customer's approved secret manager.
+- Confirm the customer has reviewed the model and embeddings providers' terms
+  and the data path. ChatGPT subscriptions are not API keys.
+- Obtain explicit approval for exact VPS provider/plan, initial and renewal
+  cost, region, hostname, DNS changes, and who can access the host. Do not
+  purchase or expose a VPS before the approval is recorded.
+- Agree backup destination, encryption-key custody, retention, deletion, and
+  recovery target. A provider snapshot alone is not a completed restore test.
+- Agree support channel, business hours/time zone, monthly support cap, and
+  response target. The response target is not a resolution or uptime guarantee.
+
+## Provision and secure
+
+1. Create a fresh per-customer checkout/release and unique Compose project.
+   Never point two customers at the same MongoDB, vector database, uploads,
+   secrets, or Docker project.
+2. Generate a mode-600 environment file with `scripts/customer-init.sh`; run
+   `scripts/customer-preflight.sh` and review its output before starting.
+3. Configure DNS and firewall only after approved. Publish only Caddy on 80/443;
+   keep application, MongoDB, Meilisearch, PostgreSQL, and RAG service ports
+   private. Restrict SSH to the operator's address where practical.
+4. Bootstrap the customer owner through loopback and an SSH tunnel, disable
+   bootstrap signup, then create member accounts with the supported prompt.
+   Public registration and unauthenticated password reset remain disabled.
+5. Configure one Company Knowledge Assistant with File Search only. The owner
+   uploads approved sources and shares it with the authenticated `USER` role
+   as Viewer. Do not add MCP tools or write actions in the base pilot.
+6. Have the owner configure the agreed customer-owned model provider and the
+   separately customer-owned embeddings key. Confirm which provider is billed.
+
+## Delivery and customer handoff
+
+- Walk the owner through admin access, member provisioning/revocation requests,
+  approving/updating source documents, and selecting the shared agent.
+- Walk members through their own sign-in, provider-key ownership (if BYOK),
+  choosing the shared assistant, citations, and how to flag an incorrect or
+  unsupported answer.
+- Explain the boundary: the customer admin and VPS operator are privileged;
+  each member's chats/files are private from peers; the shared corpus is used
+  only through the shared agent; model/embedding requests leave the VPS for
+  the configured providers.
+- Run every item in `PILOT-SCOPE-AND-ACCEPTANCE.md` and give the customer a
+  copy of the signed acceptance record and agreed operating terms.
+- Record software/image versions, hostname, backup schedule/destination,
+  recovery-key custody reference, admin contact, support channel, and billing
+  milestones in the access-controlled customer record.
+
+## Routine care and support
+
+- Check service health and disk capacity on the agreed schedule; investigate
+  only through the authorized operator account.
+- Announce maintenance according to the signed scope. Before an upgrade, take
+  an encrypted backup, test the change in an isolated copy, and retain a
+  rollback path. Never run an unreviewed image pull against production.
+- For a support request, capture timestamp/time zone, affected accounts,
+  symptom, sanitized error, business impact, and whether a recent change
+  occurred. Do not ask the customer to email prompts, documents, passwords, or
+  API keys unless an approved secure channel and data-handling procedure exist.
+- Record time against the included monthly support allowance. Notify the
+  customer before exceeding it or starting out-of-scope work.
+- Distinguish a response-time target from a fix-time guarantee. Escalate
+  provider outages or billing issues to the customer-owned provider account.
+
+## Access changes and offboarding
+
+- Verify an authorized admin request before adding or revoking a member.
+- On departure, disable/revoke the account promptly, verify it cannot sign in,
+  and record the date. Do not promise immediate erasure of backups unless the
+  agreed retention cycle and deletion procedure support that promise.
+- At termination, follow the written export/deletion plan; remove DNS and
+  credentials only after the customer confirms whether data export is needed.
+  Provide a deletion confirmation only after checking active volumes and
+  retained backups against the agreed policy.
+
+## Open launch gate
+
+This runbook does not by itself prove public-host security, DNS/TLS, off-host
+backup, recovery time, provider billing, or ongoing monitoring. Complete and
+record the customer VPS acceptance checks before loading live customer data.

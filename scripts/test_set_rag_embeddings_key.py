@@ -39,6 +39,19 @@ class SetRagEmbeddingsKeyTests(unittest.TestCase):
             )
             self.assertEqual(stat.S_IMODE(env_path.stat().st_mode), 0o600)
 
+    def test_disable_replaces_key_with_placeholder_without_touching_other_settings(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            env_path = self.make_env(
+                directory,
+                "A=1\nRAG_OPENAI_API_KEY=FAKE_TEST_KEY_NOT_REAL\nZ=3\n",
+            )
+            MODULE.disable_env_key(env_path)
+            self.assertEqual(
+                env_path.read_text(encoding="utf-8"),
+                "A=1\nRAG_OPENAI_API_KEY=REPLACE_WITH_CUSTOMER_OWNED_EMBEDDINGS_API_KEY\nZ=3\n",
+            )
+            self.assertEqual(stat.S_IMODE(env_path.stat().st_mode), 0o600)
+
     def test_rejects_duplicate_entries_without_modifying_file(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             env_path = self.make_env(

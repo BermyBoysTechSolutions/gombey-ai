@@ -118,6 +118,10 @@ GOMBEY_LOCAL_DATA_ROOT="/Volumes/Mac Mini SSD/Gombey AI Local Staging" \
 ```
 
 Do not paste keys into chat, shell arguments, screenshots, or repository files.
+If an embeddings key must be disabled before rotation, run the helper with
+`--disable` against the protected staging environment file, then stop the
+staging `rag_api` service until a fresh key has been entered. This intentionally
+pauses document search; ordinary provider chat remains separate.
 The local model menu includes an optional, non-default DeepSeek V4 Flash
 OpenRouter spec for synthetic checks; GPT-6 Luna remains the default and the
 shared knowledge agent remains pinned to Luna. Each test user must configure
@@ -160,6 +164,14 @@ The command prompts for credentials; do not put passwords in shell history or ou
 5. Members should see/use the assistant but not edit its instructions or source files. The administrator alone updates the knowledge set.
 
 Use [the shared-agent template](shared-agent-template.md) for the repeatable instructions and quick retrieval checks. This provides admin-managed shared knowledge; employees must select the agent to use the shared corpus. It does not make every ordinary new chat automatically search the shared corpus, create shared Projects, or share conversations between users.
+
+## Pilot scope, customer handoff, and acceptance
+
+Before kickoff, copy and complete [the pilot scope and acceptance worksheet](PILOT-SCOPE-AND-ACCEPTANCE.md)
+with the customer. Use [the operations handoff runbook](OPERATIONS-HANDOFF.md)
+for provisioning, delivery, routine support, access changes, and offboarding.
+These reusable documents are not a contract and do not replace an acceptance
+test on the actual customer deployment.
 
 ## Required acceptance checks before a real customer dataset
 

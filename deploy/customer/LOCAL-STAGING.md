@@ -654,3 +654,31 @@ VPS/DNS testing. Do not use the old OpenClaw profile until its key is rotated.
 - The source checkout used for capture is dirty, so the backup preserves
   deployment/config/data but is not a complete source-code snapshot. Keep the
   exact deployment commit clean and pinned before onboarding a paying customer.
+
+## RAG credential containment and customer documents (2026-10-27)
+
+- Added a tested `--disable` mode to `scripts/set_rag_embeddings_key.py`. It
+  atomically replaces only the embeddings-key setting with the unconfigured
+  placeholder in an owner-owned mode-600 environment file; it never reads the
+  old value into output. All seven helper unit tests pass.
+- A credential from the active staging `.env` had been exposed in diagnostic
+  output. I disabled it in the staging environment, recreated only the
+  `gombey_staging_gombey_test` RAG service so its container no longer retains
+  the old environment, and then stopped that RAG service. The app and other
+  test services were left running. Document search is intentionally paused
+  until a newly rotated key is entered through the hidden-input helper. No
+  provider request was made during containment.
+- The restored staging environment and extracted backup config had copies of
+  the same credential. Both environment files were changed to the unconfigured
+  placeholder. The restore project's RAG container had no mounts and was
+  removed; its app and database containers were left untouched. The restore
+  UI therefore remains available, but its document-search service must be
+  recreated only after fresh credentials are configured.
+- Added `PILOT-SCOPE-AND-ACCEPTANCE.md` and `OPERATIONS-HANDOFF.md` as reusable
+  customer-delivery documents and linked them from the deployment README.
+  These are templates; customer data, exact support terms, provider choices,
+  billing terms, and VPS approvals remain per-customer decisions.
+- Updated the separate website-source branch to remove the unverified base
+  Cloud connector promise and gate appliance/local claims on technical
+  validation. Prices and live Stripe data were not changed, and no website
+  deployment was triggered.
