@@ -47,6 +47,9 @@ COLLISION_A_ENV="$TEST_ROOT/collision-a.env"
 COLLISION_B_ENV="$TEST_ROOT/collision-b.env"
 COLLISION_A_DOMAIN="customer-deployment-gombey-agency-alpha.example.test"
 COLLISION_B_DOMAIN="customer-deployment-gombey-agency-bravo.example.test"
+OLD_A_SUFFIX="$(printf '%s' "$COLLISION_A_DOMAIN" | tr '[:upper:]' '[:lower:]' | tr '.-' '__' | tr -cd 'a-z0-9_' | cut -c1-30)"
+OLD_B_SUFFIX="$(printf '%s' "$COLLISION_B_DOMAIN" | tr '[:upper:]' '[:lower:]' | tr '.-' '__' | tr -cd 'a-z0-9_' | cut -c1-30)"
+[[ "$OLD_A_SUFFIX" == "$OLD_B_SUFFIX" ]] || fail "collision fixtures do not reproduce the old truncated-prefix collision"
 GOMBEY_CUSTOMER_ENV_PATH="$COLLISION_A_ENV" bash "$INIT_SCRIPT" \
   "$COLLISION_A_DOMAIN" ops@example.test >/dev/null
 GOMBEY_CUSTOMER_ENV_PATH="$COLLISION_B_ENV" bash "$INIT_SCRIPT" \
