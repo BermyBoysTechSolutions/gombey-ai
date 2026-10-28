@@ -812,9 +812,10 @@ confirmed revoked and replaced.
 
 ## Ephemeral RAG pipeline smoke (2026-10-28)
 
-- The running staging RAG service was healthy, but its configured embeddings
-  credential failed against OpenRouter with HTTP 401 (`Missing Authentication
-  header`). Its value was not printed or changed. Earlier notes describing the
+- The running staging RAG service was healthy, but its
+  `RAG_OPENAI_API_KEY` was still the unconfigured placeholder; an embedding
+  attempt failed with OpenRouter HTTP 401 (`Missing Authentication header`).
+  The value was not printed or changed. Earlier notes describing the
   service as stopped or its value as a placeholder are historical snapshots;
   do not treat the persistent staging RAG configuration as verified.
 - To isolate the path, a short-lived RAG container joined the staging networks

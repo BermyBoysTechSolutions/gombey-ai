@@ -445,10 +445,11 @@ applicable gates above have evidence.
 ## Ephemeral RAG pipeline smoke (2026-10-28)
 
 - State correction to earlier snapshots: the main local staging RAG API was
-  running and healthy in this check, but its configured embeddings credential
-  failed with OpenRouter HTTP 401 (`Missing Authentication header`). The
-  credential value was never printed or changed; the persistent staging RAG
-  configuration is not a verified working setup.
+  running and healthy in this check, but `RAG_OPENAI_API_KEY` remained the
+  unconfigured placeholder; an embedding attempt failed with OpenRouter HTTP
+  401 (`Missing Authentication header`). The value was never printed or
+  changed; the persistent staging RAG configuration is not a verified working
+  setup.
 - A disposable RAG container used the OpenClaw OpenRouter credential injected
   only at runtime, without writing it into the repository or deployment
   `.env`. With a unique synthetic owner/file scope, upload returned HTTP 200,
