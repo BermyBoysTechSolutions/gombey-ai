@@ -2445,3 +2445,24 @@ applicable gates above have evidence.
 - These checks strengthen the local pre-VPS evidence only; they do not replace
   public DNS/TLS/firewall/reboot/backup-restore acceptance or Stripe sandbox
   billing rehearsal.
+
+## Stripe catalog label and tax-state verification — 2026-10-28 15:33 EDT
+
+- The owner reconfirmed the intended tier progression: Plus is a dedicated
+  customer VPS with cloud inference; Pro is an on-site SER5 appliance with
+  cloud inference; Max is customer hardware (Mac Studio, DGX Spark, or Strix
+  Halo) for local inference. This is intentional offer design, not a tier
+  mismatch.
+- To match the public offer names, the three active live Stripe product titles
+  were updated to Gombey Cloud Workspace, Gombey Workspace Appliance, and
+  Gombey Private Local AI. A live read-back confirmed the titles and existing
+  hat product images. Tier metadata, descriptions, standard monthly amounts,
+  setup installment amounts, prices, coupons, and links were not changed.
+- Billing state remains gated: three setup links are active; the separate
+  recurring links remain inactive; there are no subscriptions. Stripe Tax
+  settings are `pending` because no head-office address is configured, and the
+  account has zero Tax registrations. The active setup links have automatic
+  tax enabled, but that flag does not establish tax collection without an
+  active registration. No tax configuration or payment behavior was changed;
+  owner/accountant tax review and a dedicated Stripe sandbox rehearsal remain
+  open before sending live links.
