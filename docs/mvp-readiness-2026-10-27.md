@@ -267,6 +267,10 @@ applicable gates above have evidence.
   only after the proposal/scope and payment terms are agreed; the accepted-
   delivery installment and deferred subscription still need an operator
   workflow and a test-mode rehearsal.
+- The three active links have automatic tax enabled, but the linked founding
+  kickoff prices themselves already encode the discounted installment and do
+  not accept additional promotion codes. The links are usable as kickoff
+  collection after scope approval, not as a complete setup-plus-care signup.
 - Each tier's promotion code independently allows up to three redemptions.
   The advertised “first three deployments” cap is not a Stripe-enforced global
   cap and must be tracked across all tiers by the operator unless the offer is
