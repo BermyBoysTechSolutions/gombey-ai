@@ -379,3 +379,18 @@ applicable gates above have evidence.
   check confirmed the API is healthy at `127.0.0.1:3083`; MongoDB, pgvector,
   Meilisearch, and the fail-closed RAG API are running without public host
   ports. These checks did not restart or mutate the running deployment.
+
+## Provider-key smoke and regression recheck (2026-10-28)
+
+- The staging OpenRouter variable is non-empty in the owner-only mode-600
+  environment file and is injected into the loopback API container. A minimal
+  Qwen 3.7 Flash arithmetic request was rejected with HTTP 401; no model answer
+  was returned. Do not count provider inference as passed until a valid key is
+  entered through the intended secure path and the app-level test succeeds.
+- The separate RAG embeddings credential is still empty/placeholder. The
+  OpenClaw OpenRouter credential available during this check was last modified
+  on 2026-04-12 and was not reused. No credential value was printed or added to
+  GitHub.
+- Customer-init, customer-preflight, customer-backup safety, and all 11 Python
+  unit tests passed again. The test run generated only local Python bytecode
+  caches; those exact cache directories were removed afterward.
