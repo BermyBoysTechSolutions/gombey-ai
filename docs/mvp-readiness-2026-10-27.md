@@ -2351,17 +2351,68 @@ applicable gates above have evidence.
   customer-init, customer-preflight, encrypted-backup, all 16 Python checks,
   Compose validation, candidate health, and another persistent RAG smoke also
   passed. The candidate runtime bundle currently reports per-file depth 10.
-- A post-patch member answer was not verified: LibreChat's supported
-  `create-user` CLI did not produce a disposable member in the non-interactive
-  harness, and a database check confirmed no matching test account was
-  created. No member key or provider request was made in that attempt. Earlier
-  member-side shared File Search tests remain evidence for the prior depth-5
-  runtime only; repeat this broad query as a member after the patched runtime
-  is deployed through a Docker-shared checkout.
+- At this checkpoint, a post-patch member answer was not verified: LibreChat's
+  supported `create-user` CLI did not produce a disposable member in the
+  non-interactive harness. This was later superseded by the dated member test
+  below.
 - The branch checkout at `/private/tmp` is not mounted into Colima. Attempting
   to recreate the candidate API from that checkout failed on a host bind mount;
   the API was restored from its external-SSD Compose source, then the guarded
   patch was applied to the isolated candidate bundle and its health returned
   HTTP 200. Candidate databases/uploads were not moved or deleted. This proves
-  the patch against the exact pinned bundle, but the source-controlled startup
-  mount still needs validation from a Colima-shared checkout before VPS use.
+  the patch against the exact pinned bundle at that checkpoint. The later
+  source-controlled, Docker-shared checkout validation is recorded below.
+
+## Post-patch member retrieval verification — 2026-10-28
+
+- From the external-SSD, Colima-shared candidate running the guarded per-file
+  retrieval-depth patch, a synthetic member authenticated and used the
+  admin-owned, Viewer-shared Juniper & Slate test agent. With a short-lived,
+  member-scoped OpenRouter key and Qwen 3.5 9B, the member's saved answer to
+  the JS-C30 question correctly says actual observed conversions are not
+  reported, distinguishes the documented target of 1,483 add-to-cart events
+  from actual conversions, and cites
+  `02-juniper-slate-campaign-briefs.pdf`, page 31. The message records File
+  Search tool results; this closes the post-patch member answer/grounding check
+  for this synthetic corpus. The short-lived provider key was revoked through
+  the supported key endpoint (HTTP 204).
+- The synthetic member was then deleted through LibreChat's authenticated
+  self-delete endpoint (HTTP 200); Mongo verification found zero matching user,
+  conversation, message, file, or API-key records. The CLI deletion path was
+  intentionally aborted because its global shutdown warning applied while
+  unrelated LibreChat stacks were active. No unrelated app was stopped.
+- Candidate API was restarted on loopback port 3085 and returned healthy.
+  Registration remains disabled. All test documents are synthetic; no
+  customer material, live payment, public DNS, or VPS was involved.
+- This test closes the synthetic member-side post-patch File Search answer
+  check. It does not by itself close public VPS ingress, DNS/TLS, production
+  backup/restore, billing/consent, or actual hardware acceptance. The tier
+  mapping is intentional: Plus is dedicated VPS/cloud;
+  Pro is an on-site Beelink SER5 workspace with cloud inference; Max is local
+  inference on customer-owned hardware such as Mac Studio, DGX Spark, or Strix
+  Halo.
+
+## Local dedicated-deployment isolation regression — 2026-10-28
+
+- Ran `scripts/customer-isolation-check.py` read-only against the patched
+  candidate and the isolated backup/restore copy. It passed both directions:
+  Compose networks were disjoint; each API resolved its own Mongo service but
+  not the other project's service names; cross-project TCP was blocked for
+  API, MongoDB, Meilisearch, pgvector, and RAG; internal services exposed no
+  host ports; and app data, uploads, MongoDB, Meilisearch, and pgvector storage
+  sources were distinct.
+- This verifies Docker-level separation between two local dedicated projects,
+  not member ACL behavior, public VPS/firewall/DNS/TLS, or isolation from a
+  privileged host operator. Those remain separate acceptance items.
+
+## Current Stripe test-access check — 2026-10-28
+
+- The connected Stripe integration currently exposes the live Gombey Tech
+  account only. The Stripe CLI is not installed in this environment, so there
+  is no authenticated sandbox route available for a safe setup/installment,
+  saved-payment-method, delayed-subscription, renewal, or failure rehearsal.
+- No live Stripe write was made. Do not test the billing flow in live mode.
+  To close this gate, connect a dedicated Stripe sandbox to the Stripe
+  integration (or authorize a sandbox-capable Stripe CLI session), then run
+  the test plan there. Live tax registration and product tax treatment also
+  remain owner/accountant decisions; no tax settings were changed.
