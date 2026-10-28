@@ -985,3 +985,25 @@ confirmed revoked and replaced.
   explicit script suites are counted.
 - No persistent staging configuration, customer data, production service,
   Stripe setting, DNS, or VPS state was changed.
+
+## Member ACL probe clarification (2026-10-28)
+
+- A fresh, read-only check against the restored synthetic deployment used an
+  existing `USER` account and the shared Juniper & Slate agent. The normal
+  member-facing routes are `/api/agents` and `/api/agents/{agent.id}`; the
+  `/api/agents/v1/agents/...` management routes are machine-to-machine OIDC
+  endpoints and correctly reject ordinary member JWTs. Do not use those
+  management-route 401s as evidence that member access is broken.
+- The route expects the agent's public `id` field, not MongoDB `_id`. With the
+  correct member-facing API and identifier, the member listed and opened the
+  shared agent (HTTP 200), while expanded configuration and version history
+  returned HTTP 403. The admin could open all three views (HTTP 200).
+- This probe made no database writes, created no account, and sent no model or
+  embeddings request. It closes the current restored-copy shared-agent ACL
+  check, but not member-facing File Search retrieval/citations on the clean
+  branch candidate.
+- Sanitized runtime checks found chat/embedding credentials absent or set to
+  setup placeholders in both the branch candidate and restored-copy API/RAG
+  containers. No credential value was displayed or used. Provider-backed
+  File Search on the branch candidate therefore remains gated on protected
+  credential entry and confirmation of the intended billing owner.
