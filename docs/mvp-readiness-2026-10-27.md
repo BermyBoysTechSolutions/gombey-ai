@@ -1769,3 +1769,15 @@ applicable gates above have evidence.
   is read-only and remains local-container evidence, not a VPS firewall test.
 - Updated `deploy/customer/LOCAL-STAGING.md` with the expanded check contract.
   No container/data or external service was modified.
+
+## Billing workflow alignment — 2026-10-28 10:41 EDT
+
+- Reconciled the customer acceptance worksheet and operations handoff with the
+  Stripe rehearsal plan. They now distinguish the intended consented
+  saved-method flow (manual subscription creation at delivery) from the
+  separate-subscription-checkout fallback, and state that neither is live-ready
+  with the current links until sandbox and tax gates pass.
+- Stripe account discovery still exposes only the live Gombey Tech account.
+  Generated and queued the account-management authorization page in the Codex
+  browser so the owner can add a dedicated sandbox. No live Stripe object or
+  setting was changed; no test account is connected yet.

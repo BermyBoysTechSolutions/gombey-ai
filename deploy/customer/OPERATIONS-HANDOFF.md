@@ -75,13 +75,15 @@ campaign template.
 ## Delivery and customer handoff
 
 - Follow the billing milestones and consent language in section 6 of
-  `PILOT-SCOPE-AND-ACCEPTANCE.md`. The second setup installment and monthly
-  subscription are separate checkouts; the setup payment does not enroll the
-  customer or authorize reuse of its payment method. A separately authorized
-  subscription starts its 30-day trial when checkout completes, so the first
-  charge is 30 days after delivery only if the customer enrolls at accepted
-  delivery. Do not send a live recurring link until the documented Stripe
-  sandbox, discount-scope, and tax gates pass.
+  `PILOT-SCOPE-AND-ACCEPTANCE.md` and the Stripe sandbox rehearsal plan. The
+  intended flow saves a payment method at kickoff only with explicit
+  off-session consent, collects the setup balance after written acceptance,
+  and has the operator create one 30-day-trial subscription at delivery. This
+  is not automated by Gombey and is not supported by the current active live
+  kickoff links. If consent or the saved-method flow is unavailable, use the
+  documented separate-subscription-checkout fallback; its 30-day trial begins
+  when the customer completes that checkout. Do not send any live link until
+  sandbox amount/discount/consent tests and tax review pass.
 
 - Walk the owner through admin access, member provisioning/revocation requests,
   approving/updating source documents, and selecting the shared agent.

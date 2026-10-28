@@ -109,30 +109,41 @@ deployment's data path are approved.
 | Encrypted backup and clean restore | `[record]` | `[ ]` | `[record]` |
 | Customer acceptance | `[signed acceptance record]` | `[ ]` | `[record]` |
 
-## 6. Billing milestones (manual until Stripe sandbox rehearsal passes)
+## 6. Billing milestones (manual and sandbox-gated)
 
-The setup and recurring service use separate Stripe checkouts:
+The intended flow avoids asking the customer to enroll a second time, but it is
+not configured or verified in the live account yet:
 
-1. Collect 50% of the agreed one-time setup price at kickoff.
-2. After the customer accepts delivery, collect the remaining 50% of setup.
-3. At accepted delivery, send a separate monthly subscription checkout only
-   after the recurring flow is available and its Stripe sandbox tests pass. The
-   customer must review the monthly amount, cadence, launch-rate duration and
-   later standard rate, cancellation terms, and first-charge timing; provide or
-   confirm a payment method; and explicitly authorize recurring charges.
-4. Stripe's 30-day trial starts when the customer completes subscription
-   checkout. Stripe attempts the first monthly payment when that trial ends.
-   Complete checkout at accepted delivery for the intended first attempt to be
-   30 days after delivery. If the customer enrolls later, the trial and first
-   payment move later too.
+1. At kickoff, collect 50% of the agreed setup amount through a checkout that,
+   only with explicit customer consent, saves the payment method for the
+   accepted-delivery balance and future monthly subscription charges. Disclose
+   the launch and later standard prices, cadence, first-charge timing,
+   cancellation terms, and off-session permission; preserve the customer's
+   affirmative agreement.
+2. After written delivery acceptance, collect the remaining 50% of setup using
+   the consented payment method.
+3. At accepted delivery, the operator creates one subscription for that same
+   Stripe Customer and saved method, with automatic collection and a 30-day
+   trial. The expected first monthly attempt is about 30 days after delivery.
+   Gombey has no webhook or billing workflow that automates this operator step.
 
-The setup payment does not enroll the customer in the subscription or
-automatically save/reuse its payment method. Gombey does not currently automate
-the transition from kickoff to delivery or subscription signup; the operator
-handles the separate invoices and subscription enrollment.
+If saving the method is unavailable or the customer declines consent, use the
+fallback only after the separate-checkout flow passes its sandbox tests: collect
+the delivery balance, then have the customer complete a separate subscription
+checkout at accepted delivery. The customer re-enters/confirms a payment method;
+the 30-day trial starts when that checkout completes, so a later enrollment
+moves the first charge later. Do not describe this fallback as automatic
+enrollment from the setup payment.
 
-As of the 2026-10-28 read-only check, the live monthly subscription links are
-inactive and use standard monthly prices with promotion-code entry enabled.
+As of the 2026-10-28 read-only check, the active kickoff links do not save a
+future-use payment method, and the monthly subscription links are inactive.
+Therefore neither flow is currently ready for a live charge. Gombey does not
+currently automate the transition from kickoff to delivery or subscription
+creation; the operator handles those steps after the relevant flow is
+implemented and rehearsed.
+
+The 2026-10-28 read-only check found that the live monthly subscription links
+are inactive and use standard monthly prices with promotion-code entry enabled.
 The three launch coupons are restricted to their matching products; each
 promotion code allows up to three redemptions, so the advertised first-three-
 deployments-total cap still requires manual cross-tier tracking. The Stripe
@@ -141,8 +152,9 @@ registrations. The active kickoff links have automatic tax enabled, while the
 inactive monthly links have it disabled. Do not activate or send a live
 monthly link or accept live payment until the sandbox amount/discount/consent
 cases and owner/accountant tax treatment are resolved. Do not describe the
-first charge as 30 days after delivery unless the customer completed
-subscription checkout on the delivery-acceptance date.
+first charge as 30 days after delivery unless the saved-method flow is tested
+and the subscription is created at accepted delivery, or the customer completes
+the fallback subscription checkout on that date.
 See the [Stripe sandbox rehearsal plan](../../docs/STRIPE-BILLING-TEST-PLAN.md)
 for exact test cases and no-go criteria.
 
