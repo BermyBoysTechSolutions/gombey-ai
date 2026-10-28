@@ -2496,3 +2496,15 @@ applicable gates above have evidence.
   embeddings route works, but does not independently establish which OpenRouter
   account owns the credential or prove customer billing ownership; verify that
   in the provider dashboard before a customer deployment.
+
+## Current three-stack isolation matrix — 2026-10-28 15:42 EDT
+
+- Re-ran the read-only isolation checker for every pair among the current
+  candidate, primary staging, and restored-copy Compose projects. All three
+  pairs passed in both directions: networks and persistent storage roots are
+  distinct; each API resolves only its own Mongo service; cross-project service
+  DNS and private-IP TCP probes are blocked; and internal service ports are
+  unpublished.
+- This is runtime evidence for dedicated-deployment isolation on this Colima
+  host. It does not establish public VPS ingress controls or protect against a
+  privileged host operator.
