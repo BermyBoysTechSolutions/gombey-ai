@@ -1135,3 +1135,14 @@ applicable gates above have evidence.
 - The existing untracked `tmp/` was preserved. These local checks do not close
   the authenticated member UI, customer-owned provider billing, Stripe
   sandbox/tax/consent, or approved production VPS acceptance gates.
+
+## Current two-deployment isolation audit — 2026-10-28 06:32 EDT
+
+- Re-ran `scripts/customer-isolation-check.py` against the running primary
+  staging and backup-restore deployments. The read-only audit passed: networks
+  and persistent storage roots are disjoint, each app resolves its own MongoDB,
+  cross-project Mongo DNS is blocked both ways, and MongoDB, Meilisearch,
+  pgvector, and RAG publish no host ports.
+- This verifies deployment-level separation only; it does not establish
+  member authentication, customer-owned provider billing, public VPS exposure,
+  or production readiness. No container or data was changed.
