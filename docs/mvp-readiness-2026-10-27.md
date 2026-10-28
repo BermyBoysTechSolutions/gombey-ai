@@ -135,13 +135,29 @@ following cloud-workspace gates pass.
   mode `600`, without printing any credential. At containment time, the active
   staging RAG service was stopped, and the restore project's stateless RAG
   container was removed. The staging RAG service has since been restarted and
-  is healthy; its persistent embeddings key remains the placeholder, so
-  document search through the app is still paused until a customer-owned key is
-  supplied through the protected helper.
-  The owner reported rotating/adding a replacement OpenRouter key, but
-  revocation and exact placement were not independently verified. The staging
-  embeddings environment still contains the placeholder; a chat-provider key
-  does not by itself configure RAG embeddings.
+  is healthy. A later protected configuration audit found a non-placeholder
+  `RAG_OPENAI_API_KEY` in the primary staging `.env` (mode `600`) and loaded in
+  the RAG service. Its exact identity, rotation status, and billing-account
+  ownership were not verified in that audit. The LibreChat API's `OPENROUTER_KEY`
+  and `OPENAI_API_KEY` remain placeholders; an embeddings key does not by
+  itself enable model chat.
+- A repeat member-side API check on 2026-10-28 provisioned two disposable
+  `USER` accounts using the instance's configured origin and browser User-Agent.
+  Both members saw the same role-shared synthetic File Search agent in the
+  agent list and basic view (HTTP 200); expanded configuration and version
+  history returned 403, direct source-file listing returned an empty list, and
+  each member received 404 when requesting the admin's private conversation.
+  No model request or document contents were returned in these ACL checks.
+- A synthetic member created only in primary staging was present in the primary
+  MongoDB and absent from the restore copy (count 1 versus 0), confirming local
+  deployment storage separation for this test. The eight disposable accounts
+  created during the repeat checks were removed with LibreChat's supported
+  delete-user command; the primary staging instance returned to its prior
+  baseline of one `ADMIN`, four `USER` accounts, and zero stored provider keys.
+  Both loopback login pages returned HTTP 200 after cleanup. These are local
+  API/data-store checks, not a customer VPS acceptance test or a provider-backed
+  File Search run; the latter still needs a known customer-owned chat key and
+  verified embeddings billing.
 
 ## Remaining go/no-go gates for the cloud workspace
 
