@@ -62,9 +62,17 @@ following cloud-workspace gates pass.
   staging APIs are bind-mounted from separate development checkouts rather
   than a clean checkout of this pushed MVP branch. Their HTTP-200 status and
   earlier functional results do not prove that this branch has been deployed
-  into either running instance. Before using staging as release evidence,
-  reconcile the exact commit, Compose files, and mounted patches; preserve the
-  dirty development checkout and its data while doing so.
+  into either running instance. The dirty development checkout and its data
+  are preserved.
+- A clean local candidate was then started from detached commit `e31577f` on
+  the external SSD, as an isolated Compose project on `127.0.0.1:3085`. The API,
+  MongoDB, pgvector, and RAG health checks pass; `/login` and `/health` return
+  HTTP 200; only the API is host-published and it is loopback-bound. All
+  candidate app/upload/database data is on the external SSD. No model or
+  embeddings request was made: the candidate has `user_provided` chat-provider
+  settings and the generated embeddings placeholder, with an empty database.
+  It is ready for branch-matched member/agent tests, but does not yet contain
+  accounts, agents, or evaluation documents.
 - `scripts/customer-backup.sh` now refuses plaintext output, writes a checksummed
   AES-256/PBKDF2 archive, and pauses only the target deployment's app/RAG/search
   writers during capture. Safety tests pass. A fresh encrypted backup was
