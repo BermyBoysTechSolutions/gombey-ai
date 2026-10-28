@@ -1272,6 +1272,27 @@ applicable gates above have evidence.
 - No Stripe settings/products, prices, VPS, DNS, customer data, or application
   runtime were changed. Website source stays on its feature branch; no merge.
 
+## Candidate member-agent permission gate — 2026-10-28
+
+- The clean local candidate is running on `127.0.0.1:3085`, with two synthetic
+  accounts and empty agent/file/chat/key data after cleanup. Its application
+  source is `e31577f`; the latest branch commit `4f778b7` is documentation-only.
+- A runtime test found that the default USER role could create private agents.
+  We corrected the candidate's USER agent permissions through LibreChat's
+  supported role API, retaining Use while disabling Create, Share, and Public
+  Share. The follow-up test passed admin create/share, member discover/basic
+  view, and member denial (HTTP 403) for expanded config, version history,
+  edit, ACL access, duplication, and creating another agent. The disposable
+  File Search agent was deleted; no provider calls or real data were used.
+- `deploy/customer/README.md` now makes the role setting a required step after
+  first-admin bootstrap and before employee provisioning. It is persisted in
+  the customer database, not guaranteed by YAML alone, so each fresh install
+  and post-restore/upgrade check must verify it.
+- This closes the branch-matched member-agent authorization check only. The
+  visible-browser test on this candidate, customer-owned provider/embedding
+  billing, persistent customer-key File Search, secure off-device backups,
+  Stripe sandbox billing rehearsal, and Hostinger VPS acceptance remain open.
+
 ## Stripe sandbox access recheck — 2026-10-28 07:12 EDT
 
 - Read-only Stripe account discovery still returns only the Gombey Tech live
@@ -1279,3 +1300,35 @@ applicable gates above have evidence.
 - No sandbox was created or claimed, and no live/test payment objects or
   settings were changed. Subscription trial, payment-method consent, coupon,
   and tax rehearsal remains blocked on a dedicated sandbox.
+
+## Stripe live offer recheck — 2026-10-28
+
+- Re-fetched `https://gombeytech.com` read-only (HTTP 200, title “Gombey AI”).
+  The live page currently presents Cloud Workspace ($399 standard / $349 for
+  12 months; $2,500 setup / $1,995 launch), Workspace Appliance ($699 / $599;
+  $4,500 / $3,995), and Private Local AI ($1,499 / $1,299; $7,500 / $6,995).
+  It says the founding offer is limited to the first three deployments total,
+  setup is split 50/50, monthly billing uses a separate customer-authorized
+  subscription checkout, and the 30-day trial starts at enrollment.
+- Read-only Live Stripe reads confirm the three active products and their
+  matching product-scoped, valid repeating coupons: $50/$100/$200 off per
+  month for 12 months, with zero redemptions at this check. Their active
+  promotion codes each allow three redemptions and have no expiry; the site's
+  global first-three-deployments limit therefore still needs manual tracking.
+- The three active payment links collect only the launch setup kickoff halves
+  ($997.50/$1,997.50/$3,497.50). Each has automatic tax enabled, but the latest
+  read returned zero active Stripe Tax registrations. Hold these links until
+  the owner/accountant confirms the correct tax treatment and required
+  registration; enabling automatic tax alone does not establish registration.
+- The three recurring subscription links remain inactive. Each uses the
+  standard monthly price, permits promotion codes, requires a payment method,
+  and starts a 30-day trial at the separate enrollment checkout; automatic tax
+  is disabled. No active delivery-balance links were found. Do not activate or
+  send these until the dedicated sandbox rehearsal verifies consent wording,
+  product-specific discount eligibility, trial/coupon timing, tax behavior,
+  cancellation, and first-charge handling.
+- This was a read-only audit: no Stripe products, prices, coupons, promotion
+  codes, payment links, invoices, subscriptions, tax settings, or payments
+  were changed or created. The MVP remains open on the sandbox billing rehearsal,
+  tax-treatment decision, authenticated member File Search with customer-owned
+  credentials, and approved public VPS acceptance.

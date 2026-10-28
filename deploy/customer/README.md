@@ -107,6 +107,29 @@ docker compose --env-file deploy/customer/.env \
 
 The normal `.env` keeps `ALLOW_REGISTRATION=false`, and the normal Compose file does not publish the API port. Do not change those protections. The bootstrap overlay binds only to `127.0.0.1`; do not alter it to `0.0.0.0`.
 
+## Restrict member agent permissions before adding employees
+
+The YAML setting `interface.agents.public: false` prevents instance-wide
+publishing, but it does not disable agent creation for the `USER` role. On a
+fresh database, sign in as the customer `ADMIN`, open the Agents side panel,
+and choose **Admin Settings** in its footer. Select the `USER` role and save:
+
+- **Use agents:** on (members need to use the shared Company Knowledge Assistant)
+- **Create agents:** off
+- **Share agents:** off
+- **Share agents publicly:** off
+
+Keep the `ADMIN` role's create/manage permissions enabled. These are persisted
+role permissions in MongoDB, not represented by the instance-wide YAML switch;
+apply and verify them after each fresh database seed, and recheck them after an
+upgrade or restore before inviting members. Do not set a global
+`interface.agents.create: false`, which would also block the administrator.
+
+The equivalent supported API update is `PUT /api/roles/USER/agents` with
+`{"USE":true,"CREATE":false,"SHARE":false,"SHARE_PUBLIC":false}`. Use an
+authenticated admin session; never place its bearer token in a saved command
+or shared log.
+
 For local staging, chat-provider BYOK keys are entered by each authorized test
 user in LibreChat; do not put personal or future-client chat keys in the shared
 environment file. In the current UI, use **Account menu → Settings → search
@@ -189,6 +212,7 @@ test on the actual customer deployment.
 ## Required acceptance checks before a real customer dataset
 
 - Create one admin and two separate member accounts; verify they are separate accounts with private chats.
+- Verify the `USER` role can discover/use the shared agent, but cannot create a private agent, edit/duplicate the shared agent, change its access, or publish it.
 - On two separate staging deployments, create distinct synthetic customer facts and verify neither deployment can retrieve the other customer's fact. Use separate Compose project names and fresh databases/volumes.
 - Upload a synthetic document with a unique fact to the admin-managed agent; confirm both members retrieve it with a citation.
 - Confirm a member cannot edit the shared agent or upload/remove its source files.

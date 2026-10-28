@@ -15,8 +15,10 @@ interface:
   termsOfService:
     externalUrl: "https://gombeytech.com/terms"
     openNewTab: true
-  # Preserve role-specific defaults: ADMIN can create/share; USER can use but
-  # cannot share, and neither role can publish an agent to the instance.
+  # These are instance-wide capability switches. They do not disable agent
+  # creation for USER alone. Before adding employees, use the Agents side-panel
+  # Admin Settings to set USER to Use=on, Create/Share/Public Share=off.
+  # Neither role can publish an agent to the instance.
   agents:
     use: true
     public: false

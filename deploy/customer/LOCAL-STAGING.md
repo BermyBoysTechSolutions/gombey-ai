@@ -940,3 +940,34 @@ confirmed revoked and replaced.
   Previous authenticated member File Search/citation checks used a temporary
   runtime key override and synthetic documents. The user-facing visible-browser
   check and customer-owned credential/billing check remain open.
+
+## Branch-matched candidate member-agent authorization retest (2026-10-28)
+
+- The clean candidate on the external SSD runs application source from
+  `e31577f`; the later branch commit `4f778b7` changed readiness documentation
+  only. It remains loopback-only on `127.0.0.1:3085`; `/login` and `/health`
+  return HTTP 200. The candidate contains two synthetic accounts (one ADMIN,
+  one USER), with no files, conversations, messages, provider keys, or
+  schedules before/after this test.
+- The first member-agent probe exposed that LibreChat's fresh default USER role
+  can create private agents even while it cannot edit the admin's shared one.
+  This is not a cross-user data leak, but was outside the intended managed-agent
+  pilot boundary. The temporary member-created probe was deleted immediately.
+- The USER agent permission record was then set through LibreChat's supported
+  role-permission API to `USE=true`, `CREATE=false`, `SHARE=false`, and
+  `SHARE_PUBLIC=false`. A subsequent authenticated API acceptance run confirmed
+  the ADMIN could create the disposable File Search agent and grant USER-role
+  Viewer access; the member could list and view it (HTTP 200) but was denied
+  expanded configuration, version history, edits, ACL access, duplication, and
+  agent creation (all HTTP 403).
+- The disposable shared agent was removed (HTTP 200). Final candidate counts
+  are zero agents, files, conversations, messages, provider keys, and
+  schedules; the two synthetic user accounts remain. No model or embeddings
+  requests were made, and no account credentials, old staging deployments,
+  public services, Stripe objects, or customer data were changed.
+- The role setting is database-persisted rather than encoded by
+  `interface.agents.public`. The customer runbook now requires setting this in
+  the Agents side-panel Admin Settings for the `USER` role before provisioning
+  employees, and includes the matching acceptance check. The member agent
+  permissions are now verified on the local candidate; interactive browser UX,
+  customer-owned provider billing, and VPS acceptance remain open gates.
