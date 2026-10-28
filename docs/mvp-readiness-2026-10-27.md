@@ -2905,3 +2905,24 @@ applicable gates above have evidence.
   payment, or invoice was changed. The intended tier ladder remains VPS/cloud
   (Plus), SER5/cloud (Pro), and workstation/local inference (Max); this test
   does not constitute production deployment acceptance.
+
+## Current-branch member least-privilege profile — 2026-10-28 17:47 EDT
+
+- An audit of the current-branch staging Mongo `USER` role found broad default
+  capabilities (including agent creation, MCP, skills, schedules, code
+  execution, and web search). Some list endpoints returned empty HTTP 200s, so
+  their status alone had not demonstrated that those capabilities were
+  disabled.
+- Applied the documented base-pilot profile through LibreChat's supported
+  `PATCH /api/admin/roles/USER/permissions` endpoint. Members retain shared
+  agent use plus File Search/citations; agent creation/sharing, MCP, skills,
+  schedules, code execution, web search, and remote agents are disabled.
+- Verified both synthetic members still view the shared agent (HTTP 200),
+  while expanded config, version history, MCP server/tool lists, skills,
+  schedules, and a member agent-create attempt are denied (HTTP 403). Agent
+  count remained one. The `ADMIN` role still retains those management
+  capabilities. These were API-level checks, not browser automation.
+- This role profile is persisted in the staging database; the customer
+  onboarding runbook still requires applying and verifying it on each fresh
+  customer database after the first admin is provisioned. No global YAML
+  switches were changed, and no production account or deployment was touched.
