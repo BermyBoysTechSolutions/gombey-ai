@@ -70,9 +70,12 @@ following cloud-workspace gates pass.
   HTTP 200; only the API is host-published and it is loopback-bound. All
   candidate app/upload/database data is on the external SSD. No model or
   embeddings request was made: the candidate has `user_provided` chat-provider
-  settings and the generated embeddings placeholder, with an empty database.
-  It is ready for branch-matched member/agent tests, but does not yet contain
-  accounts, agents, or evaluation documents.
+  settings and the generated embeddings placeholder. A later audit found two
+  accounts (one ADMIN and one USER), no agents, files, conversations, or
+  messages. Their account labels matched QA/test fixture naming patterns, but
+  neither account was modified or deleted. The candidate has no uploaded
+  evaluation documents. Its server-side provider settings remain placeholders;
+  this count-only audit did not inspect account passwords or user-scoped keys.
 - `scripts/customer-backup.sh` now refuses plaintext output, writes a checksummed
   AES-256/PBKDF2 archive, and pauses only the target deployment's app/RAG/search
   writers during capture. Safety tests pass. A fresh encrypted backup was
@@ -86,7 +89,7 @@ following cloud-workspace gates pass.
 - Older plaintext staging backups (including an older customer `.env`) remain
   on that unencrypted external volume. They contain synthetic test state; they
   must be secured or removed before any real customer data is stored there.
-- Three generated synthetic evaluation manuals are 31, 36, and 31 pages. Their
+- Three generated synthetic evaluation manuals are 33, 31, and 33 pages. Their
   covers, representative interior pages, and final pages were visually
   inspected. The evaluator answer key is separate and must not be uploaded as
   knowledge.
@@ -1358,3 +1361,22 @@ applicable gates above have evidence.
   with citations, visible member UX, and customer billing verification remain
   open. No customer content, Stripe mutation, production deployment, or VPS
   was involved.
+
+## Candidate read-only follow-up — 2026-10-28
+
+- Reconfirmed the branch-matched candidate at `127.0.0.1:3085`: `/health` and
+  `/login` both return HTTP 200, and the API remains loopback-only. The Codex
+  browser was pointed at the candidate login page; no authenticated UI actions
+  were performed.
+- The current candidate database has one ADMIN and one USER, with no agents,
+  files, conversations, or messages. Both account labels match QA/test fixture
+  naming patterns; no account passwords or provider keys were read or changed.
+- A fresh read-only isolation check between the candidate and
+  `gombey_backup_restore_20261027` passed: networks and storage roots are
+  distinct, cross-project Mongo DNS is blocked in both directions, and
+  MongoDB/Meilisearch/pgvector/RAG have no published host ports.
+- Customer init, preflight, backup-safety, RAG fail-closed (4), embeddings-key
+  helper (7), and full Python (13) test suites passed again; `git diff --check`
+  passed. This still does not establish visible-browser member acceptance,
+  customer-owned provider billing, Stripe sandbox/tax readiness, or public VPS
+  security.
