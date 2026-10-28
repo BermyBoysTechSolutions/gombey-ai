@@ -1256,3 +1256,11 @@ applicable gates above have evidence.
   and unchanged $1,995 founding setup price.
 - No Stripe settings/products, prices, VPS, DNS, customer data, or application
   runtime were changed. Website source stays on its feature branch; no merge.
+
+## Stripe sandbox access recheck — 2026-10-28 07:12 EDT
+
+- Read-only Stripe account discovery still returns only the Gombey Tech live
+  account. The local Stripe CLI is not installed in the current environment.
+- No sandbox was created or claimed, and no live/test payment objects or
+  settings were changed. Subscription trial, payment-method consent, coupon,
+  and tax rehearsal remains blocked on a dedicated sandbox.
