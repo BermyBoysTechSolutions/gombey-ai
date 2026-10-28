@@ -2293,3 +2293,31 @@ applicable gates above have evidence.
   payment-failure handling as automated. Sandbox rehearsal, live tax review,
   and a confirmed payment-method consent flow remain no-go gates before sending
   any live kickoff link.
+
+## Offer ladder clarification and Stripe read-back — 2026-10-28
+
+- Confirmed the owner’s intended hardware/deployment ladder: Plus is a
+  dedicated VPS workspace using cloud inference; Pro is an on-site Beelink
+  SER5 workspace that still uses cloud inference; Max is the higher-cost
+  customer-owned local-inference workstation option (Mac Studio, NVIDIA DGX
+  Spark, or Strix Halo). These are intentionally different deployment levels,
+  not a tier mismatch. The public offer mapping and Stripe product descriptions
+  now communicate that distinction.
+- Read back the live Stripe products after the description edits. Workspace
+  Appliance explicitly names the SER5 and says it hosts the workspace without
+  running local inference. Private Local AI names the three workstation
+  options and states that hardware is separately quoted and performance is
+  benchmark-dependent. No product/price activation state was changed in this
+  read-back.
+- Read back all 15 active Stripe Prices: each tier has four one-time prices
+  (standard and launch totals split into 50% kickoff and 50% delivery), plus
+  one standard monthly recurring Price. Kickoff/delivery amounts reconcile to
+  standard setup totals of $2,500/$4,500/$7,500 and launch totals of
+  $1,995/$3,995/$6,995. Monthly standard Prices remain $399/$699/$1,499;
+  launch monthly amounts depend on the existing tier-specific promotion
+  codes/coupons. No price, payment link, coupon, tax setting, invoice,
+  subscription, or charge was changed during verification.
+- This confirms catalog wording and price arithmetic, not a tested checkout or
+  automatic deferred subscription. Sandbox rehearsal, live tax review, and
+  explicit consent for future off-session charges remain prerequisites before
+  collecting a customer payment or promising automatic monthly billing.
