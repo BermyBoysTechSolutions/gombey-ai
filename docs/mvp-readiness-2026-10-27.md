@@ -2867,3 +2867,41 @@ applicable gates above have evidence.
   commissioning. The owner's intended tier ladder remains VPS/cloud,
   SER5/cloud, then customer workstation/local inference; it is intentional,
   not a mismatch.
+
+## Two-member shared File Search and cleanup — 2026-10-28 17:47 EDT
+
+- On the separate current-branch staging deployment at `127.0.0.1:3086`, two
+  synthetic member accounts used the admin-owned shared Juniper & Slate agent
+  with the three synthetic long-form PDFs. For this low-cost test only, the
+  agent was temporarily routed through the owner's authorized OpenRouter key
+  to `deepseek/deepseek-v4-flash-0731`.
+- Member one correctly answered the Ash & Anvil Winter Blend Preview launch
+  date (2026-11-04), budget cap ($2,400), and client approver (Naomi Bell),
+  citing `02-juniper-slate-campaign-briefs.pdf`, page 2. Member two correctly
+  answered the Bellwether Paper Co Desk Reset Collection date (2026-11-06),
+  budget cap ($2,575), and approver (Theo Martin), citing that same PDF,
+  page 3. Member one also correctly abstained when asked for Ash & Anvil's
+  unsupported 2025 annual revenue. These were temporary synthetic chats.
+- The admin can read the shared agent's expanded configuration and version
+  history (HTTP 200). Both members can view/use the shared agent (HTTP 200),
+  but the actual `/api/agents/{id}/expanded` and `/api/agents/{id}/versions`
+  routes deny them (HTTP 403). Do not use `?expand=true`; this build ignores
+  that query parameter. Member tests ran without browser UX automation.
+- Restored the shared agent to provider `openAI` / model `gpt-6-luna` (version
+  7). Removed both `OpenRouter` and `openrouter` test-key entries from both
+  synthetic members and verified they are absent. Reset the staging RAG
+  embeddings environment to its unconfigured placeholder and recreated only
+  `rag_api`; no key value is recorded here. Consequently, File Search will
+  need a customer-owned embeddings credential before a future provider-backed
+  deployment test.
+- The active candidate at port 3086 and RAG service are healthy; the app is
+  published only on loopback, with staging data on the external SSD. Customer
+  init, preflight, backup-safety, 16 Python tests, 10 Node tests, and
+  `git diff --check` all passed. The isolated fail-closed RAG integration test
+  returned HTTP 500 for its deliberately invalid synthetic embedding request,
+  stored zero vectors, and removed its disposable containers, network, and
+  vector volume.
+- No customer data, public VPS/DNS/TLS, production site, Stripe product,
+  payment, or invoice was changed. The intended tier ladder remains VPS/cloud
+  (Plus), SER5/cloud (Pro), and workstation/local inference (Max); this test
+  does not constitute production deployment acceptance.
