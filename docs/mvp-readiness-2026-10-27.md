@@ -25,6 +25,14 @@ following cloud-workspace gates pass.
 - `scripts/test_customer_preflight.sh` passes, including invalid hostname,
   reserved domain, short-secret, and duplicate-secret cases.
 - `python3 scripts/test_set_rag_embeddings_key.py` passes (7 tests).
+- On 2026-10-28, the init, preflight, backup-safety, and full 11-test Python
+  suite passed again; both loopback staging login pages returned HTTP 200 and
+  the staging app/RAG containers were healthy. The deployment branch was clean
+  and matched its GitHub remote after verification.
+- A targeted scan for common credential prefixes across tracked files and
+  available Git history found only the `OPENROUTER_KEY` placeholder in
+  `.env.example`. No dedicated secret scanner is installed, so this is a
+  limited pattern check, not a comprehensive secret audit.
 - The customer Compose template parses successfully; the sample `.env` emits
   expected warnings for unset provider fields. A real API credential and live
   provider response are not validated by that parse check.
