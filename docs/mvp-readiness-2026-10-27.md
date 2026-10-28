@@ -25,9 +25,9 @@ following cloud-workspace gates pass.
 - `scripts/test_customer_preflight.sh` passes, including invalid hostname,
   reserved domain, short-secret, and duplicate-secret cases.
 - `python3 scripts/test_set_rag_embeddings_key.py` passes (7 tests).
-- On 2026-10-28, the init, preflight, backup-safety, and full 11-test Python
-  suite passed again; both loopback staging login pages returned HTTP 200 and
-  the staging app/RAG containers were healthy. The deployment branch was clean
+- On 2026-10-28, the init, preflight, backup-safety, and full 13-test Python
+  suite passed; both loopback staging login pages returned HTTP 200 and the
+  staging app/RAG containers were healthy. The deployment branch was clean
   and matched its GitHub remote after verification.
 - A targeted scan for common credential prefixes across tracked files and
   available Git history found only the `OPENROUTER_KEY` placeholder in
@@ -58,6 +58,13 @@ following cloud-workspace gates pass.
   are host-published, bound to `127.0.0.1:3083` and `127.0.0.1:3084`; MongoDB,
   pgvector, Meilisearch, and RAG have no host-published ports. Both deployments
   currently store their synthetic staging data on the external SSD.
+- Qualification from the 2026-10-28 checkout audit: the primary and restore
+  staging APIs are bind-mounted from separate development checkouts rather
+  than a clean checkout of this pushed MVP branch. Their HTTP-200 status and
+  earlier functional results do not prove that this branch has been deployed
+  into either running instance. Before using staging as release evidence,
+  reconcile the exact commit, Compose files, and mounted patches; preserve the
+  dirty development checkout and its data while doing so.
 - `scripts/customer-backup.sh` now refuses plaintext output, writes a checksummed
   AES-256/PBKDF2 archive, and pauses only the target deployment's app/RAG/search
   writers during capture. Safety tests pass. A fresh encrypted backup was
