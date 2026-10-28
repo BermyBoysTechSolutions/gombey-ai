@@ -1332,3 +1332,29 @@ applicable gates above have evidence.
   were changed or created. The MVP remains open on the sandbox billing rehearsal,
   tax-treatment decision, authenticated member File Search with customer-owned
   credentials, and approved public VPS acceptance.
+
+## OpenRouter credential and model smoke — 2026-10-28
+
+- The requested OpenClaw OpenRouter credential was read in-process from its
+  protected credential store (mode `0600`) and was never printed, committed,
+  or saved into Gombey. `openclaw models status` itself timed out at 10 seconds;
+  no OpenClaw config was edited.
+- A direct, synthetic OpenRouter request to
+  `deepseek/deepseek-v4.1-flash-1017` with a 16-token output cap returned no
+  visible answer because reasoning consumed the output budget. A second
+  request with reasoning disabled and a 32-token cap returned the expected
+  text (`finish_reason=stop`, 12 input and 6 output tokens, reported cost
+  $0.00000426). Combined cost for both calls was $0.000010498. OpenRouter's
+  docs confirm reasoning tokens count toward `max_tokens` and recommend a
+  larger budget or lower/disabled reasoning.
+- This verifies the credential and model route only; it bypassed Gombey and
+  does not prove a member's LibreChat BYOK settings or customer billing. The
+  candidate API chat-provider environment remains placeholder-only, and its
+  RAG embeddings value is placeholder-like. The primary staging RAG value is
+  non-empty but provider identity, validity, and billing ownership were not
+  verified. No app/database setting or provider key was changed.
+- The OpenRouter credential/model test is now complete. Gombey's per-user
+  provider-key setup, customer-owned embeddings, 30-page shared File Search
+  with citations, visible member UX, and customer billing verification remain
+  open. No customer content, Stripe mutation, production deployment, or VPS
+  was involved.
