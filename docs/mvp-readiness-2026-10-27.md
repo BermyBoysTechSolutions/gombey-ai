@@ -1710,3 +1710,24 @@ applicable gates above have evidence.
   embedding keys are still absent or placeholders. No key was read from an
   older profile or printed. No live Stripe, public site, DNS, VPS, or customer
   data was changed.
+
+## Embeddings credential parity follow-up — 2026-10-28 10:33 EDT
+
+- Re-ran the synthetic RAG smoke against the primary staging service. Embed,
+  own-scope lookup, unrelated-scope isolation, retrieval, scoped deletion, and
+  post-delete absence all passed (HTTP 200; expected marker retrieved).
+- Ran the same self-cleaning synthetic smoke against the candidate and restored
+  copies. Candidate embed returned HTTP 500; restore returned an HTTP 200
+  wrapper but reported an unsuccessful embed. Filtered logs from both show an
+  upstream embeddings HTTP 401 / `AuthenticationError`. The restore scope check
+  confirmed the synthetic vector was absent, so no cleanup was needed.
+- Non-secret endpoint metadata is consistent across the copies:
+  `openai/text-embedding-3-small` via `openrouter.ai/api/v1`. In-memory equality
+  checks (no credential values or hashes emitted) found candidate and restore
+  credentials identical to one another and different from the primary
+  credential that just passed. Do not copy credentials between stacks; the
+  candidate/restore credential needs fresh secure entry or correction.
+- No customer/evaluation content, live Stripe object, production site, DNS, or
+  VPS was touched. The branch candidate's provider-backed File Search remains
+  unverified until its own embeddings credential works and a member retrieval
+  test passes.
