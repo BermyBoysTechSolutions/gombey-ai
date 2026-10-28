@@ -36,11 +36,11 @@ verified yet.
    reconciled on 2026-10-28; use the signed proposal to confirm which tier and
    founding offer apply to a particular customer:
 
-   | Tier | Setup standard | Setup founding | Each 50% setup installment | Monthly standard | Monthly founding (first 12 months) |
+   | Tier / public offer | Setup standard | Setup founding | Each 50% setup installment | Monthly standard | Monthly founding (first 12 months) |
    |---|---:|---:|---:|---:|---:|
-   | Cloud Workspace | $2,500 | $1,995 | $997.50 / $997.50 | $399 | $349 |
-   | Workspace Appliance | $4,500 | $3,995 | $1,997.50 / $1,997.50 | $699 | $599 |
-   | Private Local AI | $7,500 | $6,995 | $3,497.50 / $3,497.50 | $1,499 | $1,299 |
+   | Plus — Cloud Workspace (VPS, cloud inference) | $2,500 | $1,995 | $997.50 / $997.50 | $399 | $349 |
+   | Pro — Workspace Appliance (SER5, cloud inference) | $4,500 | $3,995 | $1,997.50 / $1,997.50 | $699 | $599 |
+   | Max — Private Local AI (customer-owned local-inference hardware) | $7,500 | $6,995 | $3,497.50 / $3,497.50 | $1,499 | $1,299 |
 
    The founding setup price is $505 below standard for each offer; the
    published monthly founding rate is also discounted for the first 12 paid

@@ -5,6 +5,11 @@ It is an implementation worksheet, not a contract, security certification, or
 guarantee that an untested production VPS is ready. Copy the completed choices
 into the customer's signed proposal before provisioning.
 
+Cloud Workspace is the Plus tier: a dedicated VPS with cloud inference. Pro is
+the SER5-hosted Workspace Appliance with cloud inference; Max is the
+customer-owned local-inference hardware offer. This worksheet covers Plus only;
+the Pro and Max hardware acceptance gates remain separate.
+
 ## 1. Customer and workflow
 
 - Customer legal/business name: `[complete with customer]`

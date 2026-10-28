@@ -5,9 +5,9 @@ the service is ready for unrestricted production use.
 
 ## Proposed first-sale boundary
 
-The safest initial offer is one dedicated customer deployment, with separate
-admin/member accounts, an admin-managed shared knowledge agent, private member
-chats, and a customer-owned model-provider account. This is not pooled
+The safest initial offer is the dedicated Cloud Workspace (Plus) deployment,
+with separate admin/member accounts, an admin-managed shared knowledge agent,
+private member chats, and a customer-owned model-provider account. This is not pooled
 multi-tenant SaaS, a shared inbox, local inference, or an autonomous workflow
 platform. The customer and the VPS operator remain privileged administrators
 of their infrastructure.
@@ -23,6 +23,15 @@ middle tier; and a workload-benchmarked Mac Studio, DGX Spark, or Strix
 Halo-based workstation for local inference at the highest tier. This is the
 intended product design, not a tier mismatch. Device cost and scope remain
 separately quoted and acceptance-gated.
+
+The current public and active Stripe product titles are descriptive, with this
+owner-confirmed tier mapping: **Plus → Cloud Workspace** (dedicated VPS, cloud
+inference); **Pro → Workspace Appliance** (SER5-hosted workspace, cloud
+inference); **Max → Private Local AI** (customer-owned Mac Studio, DGX Spark,
+or Strix Halo-class hardware, local inference for a benchmarked workflow).
+The live website uses the descriptive titles; older inactive Stripe records
+named Plus/Pro/Max are not additional active offers and do not change this
+intended hardware progression.
 
 ## Verified locally
 
@@ -316,7 +325,7 @@ after the corresponding implementation and acceptance test.
 ### Read-only public pricing and Stripe reconciliation (2026-10-28)
 
 - The public page and the connected live Gombey Tech catalog currently agree
-  on descriptive tier names and prices: Cloud Workspace ($2,500 standard /
+  on descriptive offer names and prices: Cloud Workspace / Plus ($2,500 standard /
   $1,995 founding setup; $399 standard / $349 founding monthly), Workspace
   Appliance ($4,500 / $3,995 setup; $699 / $599 monthly), and Private Local AI
   ($7,500 / $6,995 setup; $1,499 / $1,299 monthly).
@@ -325,11 +334,13 @@ after the corresponding implementation and acceptance test.
   three-redemption limit per coupon. The website's “first three deployments”
   cap is therefore enforced globally by the operator, not by a single Stripe
   limit.
-- The current offer is the Cloud Workspace / Workspace Appliance / Private
-  Local AI catalog and its published prices above. The latest “Gombey AI
-  Economics” thread reconciled Stripe to the public offer and archived the
-  earlier Plus/Pro/Max catalog. Treat older Plus/Pro/Max and $1,000 setup-only
-  discount directions as historical, not the active offer.
+- The current public catalog is Cloud Workspace / Workspace Appliance / Private
+  Local AI. The owner-confirmed Plus / Pro / Max tier shorthand maps to those
+  offers in the order shown above; it describes the intended VPS, SER5, and
+  local-inference progression, not a different hardware or pricing ladder.
+  Older inactive Stripe product records named Plus / Pro / Max are historical
+  catalog entries. The earlier $1,000 setup-only discount direction is also
+  historical; use the currently published setup and monthly prices above.
 - On 2026-10-27, the capability-bounded copy from website commit `dec345b` was
   promoted to Vercel production deployment `dpl_6vwirUwoQtYfnwfngaj1pmq6XtCN`.
   A post-deploy HTTP 200 check confirmed the revised boundaries and all setup
@@ -450,14 +461,12 @@ applicable gates above have evidence.
   The advertised “first three deployments” cap is not a Stripe-enforced global
   cap and must be tracked across all tiers by the operator unless the offer is
   redesigned.
-- Correction from the 06:14 EDT expanded coupon read: the earlier
-  non-expanded response was insufficient to determine product scope. All
-  three live coupons do have `applies_to` lists, each matching its
-  corresponding active product; all three were valid and unused
-  (`times_redeemed=0`) and each promotion code allows three redemptions. Keep
-  monthly links inactive until sandbox tests prove each code is accepted for
-  its matching product and rejected for the other two. The site's
-  first-three-deployments cap is still manual across tiers. See [Stripe coupon
+- Historical coupon-scope correction: an earlier expanded-response read was
+  interpreted as showing product restrictions. Subsequent direct GETs of the
+  three coupon objects returned no `applies_to` field and supersede that
+  interpretation. Treat the coupons as unscoped; do not share or apply them
+  until scoped replacements pass cross-tier sandbox tests. The site's
+  first-three-deployments cap remains manual across tiers. See [Stripe coupon
   product restrictions](https://docs.stripe.com/billing/subscriptions/coupons).
 - The current GETs show six products total (three current active products and
   three inactive historical Plus/Pro/Max products), 15 active prices (standard
@@ -640,14 +649,17 @@ applicable gates above have evidence.
   provider-key UI, or the owner deliberately chooses and tests a centrally
   managed customer key model.
 - Read-only production review of `gombeytech.com` and the connected live Stripe
-  catalog confirms the current approved offer is Cloud Workspace, Workspace
-  Appliance, and Private Local AI—not the earlier Plus/Pro/Max draft. The page
+  catalog confirms the active descriptive offer titles are Cloud Workspace,
+  Workspace Appliance, and Private Local AI. The owner's Plus / Pro / Max
+  shorthand maps to those three offers in that order; it is not a conflicting
+  hardware ladder. The page
   shows Cloud at $399/$349 monthly and $2,500/$1,995 setup; Appliance at
   $699/$599 monthly and $4,500/$3,995 setup; Local AI at $1,499/$1,299 monthly
   and $7,500/$6,995 setup. The three active Stripe products and their active
   standard/founding prices match those published figures. The setup reductions
   are $505 each; the launch monthly reductions run for 12 months. Earlier
-  Plus/Pro/Max products are inactive and are not the current offer.
+  Older Stripe product records named Plus/Pro/Max are inactive; the current
+  active public/Stripe product titles remain the descriptive names above.
 - The website remains call-first. Setup is described as 50% at kickoff and 50%
   at accepted delivery; recurring service is scheduled to begin 30 days after
   delivery, subject to written terms and saved-payment-method consent. This
@@ -990,11 +1002,11 @@ applicable gates above have evidence.
   after accepted delivery, its first payment would be attempted 30 days after
   that second checkout; it is not an automatic continuation of the kickoff
   payment. No active subscription was found.
-- The initial unexpanded coupon responses omitted `applies_to`, so product
-  scope was not established at this point in the audit. A later expanded
-  read-only retrieval (recorded below) confirmed that each coupon is restricted
-  to its matching product. The codes still have separate three-redemption
-  ceilings, so the three-deployment cross-tier cap remains operator-enforced.
+- At this earlier point in the audit, an expanded coupon response was read as
+  showing product restrictions. Later direct GETs returned no `applies_to`
+  field and supersede that reading; the coupons are treated as unscoped in the
+  latest billing safety correction below. Each code's redemption ceiling is
+  separate, so the three-deployment cross-tier cap remains operator-enforced.
 - Stripe Tax Settings remain `pending` because `head_office` is missing, with
   zero tax registrations. The live account is still the only connected Stripe
   account. No Stripe, website, VPS, DNS, or customer-data state was changed.
@@ -1156,12 +1168,13 @@ applicable gates above have evidence.
   of $2,500/$4,500/$7,500, founding totals of $1,995/$3,995/$6,995, and
   standard monthly prices of $399/$699/$1,499. Setup is represented by two
   one-time installments per option; no price changed in this check.
-- Expanded reads of all three valid repeating coupons confirm they are
-  restricted to their matching product and discount monthly prices by
-  $50/$100/$200 for 12 cycles. Each associated promotion code permits three
-  redemptions; the website's first-three-deployments cap is still a global
-  operator rule, not one shared Stripe redemption cap. This corrects earlier
-  notes based on coupon responses that did not expand `applies_to`.
+- An earlier expanded-response interpretation said the three repeating
+  coupons were product-restricted and discount monthly prices by $50/$100/$200
+  for 12 cycles. Direct GETs later returned no `applies_to` field; that direct
+  retrieval supersedes the earlier interpretation. Do not share or apply the
+  codes until product-scoped replacements pass sandbox tests. Each associated
+  promotion code has its own three-redemption cap; the website's first-three-
+  deployments limit is still a global operator rule.
 - Three active live Payment Links collect only the founding kickoff halves
   ($997.50/$1,997.50/$3,497.50); there is no active delivery-balance link.
   The three monthly links remain inactive. Each monthly link requires a
@@ -2121,8 +2134,10 @@ applicable gates above have evidence.
 - The only Stripe account available to Codex is Gombey Tech live mode; the
   Stripe CLI is not installed. Do not rehearse this process in live mode. A
   connected Stripe sandbox/test-mode account is required before the billing
-  rehearsal. The three retired Plus/Pro/Max product records are inactive; no
-  cleanup write was made.
+  rehearsal. Older Stripe product records named Plus/Pro/Max are inactive;
+  those historical records are distinct from the owner's current Plus/Pro/Max
+  shorthand for the active descriptive offer titles. No cleanup write was
+  made.
 - Stripe returned zero Tax registrations. Product tax behavior/tax codes do
   not themselves register the business or ensure tax collection. Do not enable
   automatic tax based on this catalog alone; confirm obligations and register
@@ -3205,3 +3220,47 @@ applicable gates above have evidence.
   reuse agreement or recurring subscription data; do not send them as an
   automated setup-plus-subscription flow. No Stripe settings, coupons, codes,
   links, or payments were changed.
+
+## Continuation checks and source-of-truth clarification — 2026-10-28
+
+- The owner reconfirmed the intended tier ladder: Plus is the dedicated VPS
+  offer with cloud inference; Pro deploys the workspace on a Beelink SER5 but
+  still uses cloud inference; Max is a separately scoped local-inference
+  workstation offer, with Mac Studio, NVIDIA DGX Spark, or Strix Halo-class
+  options. These are deliberate deployment differences, not a Pro/Max swap.
+  The public product titles remain Cloud Workspace, Workspace Appliance, and
+  Private Local AI, respectively.
+- Fresh local regression on the pushed worktree passed
+  `scripts/test_customer_init.sh`, `scripts/test_customer_preflight.sh`,
+  `scripts/test_customer_backup.sh`, all 16 Python checks, all 10 Node checks,
+  and `git diff --check`. Four local loopback test APIs (ports 3083–3086)
+  returned HTTP 200 for `/health` and `/login`; no running stack was restarted.
+- The current-stack checkout mounted on external storage is detached at
+  `b2b5767`. A read-only comparison shows its runtime-defining Compose, app
+  configuration, and patch files match this pushed branch; its customer
+  preflight script and documentation are older. Therefore the runtime smoke
+  checks are relevant, but they do not mean the exact branch preflight was run
+  inside the container. Run the pushed branch preflight before a new deployment.
+- The current-branch API stack has provider-key placeholders and its RAG
+  container has no embeddings key. No current-branch provider-backed chat or
+  File Search request was run in this continuation; earlier synthetic member
+  and owner-key results remain distinct evidence and do not prove customer
+  billing ownership.
+- A stale synthetic `npm run create-user` process was found in the isolated
+  candidate. Its target `example.invalid` user did not exist; the exact test
+  command was stopped and the account was verified absent. No user account or
+  customer data was deleted.
+- Fresh read-only Stripe checks confirm the three active product descriptions
+  match the owner's intended VPS/cloud, SER5/cloud, and local-hardware ladder.
+  Active founding kickoff links still collect only the correct 50% setup halves
+  ($997.50 / $1,997.50 / $3,497.50); they have automatic tax enabled, no
+  saved-method reuse consent, and no subscription data. The three monthly
+  links remain inactive. Direct GETs of all three live coupons again returned
+  no `applies_to`; they are not product-restricted. Stripe Tax is `pending`
+  because the head-office address is missing, and there are zero active
+  registrations. Only the live account is connected; no sandbox or billing
+  object was created, and no live setting was changed.
+- Still no public VPS acceptance, approved customer hostname/spend, confirmed
+  tax treatment, sandbox billing rehearsal, or customer-owned model/embedding
+  billing proof. Do not send live payment links or load customer data until
+  those applicable gates pass.
