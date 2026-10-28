@@ -22,6 +22,37 @@ record, not in this reusable source file.
 - Agree support channel, business hours/time zone, monthly support cap, and
   response target. The response target is not a resolution or uptime guarantee.
 
+## Founding-offer cap (operator-controlled)
+
+The public offer is limited to the first three deployments across all tiers.
+Stripe's launch coupons and codes are product-specific, with a three-use limit
+per tier; they do not enforce one shared three-customer cap. The three current
+founding kickoff links are reusable and have no Stripe completion restriction.
+Do not publish them on the website, in an email signature, or in a reusable
+campaign template.
+
+- Keep a three-slot register in an access-controlled operator record outside
+  GitHub. Track slot number, tier, proposal reference, status (available,
+  held, assigned, or released), proposal-valid-through date, kickoff-link
+  share time, payment status, subscription enrollment date, and matching
+  monthly promotion code. Do not store payment details, provider keys, or
+  customer documents in this register.
+- Confirm availability before offering the founding price. Place a hold when
+  issuing the written proposal and use its stated validity; mark the slot
+  assigned only after the scope is accepted and kickoff payment clears. Release
+  a declined or expired hold. Share only the matching tier's private kickoff
+  link after confirming its slot, and later use its matching monthly code at
+  the separate subscription enrollment. The monthly code is not a substitute
+  for customer consent to recurring billing.
+- After three slots are assigned, stop sharing all founding kickoff links and
+  quote standard pricing for new clients. Stripe will not enforce this
+  cross-tier cap. If an assigned customer cancels or receives a refund, record
+  the event and have the owner decide whether the slot reopens.
+- The live kickoff links currently have automatic tax enabled while the live
+  account reports no active tax registrations. Do not send them until the
+  owner/accountant confirms the applicable tax treatment and the required
+  Stripe sandbox billing rehearsal has passed.
+
 ## Provision and secure
 
 1. Create a fresh per-customer checkout/release and unique Compose project.

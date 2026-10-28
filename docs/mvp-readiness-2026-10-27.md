@@ -1402,6 +1402,12 @@ applicable gates above have evidence.
   delivery, but Stripe does not tie that event to the earlier setup payment.
   Therefore the setup checkout does not automatically schedule a charge
   30 days after delivery. No Stripe objects or settings were changed.
+- The three active founding kickoff links have no completion restriction. The
+  per-tier three-use coupons/codes do not enforce the website's global cap of
+  three deployments across all tiers. Added an operator-only allocation
+  procedure to deploy/customer/OPERATIONS-HANDOFF.md: keep the links private,
+  track three slots outside GitHub, verify a slot before offering the rate,
+  and stop sharing founding links after the third allocation.
 - Explicit reruns passed: customer-init, customer-preflight, customer-backup
   safety, RAG fail-closed (4 tests), embeddings-key helper (7 tests), and
   git diff --check. Root-level python3 -m unittest discover found no tests and
