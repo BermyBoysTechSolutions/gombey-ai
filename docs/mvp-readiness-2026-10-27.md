@@ -2682,3 +2682,38 @@ applicable gates above have evidence.
   data, external provider keys, customer data, billing records, or Stripe state
   were changed. These local checks still do not establish public VPS exposure,
   customer-provider billing, or payment/deferred-subscription acceptance.
+
+## Provider-backed RAG smoke and Stripe CLI preparation — 2026-10-28 16:25 EDT
+
+- The isolated candidate RAG container was configured for the OpenRouter
+  embeddings endpoint and `openai/text-embedding-3-small`. Ran the repository's
+  one-request synthetic smoke test: embedding returned HTTP 200, the exact
+  marker was retrieved only in its own scope, and the vector was deleted and
+  confirmed absent afterward. The credential was never printed or changed.
+  This proves the configured embedding credential/endpoint can answer now; it
+  is not a member-visible long-document/File Search test or a customer usage
+  billing reconciliation.
+- Installed the official Stripe CLI v1.55.3 ARM64 release under the external
+  SSD's `Gombey Tools` directory after verifying its SHA-256 against the
+  release checksum. Homebrew installation was blocked by the machine's
+  unaccepted Xcode license, so no license acceptance or sudo command was run.
+- No Stripe CLI login, sandbox creation, or account mutation was attempted.
+  The Stripe connector still exposes only the live Gombey Tech account; a
+  sandbox-authenticated billing rehearsal remains open. Do not test billing
+  against live mode.
+
+## Deferred-billing API shape and safe sandbox path — 2026-10-28 16:27 EDT
+
+- Read-only Stripe API schema review confirms `POST /v1/payment_links` accepts
+  `payment_intent_data.setup_future_usage=off_session`; Checkout displays that
+  saved-payment/future-use notice and attaches the method when the link creates
+  or is given a Stripe Customer. Stripe's Dashboard also exposes “Save payment
+  details for future use” in Payment Link advanced options. This supports the
+  prepared billing plan, but the existing live kickoff links lack that setting
+  and were not modified. See [Stripe Payment Link customization](https://docs.stripe.com/payment-links/customize)
+  and [saving payment details during Checkout](https://docs.stripe.com/payments/checkout/save-during-payment?ui=full-page).
+- Stripe CLI v1.55.3 help confirms a managed sandbox created after account
+  login defaults to copying live settings/data; a blank sandbox requires
+  explicit `--create-blank` and a country. No account login or sandbox was
+  created. Before creating one, authenticate the CLI and choose a blank test
+  environment deliberately; never copy live customer data into test.
