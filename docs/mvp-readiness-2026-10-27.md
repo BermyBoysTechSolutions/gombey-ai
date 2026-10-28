@@ -259,6 +259,27 @@ applicable gates above have evidence.
   provider-specific secure path, and the prior key's revocation must be
   confirmed before any further provider call.
 
+## Local staging recheck (2026-10-28)
+
+- Re-ran `bash scripts/test_customer_init.sh`,
+  `bash scripts/test_customer_preflight.sh`, and the scripts' Python unittest
+  suite: all passed (six Python tests).
+- The active staging API and isolated restore API both returned HTTP 200 at
+  their loopback health endpoints. Docker reports the staging API, RAG API,
+  MongoDB, and pgvector healthy; the restore API, MongoDB, and pgvector are
+  healthy. The deployment ports remain bound to loopback, not public network
+  interfaces.
+- Read-only inspection found three synthetic accounts, one shared agent, and
+  zero records in LibreChat's user-key collection. The staging environment
+  still has placeholders for both the OpenRouter chat key and RAG embeddings
+  key. Therefore no second-member provider-backed answer, semantic retrieval,
+  citation, or provider-billing check has passed in the current staging state.
+  The earlier one-user synthetic Qwen smoke test remains historical evidence,
+  not evidence that this current staging database has a usable provider key.
+- Hostinger VPS inventory read was requested but did not return during this
+  check; no purchase or other Hostinger write was made. Production VPS
+  acceptance is still pending explicit hostname and spend approval.
+
 ## Continuation audit (2026-10-28)
 
 - Current local cloud staging and the separate restored-copy stack both
