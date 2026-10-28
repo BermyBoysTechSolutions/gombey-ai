@@ -3348,3 +3348,35 @@ applicable gates above have evidence.
   end hardware such as Mac Studio, DGX Spark, or Strix Halo for local
   inference. Preserve this distinction in future offer edits. Visual UI
   acceptance and production VPS/DNS/TLS validation remain open.
+
+## Fresh runtime-isolation and Stripe catalog audit — 2026-10-28
+
+- Rechecked the public pricing page and the live Gombey Stripe catalog
+  read-only. They agree on the intended mapping: Plus / Cloud Workspace is
+  VPS + cloud inference; Pro / Workspace Appliance is SER5 + cloud inference;
+  Max / Private Local AI is local inference on selected hardware. Current
+  public/Stripe standard and founding setup amounts are $2,500/$1,995,
+  $4,500/$3,995, and $7,500/$6,995. Standard monthly rates are $399/$699/
+  $1,499; founding monthly rates are $349/$599/$1,299 for 12 months. No offer
+  or Stripe catalog changes were made.
+- Fresh read-only pairwise deployment-isolation checks passed across the
+  current staging stack, the candidate stack, and the backup-restore copy.
+  Docker networks and persistent roots are disjoint; cross-project DNS and
+  private TCP access to API, MongoDB, Meilisearch, pgvector, and RAG are
+  blocked; internal services publish no host ports. Candidate `/health` and
+  `/login`, plus login routes on ports 3083, 3084, and 3086, returned HTTP 200.
+- Live Stripe still has only three active one-time kickoff links: the correct
+  50% founding deposits. They have no subscription data or explicit
+  future-use payment-method setup, and have automatic tax enabled. The three
+  monthly subscription links remain inactive; each uses its standard monthly
+  Price, requires a payment method, and starts a 30-day trial only when a
+  customer completes that later checkout. No subscription schedules exist, so
+  setup-payment-to-subscription automation is not configured.
+- The three founding monthly coupons are active for 12 months ($50/$100/$200
+  off) and each permits three redemptions, but their coupons have no
+  product-application restriction; they do not enforce a single shared
+  first-three-customer cap. Stripe's live Tax Registration list is empty. Keep
+  the monthly links and codes unshared until a separate Stripe sandbox
+  rehearsal, product-scope correction, customer consent flow, and
+  owner/accountant-confirmed tax treatment are complete. No Stripe object or
+  setting was changed, no customer data was read, and no charge was created.

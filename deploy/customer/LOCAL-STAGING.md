@@ -1283,3 +1283,25 @@ confirmed revoked and replaced.
   cloud inference; Max is local inference on hardware such as Mac Studio, DGX
   Spark, or Strix Halo. This is the intended tier ladder. Visible UI
   acceptance and production VPS/DNS/TLS validation remain open.
+
+## Fresh cross-deployment and Stripe state check — 2026-10-28
+
+- Re-ran the read-only isolation check across all pairs of the current staging,
+  candidate, and backup-restore Compose deployments. Every pair passed:
+  disjoint Docker networks and data roots, own-service DNS resolution,
+  cross-deployment DNS/TCP denial for API/MongoDB/Meilisearch/pgvector/RAG,
+  and no host-published internal-service ports.
+- Candidate `/health` and `/login` returned HTTP 200; login routes on staging
+  ports 3083, 3084, and 3086 returned HTTP 200. No container was restarted.
+- Read-only comparison of the live site and Stripe catalog found their current
+  three deployment models and all standard/founding amounts aligned. Plus is
+  VPS/cloud, Pro is SER5/cloud, and Max is selected local-inference hardware;
+  no offer or price was changed.
+- Stripe's three active links collect only founding kickoff deposits and do
+  not create subscriptions or explicitly set up a saved method for later
+  subscription charging. The monthly
+  links are inactive with a 30-day trial requiring customer checkout. Their
+  founding monthly coupons lack product restrictions, and the live account
+  currently has no tax registrations. Keep billing links/code distribution
+  gated on sandbox, consent, product-scope, and tax review; no live billing
+  setting or object was changed.
