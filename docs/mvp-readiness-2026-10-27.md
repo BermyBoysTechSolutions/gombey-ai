@@ -279,9 +279,17 @@ applicable gates above have evidence.
   citation, or provider-billing check has passed in the current staging state.
   The disposable-user Qwen smoke recorded below remains historical evidence,
   not evidence that this current staging database has a usable provider key.
-- Hostinger VPS inventory read was requested but did not return during this
-  check; no purchase or other Hostinger write was made. Production VPS
-  acceptance is still pending explicit hostname and spend approval.
+- Hostinger read-only inventory/catalog API requests did not return during this
+  check; no account-specific order quote or existing VPS inventory was
+  verified. The current public [Hostinger VPS page](https://www.hostinger.com/vps-hosting?lang=en)
+  lists KVM 2 at 2 vCPU / 8 GB RAM / 100 GB NVMe, prepaid at $210.96 for 24
+  months and renewing at $14.99 per month for the same term. KVM 4 is 4 vCPU /
+  16 GB / 200 GB, prepaid at $311.76 for 24 months and renewing at $28.99 per
+  month for the same term. KVM 2 is the template's minimum-size candidate, not
+  a load-tested or approved purchase; prices exclude VAT and an account quote
+  and billing term must be checked in hPanel. No purchase or other Hostinger
+  write was made. Production VPS acceptance is still pending explicit
+  hostname and spend approval.
 
 ## Disposable member Qwen smoke (2026-10-27; historical)
 
