@@ -236,6 +236,13 @@ separately quoted and acceptance-gated.
   embeddings-key setter (7 tests), and File Search depth patch (5 tests) all
   passed against the candidate source at `820e4b7`. The pre-existing untracked
   `tmp/` directory was left untouched.
+- Continuation regression on 2026-10-28 after adding targeted session
+  revocation: customer-init, customer-preflight, and encrypted-backup safety
+  passed; all 16 Python unit tests and all 10 Node tests passed. Customer
+  preflight now also validates the production Compose configuration using
+  generated synthetic settings, in addition to its existing loopback-overlay
+  validation. `git diff --check` and the session-helper syntax check passed.
+  These are configuration/unit checks; no running service was restarted.
 
 ## Remaining go/no-go gates for the cloud workspace
 
@@ -450,6 +457,30 @@ applicable gates above have evidence.
   this workflow to the live account for rehearsal, and do not claim deferred
   subscription billing is automated until a sandbox test-clock run and the
   required signed-webhook lifecycle handling pass.
+
+### Fresh Stripe read-only verification (2026-10-28)
+
+- The connected Stripe context is the live Gombey Tech account only; no
+  sandbox is currently exposed to this session. Three active products still
+  match the intended deployment ladder: Cloud Workspace (VPS + cloud
+  inference), Workspace Appliance (on-site SER5 + cloud inference), and
+  Private Local AI (customer workstation + local inference). The product
+  descriptions explicitly distinguish the SER5 from a local-inference
+  promise, and all three products have an image.
+- Their default recurring prices are the standard monthly rates ($399, $699,
+  and $1,499). The three active Payment Links each contain only the matching
+  tier's founding kickoff installment ($997.50, $1,997.50, and $3,497.50).
+  They have no subscription data, and `payment_method_collection` is
+  `if_required`; they do not enroll the customer in a subscription or
+  guarantee a saved payment method for a later charge.
+- All three active links still report `automatic_tax.enabled=true`, but a
+  fresh active-registration list returned zero registrations. Do not tell a
+  customer that tax is being collected until the owner and tax professional
+  confirm applicable obligations and the relevant Stripe registrations are
+  active. No tax settings or live billing objects were changed.
+- A Stripe account-management page was opened in the Codex browser so the
+  owner can add/connect a separate blank sandbox. Billing rehearsal remains
+  blocked until that test context is connected; do not use live mode for it.
 
 ## Member authorization and local deployment-isolation recheck (2026-10-27)
 

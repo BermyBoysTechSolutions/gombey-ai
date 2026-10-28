@@ -52,6 +52,13 @@ chmod 600 "$VALID_ENV.tmp"
 mv "$VALID_ENV.tmp" "$VALID_ENV"
 GOMBEY_CUSTOMER_ENV_PATH="$VALID_ENV" bash "$PREFLIGHT_SCRIPT" >/dev/null
 
+# Validate the production Compose stack as well as the loopback-only local
+# overlay. Both checks use generated synthetic configuration and start no
+# containers.
+docker compose --env-file "$VALID_ENV" \
+  -f "$SCRIPT_DIR/../deploy/customer/compose.yaml" \
+  config --quiet
+
 # Ensure the loopback-only Mac staging overlay inherits the same resource
 # ceilings and never publishes the API beyond localhost.
 GOMBEY_LOCAL_DATA_ROOT="$TEST_ROOT/local-data" docker compose \
