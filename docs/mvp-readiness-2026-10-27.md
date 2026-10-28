@@ -2721,3 +2721,15 @@ applicable gates above have evidence.
   and queued in Codex's native browser. It has not been approved; no Stripe
   CLI account authorization or sandbox creation is complete. The one-time
   device code is intentionally not recorded here.
+
+## Reachable Git-history secret-pattern scan — 2026-10-28 16:29 EDT
+
+- Scanned every commit reachable from the fetched local/remote branches (239
+  commits) for common OpenAI/OpenRouter, Stripe secret/restricted/webhook,
+  GitHub, Slack, AWS access-key, Google API-key, and PEM private-key patterns.
+  No matches were found.
+- This is a high-confidence pattern scan, not a general-purpose secrets audit:
+  it cannot detect arbitrary passwords or unknown token formats, does not
+  inspect ignored configuration or the unrelated untracked `tmp/` directory,
+  and cannot cover remote refs that are not fetched locally. Rotate any
+  suspected credential regardless of this result.
