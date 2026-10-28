@@ -67,6 +67,9 @@ modelSpecs:
       preset:
         endpoint: openAI
         model: gpt-6-luna
+        # Set a practical prompt budget for long work while keeping routine
+        # chat history bounded; this is not the provider model's API ceiling.
+        maxContextTokens: 128000
     - name: gombey-openrouter-deepseek-v4-flash
       label: DeepSeek V4 Flash (OpenRouter test)
       description: Optional low-cost model for synthetic checks; requires the user's own OpenRouter key and does not replace the shared GPT-6 Luna agent.

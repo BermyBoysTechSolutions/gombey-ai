@@ -6,6 +6,8 @@ Use this as the reusable setup for the first customer pilot. Customize only the 
 
 - Name: `Company Knowledge Assistant`
 - Description: `Answers questions using the documents approved by your company administrator.`
+- Model: the customer's chosen provider/model, authenticated with their own provider account or API key
+- For the default GPT-6 Luna model, set **Maximum context tokens** to `128000`; for another model, use a budget no larger than that provider's documented context limit
 - Capability: File Search only
 - Sharing: `USER` role as Viewer within this customer's dedicated instance
 - Public sharing: Off

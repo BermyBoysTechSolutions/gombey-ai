@@ -195,9 +195,11 @@ The command prompts for credentials; do not put passwords in shell history or ou
 
 1. Sign in as the customer administrator and create one named company assistant.
 2. Enable only File Search for its capability; do not enable external actions or tools for this pilot.
-3. Upload the approved synthetic/customer-approved SOPs into the assistant's File Search knowledge.
-4. Share the assistant with the `USER` role as Viewer so all provisioned employees in this dedicated customer instance can use it. Do not share it publicly outside the authenticated instance.
-5. Members should see/use the assistant but not edit its instructions or source files. The administrator alone updates the knowledge set.
+3. Select the customer's chosen provider/model and authenticate it with the customer's own provider account or API key. Do not use a Gombey or operator credential.
+4. For GPT-6 Luna, set **Maximum context tokens** to `128000`; for another model, stay within its documented context limit. Verify the saved setting and run the long-document acceptance checks before inviting employees.
+5. Upload the approved synthetic/customer-approved SOPs into the assistant's File Search knowledge.
+6. Share the assistant with the `USER` role as Viewer so all provisioned employees in this dedicated customer instance can use it. Do not share it publicly outside the authenticated instance.
+7. Members should see/use the assistant but not edit its instructions or source files. The administrator alone updates the knowledge set.
 
 Use [the shared-agent template](shared-agent-template.md) for the repeatable instructions and quick retrieval checks. This provides admin-managed shared knowledge; employees must select the agent to use the shared corpus. It does not make every ordinary new chat automatically search the shared corpus, create shared Projects, or share conversations between users.
 
