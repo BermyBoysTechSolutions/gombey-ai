@@ -2269,3 +2269,23 @@ applicable gates above have evidence.
   commissioning and acceptance on the actual selected device. No tier, price,
   live Stripe setting, DNS record, production deployment, customer data, or
   provider credential was changed.
+
+## Stripe test-access recheck — 2026-10-28
+
+- The connected Stripe account listing currently exposes only Gombey Tech with
+  `livemode=true`. The Stripe CLI is not installed in this environment, so no
+  sandbox account or sandbox API context was available. No live API write,
+  checkout, invoice, subscription, or charge was made.
+- Rechecked the official Stripe billing/payment guidance against the prepared
+  rehearsal plan: a one-time Checkout payment does not by default make its
+  payment method reusable. Off-session reuse requires the appropriate
+  future-use setup plus explicit customer agreement to the timing, frequency,
+  amount basis, and cancellation terms. The test plan includes these gates and
+  the 30-day trial that begins only when the operator creates the subscription
+  after accepted delivery.
+- A source scan found no Gombey Stripe API client, webhook endpoint, or
+  subscription-creation code. The current onboarding remains an
+  operator-managed Stripe process; do not describe subscription creation or
+  payment-failure handling as automated. Sandbox rehearsal, live tax review,
+  and a confirmed payment-method consent flow remain no-go gates before sending
+  any live kickoff link.
