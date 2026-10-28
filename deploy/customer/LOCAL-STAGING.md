@@ -971,3 +971,17 @@ confirmed revoked and replaced.
   employees, and includes the matching acceptance check. The member agent
   permissions are now verified on the local candidate; interactive browser UX,
   customer-owned provider billing, and VPS acceptance remain open gates.
+
+## Local staging continuation check (2026-10-28)
+
+- Re-ran scripts/customer-rag-smoke.py against the primary staging RAG
+  container. Synthetic embedding, exact-marker retrieval, owner-scope check,
+  unrelated-scope isolation, deletion, and post-delete absence all passed;
+  no vector remains. The configured key is the owner's test credential, not a
+  customer credential.
+- Re-ran customer-init, customer-preflight, customer-backup safety,
+  RAG fail-closed (4), and embeddings-key helper (7); all passed. The default
+  root python3 -m unittest discover found no tests (exit 5), so only the
+  explicit script suites are counted.
+- No persistent staging configuration, customer data, production service,
+  Stripe setting, DNS, or VPS state was changed.

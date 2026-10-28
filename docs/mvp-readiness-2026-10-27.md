@@ -1380,3 +1380,37 @@ applicable gates above have evidence.
   passed. This still does not establish visible-browser member acceptance,
   customer-owned provider billing, Stripe sandbox/tax readiness, or public VPS
   security.
+
+## Continuation verification — 2026-10-28 12:10 UTC
+
+- Re-ran the primary local staging RAG smoke with synthetic text and its
+  configured owner test credential. Embed, own-scope lookup, unrelated-scope
+  isolation, retrieval of the exact marker, deletion, and post-delete absence
+  all returned the expected results (HTTP 200). No test vector remains. This
+  validates the local RAG service path, not customer-owned billing.
+- Re-read the live Stripe products, prices, coupons, all six payment-link
+  records, and active Tax registrations. Product prices and the three
+  product-scoped 12-month coupons still match the public offer; no coupons
+  have been redeemed. The three active links map to only the founding setup
+  kickoff halves: Cloud $997.50, Appliance $1,997.50, and Private Local AI
+  $3,497.50. Each has automatic tax enabled, but Stripe still reports no
+  active tax registrations. Hold these links pending owner/accountant review.
+- The three delivery-half setup prices exist, but there are no active links
+  for them. The separate monthly links remain inactive and require a separate
+  customer-authorized enrollment; they collect a payment method and start a
+  30-day trial at enrollment. Their metadata says to send after accepted
+  delivery, but Stripe does not tie that event to the earlier setup payment.
+  Therefore the setup checkout does not automatically schedule a charge
+  30 days after delivery. No Stripe objects or settings were changed.
+- Explicit reruns passed: customer-init, customer-preflight, customer-backup
+  safety, RAG fail-closed (4 tests), embeddings-key helper (7 tests), and
+  git diff --check. Root-level python3 -m unittest discover found no tests and
+  exited 5; it is not counted as a passing test suite.
+- The native Codex browser was opened to the isolated candidate login at
+  127.0.0.1:3085; no authenticated interaction was possible with the current
+  synthetic candidate credentials. The prior headless member-agent checks
+  remain valid, but a visible-browser walkthrough is still open.
+- No production app, public website, live Stripe state, VPS, DNS, or customer
+  data was changed. The MVP goal remains open on customer-owned provider proof,
+  Stripe sandbox and tax/consent rehearsal, off-device recovery, and approved
+  public VPS acceptance.
