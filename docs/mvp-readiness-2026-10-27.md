@@ -250,6 +250,35 @@ applicable gates above have evidence.
   currently has no billing webhook integration; pilot billing remains
   operator-managed until that exists and is tested.
 
+## Stripe account and live-link recheck (2026-10-28)
+
+- Read-only Stripe account discovery exposed only the live Gombey Tech
+  account; no sandbox/test-mode account is connected to this session. No
+  billing objects were created or changed during this check.
+- The live catalog still has three active products matching the public offer:
+  Cloud Workspace ($1,995 founding setup / $349 monthly for 12 months, then
+  $399), Workspace Appliance ($3,995 / $599 for 12 months, then $699), and
+  Private Local AI ($6,995 / $1,299 for 12 months, then $1,499). Setup is
+  split into two 50% one-time prices; the active base recurring prices are
+  standard rates with valid 12-month amount-off coupons for founding rates.
+- Three active Stripe Payment Links were found. Each collects only its tier's
+  50% founding kickoff installment; none has subscription data or schedules a
+  day-30 recurring charge. The public site remains call-first. Use those links
+  only after the proposal/scope and payment terms are agreed; the accepted-
+  delivery installment and deferred subscription still need an operator
+  workflow and a test-mode rehearsal.
+- Each tier's promotion code independently allows up to three redemptions.
+  The advertised “first three deployments” cap is not a Stripe-enforced global
+  cap and must be tracked across all tiers by the operator unless the offer is
+  redesigned.
+- The Payment Links report `automatic_tax.enabled=true`, but this alone does
+  not mean tax is being collected. Verify active tax registration for any
+  relevant jurisdiction before using a live checkout link or invoice.
+- Test-mode access is still the blocking billing prerequisite. Do not switch
+  this workflow to the live account for rehearsal, and do not claim deferred
+  subscription billing is automated until a sandbox test-clock run and the
+  required signed-webhook lifecycle handling pass.
+
 ## Member authorization and local deployment-isolation recheck (2026-10-27)
 
 - Two existing member-role accounts in the isolated restored copy each listed
