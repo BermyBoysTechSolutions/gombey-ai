@@ -69,6 +69,25 @@ record, not in this reusable source file.
   symptom, sanitized error, business impact, and whether a recent change
   occurred. Do not ask the customer to email prompts, documents, passwords, or
   API keys unless an approved secure channel and data-handling procedure exist.
+- Use this intake template in the agreed support channel; keep the report free
+  of credentials, customer documents, and unredacted prompt content:
+
+  ```text
+  Subject: [short symptom] — [workspace name]
+  Reported at (date/time/time zone):
+  Affected account(s) or workflow:
+  Business impact / is work blocked?:
+  What happened and expected result:
+  Sanitized error text or screenshot (redacted):
+  Steps to reproduce (if known):
+  Recent changes or last known good time:
+  Workaround tried / current workaround:
+  Is there a suspected security or data-exposure concern?:
+  ```
+
+- Acknowledge the report within the signed tier's business-hours response
+  target; separately estimate resolution. Confirm before work that would
+  exceed the included monthly allowance or signed workflow scope.
 - Record time against the included monthly support allowance. Notify the
   customer before exceeding it or starting out-of-scope work.
 - Distinguish a response-time target from a fix-time guarantee. Escalate
