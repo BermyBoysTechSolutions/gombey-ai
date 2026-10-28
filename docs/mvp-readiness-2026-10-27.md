@@ -2717,3 +2717,7 @@ applicable gates above have evidence.
   explicit `--create-blank` and a country. No account login or sandbox was
   created. Before creating one, authenticate the CLI and choose a blank test
   environment deliberately; never copy live customer data into test.
+- A separate Stripe CLI device-authorization request has now been initiated
+  and queued in Codex's native browser. It has not been approved; no Stripe
+  CLI account authorization or sandbox creation is complete. The one-time
+  device code is intentionally not recorded here.
