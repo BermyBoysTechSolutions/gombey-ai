@@ -979,3 +979,41 @@ applicable gates above have evidence.
   image builds until storage is reviewed; no VM or persistent data was moved.
 - This is staging-only evidence. Authenticated long-document/shared-agent
   member checks and public VPS acceptance remain open.
+
+## Live billing and website recheck — 2026-10-28 05:20 EDT
+
+- The latest economics decision and current public offer use Cloud Workspace,
+  Workspace Appliance, and Private Local AI. A fresh read-only Stripe check
+  confirms three active products and 15 active prices: standard setup totals
+  of $2,500/$4,500/$7,500, founding totals of $1,995/$3,995/$6,995, and
+  standard monthly prices of $399/$699/$1,499. Setup is represented by two
+  one-time installments per option; no price changed in this check.
+- Expanded reads of all three valid repeating coupons confirm they are
+  restricted to their matching product and discount monthly prices by
+  $50/$100/$200 for 12 cycles. Each associated promotion code permits three
+  redemptions; the website's first-three-deployments cap is still a global
+  operator rule, not one shared Stripe redemption cap. This corrects earlier
+  notes based on coupon responses that did not expand `applies_to`.
+- Three active live Payment Links collect only the founding kickoff halves
+  ($997.50/$1,997.50/$3,497.50); there is no active delivery-balance link.
+  The three monthly links remain inactive. Each monthly link requires a
+  payment method, starts its 30-day trial at that separate checkout, and
+  cancels at trial end if no method exists. Enrollment at accepted delivery
+  yields a first charge 30 days later; later enrollment moves that date later.
+  Monthly links still need the sandbox/visible-consent rehearsal before use.
+- All active kickoff links have automatic tax enabled, but the live account
+  has zero active Tax registrations. Stripe calculates tax only in
+  jurisdictions with an active registration; automatic-tax being enabled is
+  not evidence that tax will be collected. The monthly links currently have
+  automatic tax disabled. Keep live collection gated on the owner/accountant's
+  tax determination and correct account setup.
+- Published the previously reviewed billing-copy clarification to production:
+  Vercel deployment `dpl_CwaZtcCNxhUeUAazZ2x4ziMNKXZa` is Ready and aliased to
+  `gombeytech.com`. The page now says setup and subscription are separate
+  checkouts and explains the trial/first-charge timing. Prices, Stripe objects,
+  and payment links were not changed by this deploy.
+- No charge, invoice, subscription, VPS, DNS, or customer-data operation was
+  performed. Remaining gates include authenticated two-member long-document
+  UI acceptance, dedicated Stripe sandbox access and billing rehearsal, tax
+  review, and owner-approved VPS hostname/spend plus public network/restore
+  acceptance.
