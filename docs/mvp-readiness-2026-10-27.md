@@ -366,3 +366,16 @@ applicable gates above have evidence.
 - Production VPS acceptance, DNS/TLS, reboot persistence, public firewall
   checks, off-host backup/restore, and the member-key retrieval test remain
   open. No VPS was purchased or configured.
+
+## Staging operator control (2026-10-28)
+
+- Added a local owner-only wrapper on the external SSD for the primary
+  synthetic staging Compose project. Its supported actions are `start`,
+  `stop`, `status`, and `validate`; it pins the project name, Compose files,
+  loopback port, and SSD data root. It has no delete/down action and does not
+  print environment values. The Mac-specific wrapper is intentionally not
+  part of the repository.
+- Set the wrapper to mode 700. Its Compose validation passed, and its status
+  check confirmed the API is healthy at `127.0.0.1:3083`; MongoDB, pgvector,
+  Meilisearch, and the fail-closed RAG API are running without public host
+  ports. These checks did not restart or mutate the running deployment.
