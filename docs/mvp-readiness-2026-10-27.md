@@ -3053,3 +3053,33 @@ applicable gates above have evidence.
 - These checks establish local deployment separation only. They do not prove
   public VPS firewalling, DNS/TLS, customer-owned provider billing, successful
   public sign-in, or hardware-tier acceptance.
+
+## Public chat ingress and tier-intent confirmation — 2026-10-28
+
+- The owner reconfirmed the deployment ladder is intentional, not a mismatch:
+  Plus is a dedicated VPS running cloud inference; Pro deploys a Beelink SER5
+  Mini PC that runs the workspace but uses cloud inference; Max uses locally
+  benchmarked inference on customer hardware such as a Mac Studio, NVIDIA DGX
+  Spark, or Strix Halo. This matches the current offer matrix; no tier changes
+  were made.
+- Read-only Vercel inspection found the production `gombey-chat-proxy`
+  deployment (`dpl_Bx8g2BpJzZtEVAJoVRLH1owzJgRo`) is marked Ready but has no
+  linked Git repository/source. Its deployment artifact rewrites all paths to
+  a Cloudflare Quick Tunnel targeting the Mac mini's `127.0.0.1:3080` chat
+  origin. The local `com.gombeytech.chat-tunnel` launchd job is loaded, and
+  the local origin returned HTTP 200 for `/health` and `/login`.
+- A fresh public smoke check passed: `chat.gombeytech.com` returned HTTP 200
+  for `/`, `/health`, `/login`, and `/api/config`; unauthenticated requests to
+  `/api/user`, `/api/agents`, and `/api/models` returned HTTP 401. The active
+  Quick Tunnel target also returned HTTP 200 for `/health`, `/login`, and
+  `/api/config`. A first probe timed out before retries passed, so this is a
+  point-in-time check, not an uptime guarantee.
+- This public path is the personal/demo Mac mini ingress, not the customer
+  deployment template or a dedicated customer tenant. A Quick Tunnel is not
+  the stable production endpoint to promise for a client. No Vercel, tunnel,
+  DNS, or Mac service settings were changed. Before customer launch, put the
+  customer instance on its approved VPS hostname and validate its own DNS,
+  TLS, firewall, authentication, backup, restore, and provider billing.
+- The Vercel project should also be brought under source control before it is
+  treated as maintainable production infrastructure. No live deployment or
+  customer data was touched during this audit.
