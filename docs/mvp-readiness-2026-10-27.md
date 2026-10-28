@@ -962,7 +962,9 @@ applicable gates above have evidence.
 - This proves the RAG service's configured embedding/query path and basic
   entity scoping only. It does not prove shared-agent permissions, long-PDF
   retrieval, member-facing citations, or provider privacy. No corpus or
-  customer data was uploaded; no production services changed.
+  customer data was uploaded; no production services changed. The positive
+  smoke sent one tiny synthetic text to the configured embeddings provider
+  (potentially metered); it did not run a chat-model completion.
 
 ## Fail-closed RAG integration and storage audit — 2026-10-28 05:11 EDT
 
