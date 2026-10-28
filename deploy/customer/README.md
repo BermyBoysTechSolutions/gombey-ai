@@ -107,28 +107,55 @@ docker compose --env-file deploy/customer/.env \
 
 The normal `.env` keeps `ALLOW_REGISTRATION=false`, and the normal Compose file does not publish the API port. Do not change those protections. The bootstrap overlay binds only to `127.0.0.1`; do not alter it to `0.0.0.0`.
 
-## Restrict member agent permissions before adding employees
+## Apply the base-pilot member permission profile before adding employees
 
 The YAML setting `interface.agents.public: false` prevents instance-wide
 publishing, but it does not disable agent creation for the `USER` role. On a
 fresh database, sign in as the customer `ADMIN`, open the Agents side panel,
-and choose **Admin Settings** in its footer. Select the `USER` role and save:
+and choose **Admin Settings** in its footer. Select the `USER` role and save
+the least-privilege profile below. The base cloud workspace is a shared,
+admin-managed File Search assistant; it is not an automation or connector tier.
 
 - **Use agents:** on (members need to use the shared Company Knowledge Assistant)
 - **Create agents:** off
 - **Share agents:** off
 - **Share agents publicly:** off
+- **File Search and citations:** on
+- **MCP server use/create/share:** off
+- **Skills use/create/share:** off
+- **Schedules use/create:** off
+- **Run code:** off
+- **Web search:** off
 
 Keep the `ADMIN` role's create/manage permissions enabled. These are persisted
 role permissions in MongoDB, not represented by the instance-wide YAML switch;
 apply and verify them after each fresh database seed, and recheck them after an
-upgrade or restore before inviting members. Do not set a global
+upgrade or restore before inviting members. Add MCP, skills, schedules, code
+execution, or web search only when that customer's scope explicitly includes
+them and they have been separately tested. Do not set a global
 `interface.agents.create: false`, which would also block the administrator.
 
-The equivalent supported API update is `PUT /api/roles/USER/agents` with
-`{"USE":true,"CREATE":false,"SHARE":false,"SHARE_PUBLIC":false}`. Use an
-authenticated admin session; never place its bearer token in a saved command
-or shared log.
+The equivalent supported admin API is `PATCH
+/api/admin/roles/USER/permissions` with this body:
+
+```json
+{
+  "permissions": {
+    "AGENTS": { "USE": true, "CREATE": false, "SHARE": false, "SHARE_PUBLIC": false },
+    "MCP_SERVERS": { "USE": false, "CREATE": false, "SHARE": false, "SHARE_PUBLIC": false, "CONFIGURE_OBO": false },
+    "SKILLS": { "USE": false, "CREATE": false, "SHARE": false, "SHARE_PUBLIC": false },
+    "SCHEDULES": { "USE": false, "CREATE": false },
+    "RUN_CODE": { "USE": false },
+    "WEB_SEARCH": { "USE": false },
+    "FILE_SEARCH": { "USE": true },
+    "FILE_CITATIONS": { "USE": true }
+  }
+}
+```
+
+Use an authenticated admin session for role changes; never place its bearer
+token in a saved command or shared log. Verify the saved settings and exercise
+the shared-agent routes as a `USER` member before inviting employees.
 
 For local staging, chat-provider BYOK keys are entered by each authorized test
 user in LibreChat; do not put personal or future-client chat keys in the shared

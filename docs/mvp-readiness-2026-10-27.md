@@ -1671,3 +1671,24 @@ applicable gates above have evidence.
   result does not substitute for that test.
 - No live payment, Stripe object, production website, DNS, VPS, or customer
   data was changed.
+
+## Base-pilot role least-privilege verification — 2026-10-28
+
+- Set the `USER` role on the isolated branch candidate to allow shared-agent
+  use and File Search/citations while denying agent creation/sharing, MCP
+  servers, skills, schedules, code execution, and web search. The candidate
+  remains a synthetic two-account database with no agent or customer files;
+  its `ADMIN` role was left unchanged.
+- Applied that profile to the restored synthetic workspace and tested every
+  existing member. All four members listed and opened the shared Juniper &
+  Slate assistant (HTTP 200) and were denied its expanded configuration and
+  version history (HTTP 403). MCP server, schedule, and skill list requests
+  returned HTTP 403. The admin retained HTTP 200 access.
+- The assistant's only configured tool is File Search. Both deployments use
+  the same pinned LibreChat image digest. This closes the role and shared-agent
+  authorization checks for the base pilot, but not provider-backed member
+  chat, vector ingestion, grounded citations, or the visible-browser flow.
+- The credential-entry prompt remains a user-side gate: candidate chat and
+  embedding keys are still absent or placeholders. No key was read from an
+  older profile or printed. No live Stripe, public site, DNS, VPS, or customer
+  data was changed.

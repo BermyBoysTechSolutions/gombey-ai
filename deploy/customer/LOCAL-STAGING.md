@@ -1009,3 +1009,25 @@ confirmed revoked and replaced.
   containers. No credential value was displayed or used. Provider-backed
   File Search on the branch candidate therefore remains gated on protected
   credential entry and confirmation of the intended billing owner.
+
+## Base-pilot member capability boundary (2026-10-28)
+
+- On the clean loopback candidate, set the synthetic `USER` role to the
+  base-pilot profile: shared-agent use and File Search/citations on; agent
+  create/share, MCP servers, skills, schedules, code execution, and web search
+  off. The candidate still has only its two synthetic accounts and no agent,
+  files, or conversations. The `ADMIN` role was not changed.
+- Applied the same profile to the separate restored synthetic workspace to
+  verify the actual shared-agent boundary with its four existing members. All
+  four members listed and opened the shared Juniper & Slate assistant (HTTP
+  200), but could not access its expanded editor or version history (HTTP
+  403). MCP server, schedule, and skill list requests were also denied (HTTP
+  403) for all four. The admin retained access (HTTP 200).
+- The shared assistant is configured with `file_search` as its only tool.
+  This verifies role/agent authorization and least-privilege defaults; it does
+  not verify a provider-backed answer, ingestion, citations, or browser UX.
+  Those remain gated on a fresh low-limit chat key and embeddings key entered
+  only through the protected local prompts.
+- Candidate and restored workspace use the same pinned LibreChat image digest.
+  Both changes are confined to synthetic local databases; no production role,
+  customer account, live provider key, public endpoint, or VPS was changed.
