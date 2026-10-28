@@ -40,11 +40,13 @@ following cloud-workspace gates pass.
   and DeepSeek V4 Flash test models. The clean candidate at `127.0.0.1:3085`
   has `maxContextTokens: 128000`; the older primary and restore stacks do not.
   The candidate's checked-out source remains detached at `e31577f`, while the
-  pushed MVP branch is `4d1e0a7`; its local LibreChat config contains the
-  128k setting, but it is not an exact checkout of the pushed branch. Before
-  VPS acceptance, deploy the exact pushed commit to a clean isolated candidate
-  and repeat the relevant runtime checks rather than treating this older
-  candidate as branch-exact.
+  pushed MVP branch is `4d1e0a7`. A comparison of the candidate's effective
+  LibreChat YAML (ignoring comments) against the branch file found them
+  identical, including the 128k setting; the intervening diff otherwise
+  consists of documentation and the RAG smoke-test harness. Local runtime
+  evidence therefore matches the pushed runtime configuration, but the
+  candidate is not an exact source checkout. Use the current pushed branch head
+  when preparing a VPS and rerun its preflight there.
 - A targeted scan for common credential prefixes across tracked files and
   available Git history found only the `OPENROUTER_KEY` placeholder in
   `.env.example`. No dedicated secret scanner is installed, so this is a
