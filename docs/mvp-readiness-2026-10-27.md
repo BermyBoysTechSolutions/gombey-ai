@@ -3031,3 +3031,25 @@ applicable gates above have evidence.
   `authenticated=false`, with no test-mode key. No sandbox was created and no
   live account or billing object was modified. Test-mode checkout, consent,
   trial timing, and tax remain unverified.
+
+## Fresh current-stack runtime and isolation audit — 2026-10-28 18:15 EDT
+
+- Docker Compose currently reports four dedicated loopback customer-test
+  projects: `gombey_staging_gombey_test` on 3083,
+  `gombey_backup_restore_20261027` on 3084,
+  `gombey_candidate_gombeytech_c_85b100786028cbd5901b` on 3085, and
+  `gombey_mvp_current_20261028` on 3086. All four `/health` and `/login`
+  routes returned HTTP 200. No containers were stopped or restarted.
+- The current MVP stack's `/api/config` returned HTTP 200 and identifies a
+  LibreChat `v0.8.8` build with public registration disabled. Unauthenticated
+  requests to `/api/user` and `/api/agents` returned HTTP 401 as expected.
+- The read-only customer-isolation verifier passed between the current MVP
+  project and each of the other three projects. Each pair has disjoint Docker
+  networks, distinct persistent data roots, blocked cross-project service
+  DNS, and blocked cross-project private-IP TCP access to the API, MongoDB,
+  Meilisearch, pgvector, and RAG ports. Combined with the earlier recorded
+  checks among the other three projects, all six pairwise combinations have
+  current same-day evidence.
+- These checks establish local deployment separation only. They do not prove
+  public VPS firewalling, DNS/TLS, customer-owned provider billing, successful
+  public sign-in, or hardware-tier acceptance.
