@@ -2951,10 +2951,23 @@ applicable gates above have evidence.
   hardware for the upper tiers is separately quoted/acceptance-gated. The
   page remains call-first and its customer launch link targets
   `chat.gombeytech.com`.
-- The public chat hostname now resolves to the Gombey AI page and returned
-  HTTPS HTTP 200; the prior Cloudflare 1033 error did not recur. This checks
-  current reachability only, not customer account onboarding or production
-  VPS isolation.
+- Fresh public route checks on 2026-10-28: `/` and `/login` return HTTPS
+  HTTP 200 from Vercel; `/health` returns `OK`; and `/api/config` returns the
+  app configuration. Unauthenticated GETs to `/api/user`, `/api/agents`, and
+  `/api/models` return HTTP 401 (`No auth token`), showing that those protected
+  API routes are reachable and enforcing authentication. `/api/health` returns
+  HTTP 404 because that route is not present; this is not evidence that the
+  backend is down. These checks do not prove successful sign-in, a customer
+  chat, file retrieval, or production VPS isolation.
+- The public config currently reports app title `Gombey AI Private`,
+  `serverDomain=http://localhost:3080`, build branch `v0.8.7`, and commit
+  `9e74cc0` (build date 2026-06-24). Email/password login is enabled,
+  registration and password reset are disabled, and OpenID/social login is
+  disabled. The localhost server-domain value and reported build identity
+  should be checked against the intended public deployment before enabling
+  external SSO or declaring the public customer onboarding path accepted. No
+  authenticated public login was attempted and no DNS, Vercel, or app setting
+  was changed.
 - A fresh read-only Stripe audit found only the live Gombey Tech account
   available in this session. The three active setup links map to the correct
   products and collect only the 50% launch kickoff installments
