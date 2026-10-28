@@ -688,3 +688,35 @@ applicable gates above have evidence.
   of local staging storage before any real data; and a separately approved
   customer VPS/hostname/DNS/TLS/firewall/backup acceptance. No live billing,
   public DNS, VPS purchase, or customer-data action occurred.
+
+## Current MVP continuation verification (2026-10-28)
+
+- The public landing page was fetched read-only and still presents Cloud
+  Workspace, Workspace Appliance, and Private Local AI. It describes Cloud as
+  one scoped workflow with customer-owned provider billing and marks the
+  appliance as subject to device-specific validation. No live website edit or
+  deployment was made.
+- Rechecked local runtime: Colima is running; both customer-staging login pages
+  (`127.0.0.1:3083` and `:3084`) returned HTTP 200. The read-only
+  `customer-isolation-check.py` passed for the primary and restored Compose
+  projects: internal networks are disjoint, own Mongo DNS resolves, cross-
+  project Mongo DNS is blocked both ways, internal services publish no host
+  ports, and app/upload/database storage sources are distinct.
+- Customer-init, customer-preflight, encrypted-backup safety, and all 11 Python
+  unit tests passed. No production/customer data or provider inference was used
+  in this verification pass.
+- The mounted external USB SSD is APFS, 1.8 TiB total with about 1.6 TiB free.
+  Runtime mount inspection confirms primary and restore app data, uploads, and
+  database roots are on that volume. The external volume is not encrypted;
+  macOS FileVault is on for the internal disk, where the protected staging
+  environment file resides. Keep the external staging data synthetic-only.
+- Stripe still exposes only the live Gombey account. No sandbox is connected;
+  deferred-billing consent and automatic monthly charging have not been
+  rehearsed. Tax Settings remain `pending` with no head-office address and zero
+  registrations; the existing monthly links are inactive and have automatic
+  tax disabled. No Stripe mutation was made.
+- Remaining external gates are sandbox account access and billing rehearsal,
+  qualified tax review, a usable visible member-browser session if visual
+  acceptance is still required, and explicit approval of customer hostname and
+  VPS spend before public DNS/TLS/firewall/reboot/backup acceptance. No
+  customer data or live payment should be used before those gates pass.
