@@ -1201,3 +1201,28 @@ applicable gates above have evidence.
   out; no inventory result was available. No VPS purchase, setup, power, DNS,
   or nameserver action was issued, so existing account VPS state remains
   unverified.
+
+## Public-offer source-copy audit — 2026-10-28 07:05 EDT
+
+- Compared the Vercel site's current local source with the live HTML response
+  and the MVP acceptance matrix. The published prices and tier boundaries stay
+  unchanged.
+- Updated local `index.html` copy to state the verified base scope more plainly:
+  one agreed workflow, one shared/admin-managed knowledge assistant, named
+  accounts, and customer-owned AI-provider billing. It now explicitly says
+  ordinary chats do not automatically retrieve from the shared collection and
+  that extra agents, connectors, write actions, and automation require separate
+  scope and acceptance.
+- Corrected the billing explanation: setup installments do not create a
+  subscription; the customer must complete a separate recurring checkout and
+  authorize payment. The 30-day trial starts at that checkout; it aligns to
+  delivery + 30 days only when enrollment happens at accepted delivery. This is
+  consistent with the configured Stripe link behavior and does not claim the
+  setup payment automates subscription enrollment.
+- Source checks passed: Python HTMLParser parse, required offer/billing boundary
+  assertions, and `git diff --check`. This is source-only on
+  `codex/mvp-offer-scope-2026-10-27`; no production deployment, prices, Stripe,
+  VPS, DNS, or customer data were changed.
+- This copy change is prepared for commit/push after final source review. Public
+  production will retain the previous wording until a website deployment is
+  made. The separate hard gates in this matrix remain.
