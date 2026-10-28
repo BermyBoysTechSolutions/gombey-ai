@@ -2109,3 +2109,26 @@ applicable gates above have evidence.
   entered through the protected setup path. This test used synthetic data and
   does not verify customer-owned credentials, uploaded-file deletion/reindex
   through the visible app, or member-side shared-agent UX on this candidate.
+
+## Offer mapping and local regression recheck — 2026-10-28
+
+- Owner confirmed that the hardware/deployment ladder is intentional, not a
+  mismatch: entry is a dedicated VPS with cloud inference; the middle tier is
+  an on-site Beelink SER5 with cloud inference; the top tier is a locally
+  benchmarked Mac Studio, DGX Spark, or Strix Halo workstation. The live
+  `gombeytech.com` offer copy explicitly describes these same deployment and
+  inference modes; no tier or price change was needed.
+- Re-ran customer initialization, customer preflight, encrypted-backup safety,
+  and all 16 Python regression tests; all passed. Re-ran all three pairwise
+  network/storage isolation checks among primary staging, restored backup,
+  and clean candidate; all passed.
+- Re-ran the disposable RAG fail-closed integration with a generated
+  throwaway environment, synthetic invalid key, and unreachable loopback
+  embeddings endpoint. The synthetic upload returned HTTP 500, wrote zero
+  vectors, and the temporary containers, volume, and networks were removed.
+- The three candidate local login pages and candidate health endpoint returned
+  HTTP 200. The clean candidate still has no uploaded evaluation corpus on a
+  separate shared agent; member-side long-document UX, customer-owned provider
+  billing, Stripe sandbox rehearsal, and public VPS acceptance remain open.
+- No production VPS, live billing object, DNS, customer data, or production
+  deployment was changed.
