@@ -299,6 +299,31 @@ applicable gates above have evidence.
 - The stale OpenClaw credential file documented above was not used. No
   customer data or production service was involved.
 
+## Restore-copy external-storage move (2026-10-28)
+
+- Moved the isolated restore copy's 258 MB of database/app data, its deployment
+  source/config, and its synthetic backup payload from the internal disk to
+  the external SSD. The source and copy were compared before restart; no file
+  differences were reported. The restored deployment's environment file
+  remains owner-only (mode 600), and the restore root is owner-only (mode 700).
+- Recreated only the restore Compose project from the SSD copy, with an
+  explicit project name so the backup's copied environment could not target
+  or stop the primary staging project. Added a local mode-700 control script
+  with only `start`, `stop`, `status`, and `validate` actions; its validation
+  passed.
+- After restart, both staging and restore APIs returned HTTP 200 and the
+  restore API became healthy. Restored state remained five synthetic users,
+  one agent, three files, seven synthetic conversations, zero user-key
+  records, and 101 pgvector embeddings. Both deployments returned DNS
+  `ENOTFOUND` when probing the other deployment's MongoDB service name, and
+  their API/database/search services remain on separate Compose networks;
+  only their own API ports are published on loopback.
+- Confirmed no running container referenced the old internal restore path,
+  then removed only that exact stale internal restore directory. This freed
+  its 265 MB working directory; primary staging remained running throughout.
+  The restore environment and all test data are synthetic. This is local
+  recovery/isolation evidence only, not public VPS acceptance.
+
 ## Continuation audit (2026-10-28)
 
 - Current local cloud staging and the separate restored-copy stack both
