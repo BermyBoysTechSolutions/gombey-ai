@@ -1781,3 +1781,14 @@ applicable gates above have evidence.
   Generated and queued the account-management authorization page in the Codex
   browser so the owner can add a dedicated sandbox. No live Stripe object or
   setting was changed; no test account is connected yet.
+
+## Onboarding regression and tracked-secret scan — 2026-10-28 10:42 EDT
+
+- Re-ran `scripts/test_customer_init.sh` and
+  `scripts/test_customer_preflight.sh`; both passed. The latter checks safe
+  loopback binding/resource ceilings as well as bad hostname, weak/duplicate
+  secrets, copied project namespace, and provider-placeholder cases.
+- A limited tracked-file scan for common OpenAI/OpenRouter/Stripe/GitHub token
+  prefixes returned no matching tracked path; only `.env.example` templates
+  are tracked. No dedicated secret scanner is installed, so this is not a
+  comprehensive secret-history audit. No credential values were printed.
