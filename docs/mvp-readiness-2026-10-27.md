@@ -3160,3 +3160,22 @@ applicable gates above have evidence.
   demo tunnel targets loopback, so the all-interface publish is not needed for
   that tunnel. No port binding or running container was changed; review whether
   LAN access is intended and restrict it to loopback if it is not.
+
+## Current public offer and Stripe read-only recheck — 2026-10-28
+
+- A fresh request to `https://gombeytech.com/` returned HTTP 200. The page
+  still presents Cloud Workspace at $2,500 standard setup / $1,995 founding
+  setup and $399 / $349 monthly; Workspace Appliance at $4,500 / $3,995 and
+  $699 / $599 monthly; Private Local AI at $7,500 / $6,995 and $1,499 / $1,299
+  monthly. Product text continues to describe the VPS/cloud, SER5/cloud, and
+  customer-owned local-inference hardware ladder respectively.
+- A fresh Stripe account listing exposed only the live Gombey Tech account.
+  Read-only active Price retrieval confirmed the matching standard recurring
+  rates and standard/founding 50%-kickoff and 50%-delivery setup amounts. The
+  setup prices are $1,995, $3,995, and $6,995 for the founding offers; each is
+  split into two equal installments. No Stripe object or setting was changed.
+- This read does not prove the founding monthly promotion's eligibility,
+  duration, subscription trial timing, saved-payment consent, webhook
+  fulfillment, or tax calculation. The promotion and deferred-billing flow
+  remain unverified until an isolated Stripe sandbox is connected and the full
+  checkout lifecycle is rehearsed. The live account was not used for a test.
