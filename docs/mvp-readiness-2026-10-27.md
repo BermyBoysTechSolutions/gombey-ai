@@ -2611,3 +2611,21 @@ applicable gates above have evidence.
   this is not evidence that the account has no VPS. No Hostinger CLI is
   installed as a local fallback. No Hostinger write, purchase, DNS change, or
   server operation was attempted.
+
+## Local staging resource and storage snapshot — 2026-10-28 16:14 EDT
+
+- The candidate's persistent app data/uploads, MongoDB, pgvector, and
+  Meilisearch bind mounts resolve to the external “Mac Mini SSD” volume, which
+  had about 1.6 TiB free. Colima's Docker VM disk is still under the internal
+  user profile: its sparse 100-GiB disk file occupies about 30 GiB, while the
+  internal data volume reports 13 GiB free (94% used). `docker system df`
+  reported 21.39 GiB of images and 8.67 GiB of volumes across all stacks.
+- A one-time candidate-container sample during idle synthetic testing showed
+  about 1.1 GiB aggregate memory use: API 525 MiB, RAG 357 MiB, MongoDB 151
+  MiB, pgvector 33 MiB, and Meilisearch 65 MiB. This is not a load test and
+  does not establish a safe production concurrency or VPS size.
+- The shared Colima VM runs multiple active Gombey and unrelated test
+  containers. I did not stop it, relocate its disk, prune images/volumes, or
+  otherwise risk disrupting those workloads. Keep new persistent test data on
+  the external volume; moving the VM itself requires a separately planned
+  maintenance window and verified rollback.
