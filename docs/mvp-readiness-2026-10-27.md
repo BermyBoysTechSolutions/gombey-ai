@@ -253,8 +253,8 @@ after the corresponding implementation and acceptance test.
 | Public claim | Current evidence | Gate still open |
 |---|---|---|
 | Cloud: dedicated VPS per customer | Separate Compose project, secrets, database, network, and storage were tested locally. | Public VPS, DNS/TLS, firewall, reboot, and restore acceptance. |
-| Cloud: up to 5 named accounts with admin/member roles | Five accounts (one admin, four members) were provisioned with registration disabled. Two members passed shared-agent ACL checks; an earlier disposable member passed interactive login/privacy checks. Synthetic grounded File Search answers with citations and unsupported-query abstention passed through API harnesses on primary and restore staging. These were not a simultaneous two-member visible-browser run and used temporary owner test credentials. | Visible-browser two-member run; repeat with approved customer-owned model and embeddings keys; verify key isolation/revocation and account recovery. |
-| Cloud: one workflow, one custom agent, shared knowledge | Shared File Search agent and admin-managed Viewer access are configured. Synthetic 31–36-page manuals were retrieved with expected facts/citations; unsupported facts were abstained; scope and deletion checks passed. | Repeat the full flow in the actual member UI with intended customer-owned model + embeddings credentials and record citations/deletion evidence. |
+| Cloud: up to 5 named accounts with admin/member roles | Five accounts (one admin, four members) are provisioned with registration disabled. Two disposable members signed in through the app in headless Chromium, saw the same agent, and were denied edit/version access; a third selected that agent in the model picker. Prior synthetic grounded File Search answers and private-chat isolation passed through API harnesses. | Run member-facing grounded chat and citation checks with customer-owned model and embeddings credentials; verify provider-key ownership/isolation/revocation and account recovery. |
+| Cloud: one workflow, one custom agent, shared knowledge | Shared File Search agent and admin-managed Viewer access are configured. Synthetic 31–36-page manuals were retrieved with expected facts/citations; unsupported facts were abstained; scope and deletion checks passed. A member can discover/select the assistant in the picker. | Repeat the full member chat flow with approved customer-owned model + embeddings credentials and record citations/deletion evidence. |
 | Cloud: connector, only if separately scoped and accepted | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. Production Cloud copy excludes connectors from base scope. | Keep connectors out of the base offer until a named integration passes compatibility, permission, and data-path acceptance tests. |
 | Cloud: managed hosting, updates, backups, restore checks | Encrypted local snapshot and isolated full restore passed. New deployment wording requires a per-customer backup/recovery plan. | Secure/remove legacy plaintext test snapshots; define cadence/retention and portable key escrow; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
 | Cloud: setup guide, onboarding, 1.5 support hours and 2-business-day response | Reusable pilot scope/acceptance worksheet and operator handoff runbook are now in `deploy/customer/`. | Rehearse onboarding, support intake/time tracking, response target, and recovery on a real deployment. |
@@ -711,12 +711,13 @@ applicable gates above have evidence.
   containers, networks, and volume. It made no external provider call.
 - This closes the persistent primary RAG service/credential smoke gate for
   synthetic tests. It does not make the owner key suitable for customer use,
-  prove customer-owned provider billing, substitute for a visible-browser
-  multi-member session, or prove the public VPS boundary. Customer deployments
+  prove customer-owned provider billing, substitute for member-facing grounded
+  chat/citation acceptance, or prove the public VPS boundary. Customer deployments
   must use the customer's own embeddings credential.
-- The remaining gates are: member-facing UX/privacy acceptance in the visible
-  app; a dedicated Stripe sandbox rehearsal and customer-consented deferred
-  billing test; owner/tax-advisor resolution of tax setup; review or encryption
+- The remaining gates are: member-facing grounded chat/citation acceptance with
+  customer-owned credentials; a dedicated Stripe sandbox rehearsal and
+  customer-consented deferred-billing test; owner/tax-advisor resolution of tax
+  setup; review or encryption
   of local staging storage before any real data; and a separately approved
   customer VPS/hostname/DNS/TLS/firewall/backup acceptance. No live billing,
   public DNS, VPS purchase, or customer-data action occurred.
