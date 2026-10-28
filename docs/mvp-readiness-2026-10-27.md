@@ -478,6 +478,12 @@ applicable gates above have evidence.
   They have no subscription data, and `payment_method_collection` is
   `if_required`; they do not enroll the customer in a subscription or
   guarantee a saved payment method for a later charge.
+- Three inactive fallback subscription links also exist, one per product.
+  Each requires payment-method collection, has a 30-day trial, permits
+  promotion codes, uses the standard recurring price, and has automatic tax
+  disabled. They remain inactive; coupon eligibility, trial/discount timing,
+  and the first invoice still need a sandbox test-clock rehearsal before any
+  link is activated or sent.
 - All three active links still report `automatic_tax.enabled=true`, but a
   fresh active-registration list returned zero registrations. Do not tell a
   customer that tax is being collected until the owner and tax professional
