@@ -2562,3 +2562,26 @@ applicable gates above have evidence.
   not send or activate links until the dedicated
   sandbox rehearsal and tax review pass; no live billing or tax settings were
   changed in this audit.
+
+## Stripe billing state revalidated — 2026-10-28 16:03 EDT
+
+- The owner clarified that the deployment ladder is intentional, not a tier
+  mismatch: Plus is a dedicated VPS using cloud inference; Pro is a Beelink
+  SER5 workspace using cloud inference; Max is a customer-owned Mac Studio,
+  DGX Spark, or Strix Halo-class system for local inference. No offer or
+  Stripe catalog changes were requested or made during this check.
+- A fresh read-only live Stripe API audit found the three current products
+  active, their retired draft products inactive, and the current standard and
+  founding setup/monthly Prices aligned with the published Cloud Workspace,
+  Workspace Appliance, and Private Local AI offer amounts. The three active
+  Payment Links are only the founding setup kickoff halves ($997.50, $1,997.50,
+  and $3,497.50). The separate monthly subscription links remain inactive;
+  they use a 30-day trial and are not automatically attached to setup payment
+  or accepted delivery. No subscriptions were returned.
+- The active setup links have automatic tax enabled, but the live Stripe Tax
+  settings remain `pending` because `head_office` is missing, and the account
+  has zero Tax registrations. Do not represent those links as collecting tax.
+- The connected Stripe integration exposes only the live Gombey Tech account;
+  a sandbox billing rehearsal remains blocked until a sandbox is connected.
+  This was a read-only audit: no products, Prices, links, invoices, customer
+  subscriptions, payments, or tax settings were created or changed.
