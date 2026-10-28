@@ -3,6 +3,7 @@
 deploy/customer/.env
 deploy/customer/data/
 deploy/customer/backups/
+__pycache__/
 gdrive/credentials.json
 gdrive/gcp-oauth.keys.json
 gdrive/*

@@ -109,6 +109,16 @@ following cloud-workspace gates pass.
   tests were sequential API harnesses on restore and primary staging, not a
   simultaneous two-member browser session; all temporary accounts and records
   were deleted and both deployments returned to their original configuration.
+- On 2026-10-28, the freshly rotated owner OpenRouter key was read directly
+  from OpenClaw without displaying it and placed only in the mode-600 primary
+  staging environment. A separate 14-token embeddings smoke returned HTTP 200
+  with 1,536 dimensions. The primary staging RAG API then passed a synthetic
+  ingest → semantic query → scoped delete check (HTTP 200 at each stage); the
+  unique fact was retrieved, the scoped ID list was empty afterward, and a
+  post-delete document read returned 404. No customer content was used. This
+  validates the configured RAG service, not LibreChat's full member File Search
+  experience or customer billing; production still requires customer-owned
+  provider and embeddings credentials.
 - The RAG upload failure path is now fail-closed: an isolated synthetic upload
   with a loopback-only unavailable embeddings endpoint returned HTTP 500 and
   left zero vectors in its dedicated disposable database. Four exact-match,
@@ -138,10 +148,10 @@ following cloud-workspace gates pass.
 1. Repeat grounded retrieval/citation as a second member with the agreed
    customer-owned provider/embedding credentials. Confirm the result and usage
    appear under the intended customer billing account. Do not use Gombey's or
-   the owner's subscription/API credentials for customer traffic. The owner
-   reports rotating the potentially exposed prior OpenRouter key, but this was
-   not independently verified; do not reuse the prior value. The separate
-   staging embeddings setting remains a placeholder and needs a fresh key.
+   the owner's subscription/API credentials for customer traffic. The primary
+   local staging RAG service now has the owner's rotated OpenRouter key for
+   synthetic validation only; this is not a customer credential and must not be
+   carried into a customer deployment.
 2. Decide whether model keys are per-member BYOK or customer-managed centrally,
    then test the chosen flow end-to-end for both members.
 3. Keep connectors outside the base Cloud offer. The current shared agent has
@@ -160,6 +170,9 @@ following cloud-workspace gates pass.
    network exposure, backup, restore, and the same account-isolation checks.
    Purchase/production setup requires owner approval of exact plan and spend,
    hostname, and DNS control.
+
+The read-only Hostinger VPS inventory request timed out twice on 2026-10-28;
+no VPS inventory was confirmed, and no VPS was purchased or changed.
 
 ## Public-offer claims mapped to evidence
 
