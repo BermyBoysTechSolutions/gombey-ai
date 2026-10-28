@@ -1550,3 +1550,17 @@ applicable gates above have evidence.
   branch-mounted Compose files. This verifies config alignment, not a
   successful embeddings/provider integration. No customer or evaluation
   documents were uploaded.
+
+## No-key RAG smoke regression — 2026-10-28 09:25 EDT
+
+- Added a deterministic local fake-service test for the successful smoke path:
+  embed the synthetic marker, verify own and unrelated scopes, retrieve the
+  marker, delete only the exact synthetic file, and confirm it is absent.
+  This uses no external provider and incurs no API cost.
+- All 15 Python tests across the three script test suites passed, as did
+  customer initialization, deployment preflight, encrypted-backup safety, and
+  `git diff --check`.
+- Rechecked the candidate and protected env files: the embeddings key remains
+  the setup placeholder, and the hidden-input prompt is still waiting. No key
+  was used or printed. This improves the smoke runner's local test coverage
+  but does not pass provider-backed embeddings or member-facing File Search.
