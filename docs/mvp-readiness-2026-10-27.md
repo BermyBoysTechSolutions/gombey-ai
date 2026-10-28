@@ -394,3 +394,39 @@ applicable gates above have evidence.
 - Customer-init, customer-preflight, customer-backup safety, and all 11 Python
   unit tests passed again. The test run generated only local Python bytecode
   caches; those exact cache directories were removed afterward.
+
+## Stripe offer and billing audit (2026-10-28, read-only)
+
+- The public site returned HTTP 200 and presents Cloud Workspace, Workspace
+  Appliance, and Private Local AI with standard and founding monthly/setup
+  rates. The same three products are active in the live Stripe account; their
+  standard monthly prices and 50/50 setup installment prices match the site.
+  The active founding coupons discount monthly service by $50, $100, or $200
+  for 12 months. Each tier's promotion code permits up to three redemptions;
+  the site-wide “first 3 deployments” cap is metadata/manual enforcement, not
+  one shared Stripe redemption limit.
+- The three active live kickoff links are one-time founding deposits only
+  ($997.50 Cloud, $1,997.50 Appliance, $3,497.50 Local). They do not create a
+  subscription or establish reuse consent for later charges. The separate
+  monthly links are inactive. Those links have a 30-day subscription trial,
+  require a payment method at subscription checkout, and allow promo codes.
+  If enabled and sent only after accepted delivery, that is a viable
+  customer-confirmed second checkout whose trial then runs 30 days; it will
+  not reuse the card from the kickoff payment. A no-second-checkout flow would
+  need a tested save-for-off-session-consent step at kickoff and a subscription
+  created after delivery; no such flow is implemented or tested.
+- Live Stripe Tax settings currently report `pending` with no head-office
+  address, and the account has no tax registrations. The three active kickoff
+  links have automatic tax enabled, which does not prove tax will be
+  calculated or collected. All three products currently use the “Software as a
+  service (SaaS) - business use” code, whose suitability for the on-site
+  appliance and local-inference offer has not been confirmed. No tax settings,
+  registrations, product codes, links, or live prices were changed. The owner
+  should confirm tax obligations and product classification with a qualified
+  tax professional before sharing live payment links; see [Stripe Tax setup](https://docs.stripe.com/tax/set-up.md)
+  and [Stripe's off-session consent guidance](https://docs.stripe.com/payments/off-session-payments).
+- The connected Stripe tool exposes only the live Gombey Tech account, so the
+  deferred-subscription, payment-method-consent, coupon, failure/cancellation,
+  and tax behaviors remain untested in a sandbox. Do not mark the live billing
+  flow production-ready or send live checkout links until the sandbox
+  acceptance test and tax review are complete.
