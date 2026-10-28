@@ -917,3 +917,20 @@ applicable gates above have evidence.
   the intended monthly enrollment flow available in Stripe.
 - No live Stripe objects, tax settings, website deployment, customer data,
   VPS, or DNS were changed.
+
+## Local deployment regression recheck — 2026-10-28 05:03 EDT
+
+- Both loopback staging login routes returned HTTP 200. The current read-only
+  two-deployment isolation check passed: project networks and data roots are
+  distinct, each API resolves its own Mongo service, cross-project Mongo DNS is
+  blocked in both directions, and database/search/vector/RAG services expose no
+  host ports.
+- Customer init, deployment preflight, encrypted-backup safety, all 13 Python
+  unit tests, and shell syntax checks passed. Test temporary files were placed
+  on the external SSD; no persistent staging data was changed.
+- The primary staging login is queued in the Codex browser. No authenticated
+  shared-agent browser session was available for this check, so member-visible
+  File Search/citation and private-chat acceptance remain open. The browser step
+  requires the staging administrator to sign in.
+- No live billing, customer data, production website, VPS, DNS, or deployment
+  state was changed.
