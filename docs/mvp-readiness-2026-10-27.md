@@ -3325,3 +3325,26 @@ applicable gates above have evidence.
   to configure a protected test credential, create a disposable evaluation
   agent, upload these synthetic PDFs, then test member-visible answers,
   citations, abstention, and UI deletion/reindex. This goal remains open.
+
+## Member-visible Qwen File Search checks and offer architecture — 2026-10-28
+
+- Completed three authenticated member-side File Search checks in the isolated
+  candidate using the synthetic Juniper & Slate corpus and inexpensive
+  OpenRouter `qwen/qwen3.5-9b`: exact campaign fact retrieval, a
+  cross-document workflow/version-control answer, and abstention from an
+  unsupported actual-revenue claim. All three passed with source citations;
+  targeted checks included page references. These were API-backed member
+  requests, not a visual end-to-end browser/UI acceptance run.
+- Evaluation reads assistant text from typed `content` parts; LibreChat's
+  legacy top-level `text` field was empty. A targeted retry confirmed the
+  source/page citation on the unsupported-revenue check.
+- Removed test-created conversations and the temporary member-scoped
+  OpenRouter key; verified return to the baseline five chats and ten messages,
+  absence of the key in both key collections, and the three files remaining
+  only in the intended shared-agent vector scope. No customer content or
+  production service was involved.
+- Offer architecture is intentional, not a tier mismatch: Plus is VPS/cloud
+  inference; Pro deploys a SER5 Mini PC with cloud inference; Max uses higher-
+  end hardware such as Mac Studio, DGX Spark, or Strix Halo for local
+  inference. Preserve this distinction in future offer edits. Visual UI
+  acceptance and production VPS/DNS/TLS validation remain open.

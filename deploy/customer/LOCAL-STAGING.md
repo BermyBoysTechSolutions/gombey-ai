@@ -1260,3 +1260,26 @@ confirmed revoked and replaced.
   services were not restarted. The candidate's persistent embeddings key is
   still a template placeholder, so member-visible long-document testing still
   requires the protected test-key setup and a disposable evaluation agent.
+
+## Member-side Qwen File Search acceptance — 2026-10-28
+
+- In the isolated candidate, an authenticated disposable member ran three
+  synthetic, shared-agent File Search checks using OpenRouter
+  `qwen/qwen3.5-9b`: a precise campaign fact, a workflow answer requiring
+  cross-document detail, and a question about actual revenue absent from the
+  fictional corpus. All three answers were correct and cited the relevant
+  synthetic source; targeted checks included page references. This was tested
+  through the authenticated API/agent path, not visually through the browser.
+- Evaluation reads assistant text from typed `content` parts because the
+  legacy top-level `text` field is empty. The unsupported-revenue check was
+  repeated with an explicit source/page requirement and correctly abstained
+  while distinguishing planned figures from actual revenue.
+- Deleted every test-created conversation and the temporary user-scoped
+  OpenRouter key. Verified return to the five-chat/ten-message baseline, no
+  test key in either API-key collection, and the three synthetic PDFs only in
+  the intended shared-agent vector scope. The candidate API stayed healthy;
+  no Ollama or production service was used.
+- Tier clarification: Plus is VPS + cloud inference; Pro is SER5 Mini PC +
+  cloud inference; Max is local inference on hardware such as Mac Studio, DGX
+  Spark, or Strix Halo. This is the intended tier ladder. Visible UI
+  acceptance and production VPS/DNS/TLS validation remain open.
