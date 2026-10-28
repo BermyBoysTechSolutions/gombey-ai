@@ -1492,3 +1492,30 @@ applicable gates above have evidence.
   sandbox and tax/consent rehearsal, off-device recovery, and approved public
   VPS acceptance. No live billing, production website, VPS, DNS, or customer
   data changed.
+
+## Current Stripe and offer alignment — 2026-10-28 09:05 EDT
+
+- Re-read the public `gombeytech.com` page and the live Stripe catalog. The
+  three product names and standard/launch amounts match: Cloud $2,500 setup /
+  $1,995 launch and $399/$349 monthly; Appliance $4,500 / $3,995 and
+  $699/$599 monthly; Private Local AI $7,500 / $6,995 and $1,499/$1,299
+  monthly. Public workflow, provider-billing, and hardware boundaries remain
+  reflected in the Stripe product descriptions.
+- Stripe has three active launch setup-kickoff payment links at $997.50,
+  $1,997.50, and $3,497.50. Each link has no completion cap and has
+  `automatic_tax.enabled=true`. Stripe returned no active Tax registrations;
+  its [official Payment Links guidance](https://docs.stripe.com/tax/payment-links)
+  says it calculates tax only where the
+  merchant has an active registration and returns zero without one. Keep these
+  links private and do not send them until the owner's tax/accountant review
+  resolves registration and tax treatment. No link or tax setting was changed.
+- Three recurring checkout links remain inactive, one per tier. They are
+  separate from setup checkout, require a payment method, and start a 30-day
+  trial when the customer enrolls; they do not automatically enroll or reuse
+  the setup payment method. Each launch promotion code permits up to three
+  redemptions, but the promised three-deployments-total cap across tiers still
+  requires a manual shared allocation register.
+- Stripe account discovery still exposes only the Gombey Tech live account;
+  no sandbox is connected. A Stripe account-management authorization URL was
+  generated for the owner to connect a dedicated sandbox. No sandbox, live
+  billing object, invoice, subscription, checkout, or charge was created.
