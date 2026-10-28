@@ -856,3 +856,47 @@ confirmed revoked and replaced.
   and entity scoping over existing synthetic vectors; it does not validate
   member-authenticated LibreChat File Search, visible citations, or customer-
   owned billing. Those acceptance gates remain open.
+
+## Authenticated member File Search check (2026-10-28)
+
+- On the isolated restore copy, a disposable USER signed in through the normal
+  auth API, saved a short-lived user-scoped OpenRouter key, and used the shared
+  Juniper & Slate agent with the existing three synthetic PDFs. The test model
+  was temporarily switched from GPT-6 Luna to the configured low-cost
+  `deepseek/deepseek-v4-flash-0731` model so the stored GPT-6 Luna default was
+  not used for this test.
+- The first run exposed a real blocker: the restore copy's saved RAG embeddings
+  credential is rejected by OpenRouter (HTTP 401). File Search's query
+  embeddings failed closed, so the model correctly said it could not verify the
+  requested facts. No answer was counted as a pass.
+- For a controlled retry, the current OpenClaw OpenRouter credential was
+  injected only into the restore RAG container's runtime environment. A direct
+  embedding probe returned 1,536 dimensions. The member's shared-agent request
+  and stream both returned HTTP 200, the `file_search` tool ran, and the answer
+  correctly identified Alder & Finch v6 as HOLD pending Jamie Rivera's written
+  approval, with Morgan Ellis owning internal QA. It cited the source manuals
+  and pages/sections (including Operations Manual pages 3 and 10 and Decision
+  Log page 10).
+- The temporary USER, provider key, conversation, and messages were deleted;
+  post-delete checks found zero matching user/key/conversation/message records.
+  The shared agent was restored to its exact GPT-6 Luna model and instructions.
+  The RAG service was recreated from its existing `.env`; the file hash did not
+  change. Both the account key and the RAG runtime override were removed with
+  the disposable account/container lifecycle; no secret was printed or
+  committed.
+- This was an authenticated API harness test, not a visible-browser UX test.
+  It proves member access to shared File Search and citations only while using
+  the owner's test OpenRouter key. It does not prove customer-owned billing or
+  make the saved restore embeddings credential usable. The persistent primary
+  staging RAG key remains a placeholder; the restore copy's configured key
+  returns HTTP 401. A fresh customer-owned embeddings key must be entered via
+  the protected helper before treating persistent File Search as ready.
+- A separate temporary USER on primary loopback staging also passed the same
+  grounded shared-agent check, with HTTP 200 generation/stream responses, the
+  expected HOLD / Jamie Rivera / Morgan Ellis facts, and source/page citations.
+  An unsupported annual-revenue question invoked File Search and returned the
+  instructed abstention without inventing a figure. That account, its key, and
+  its messages were deleted; the GPT-6 Luna agent and RAG container were
+  restored, and the staging `.env` hash was unchanged. These were sequential
+  API-harness checks, not a simultaneous two-member browser session or
+  customer-owned billing test.

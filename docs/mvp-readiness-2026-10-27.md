@@ -76,6 +76,25 @@ following cloud-workspace gates pass.
   14 input tokens), but the key was not put in the staging RAG environment and
   the RAG pipeline, file retrieval, and citations remain unverified by this
   run.
+- A later isolated restore-copy member test passed the shared agent's
+  `file_search` path with low-cost DeepSeek V4 Flash after a runtime-only
+  OpenClaw embeddings-key override. The authenticated chat and stream returned
+  HTTP 200; the answer correctly reported Alder & Finch v6 on HOLD pending
+  Jamie Rivera's written approval, Morgan Ellis as internal QA owner, and cited
+  the synthetic manuals by filename and page/section. The temporary member,
+  key, conversation, and messages were deleted, the agent was restored to GPT-6
+  Luna, the RAG container was returned to its saved configuration, and the
+  restore `.env` hash was unchanged. This was API-level proof using the owner's
+  test key, not visible-browser UX or customer-billing proof. The restore
+  `.env` embeddings key itself returns HTTP 401; the main staging RAG key is
+  still a placeholder, so the persistent File Search path needs a fresh
+  customer-owned embeddings key before it is production-ready.
+- A separate synthetic member on primary loopback staging also passed the
+  grounded shared-agent check with citations. An unsupported annual-revenue
+  question invoked File Search and abstained without inventing a number. The
+  tests were sequential API harnesses on restore and primary staging, not a
+  simultaneous two-member browser session; all temporary accounts and records
+  were deleted and both deployments returned to their original configuration.
 - The RAG upload failure path is now fail-closed: an isolated synthetic upload
   with a loopback-only unavailable embeddings endpoint returned HTTP 500 and
   left zero vectors in its dedicated disposable database. Four exact-match,
