@@ -1146,3 +1146,29 @@ applicable gates above have evidence.
 - This verifies deployment-level separation only; it does not establish
   member authentication, customer-owned provider billing, public VPS exposure,
   or production readiness. No container or data was changed.
+
+## Continuation regression check — 2026-10-28 10:36 EDT
+
+- Re-ran customer initialization, customer preflight, encrypted-backup safety,
+  and all 13 Python unit tests; all passed. Both loopback staging login pages
+  returned HTTP 200.
+- The primary staging RAG service passed a self-cleaning synthetic
+  embed/scope/query/delete smoke. Every request returned HTTP 200, the exact
+  synthetic marker was retrieved only in its own entity scope, and the vector
+  was confirmed absent after cleanup. No chat completion or customer content
+  was used; the configured owner test embeddings credential was not printed.
+- The disposable fail-closed integration passed again: upload to the
+  deliberately unavailable loopback embeddings endpoint returned HTTP 500,
+  zero vectors were written, and its unique test containers, networks, and
+  volume were removed. The read-only deployment isolation check also passed:
+  separate networks/storage, blocked cross-project Mongo service discovery,
+  and no host-published database, search, vector, or RAG ports.
+- Stripe account discovery still exposes only the live Gombey Tech account.
+  The official Stripe CLI v1.55.3 macOS ARM binary was checksum-verified and
+  run temporarily from the external SSD; CLI authentication was unavailable,
+  so no login, sandbox creation, or Stripe API mutation was attempted. The
+  temporary download was removed. Dedicated sandbox access and the billing
+  rehearsal remain open; Live mode was not changed.
+- The checkout was synced at `23fd87b` before this note; the pre-existing
+  untracked `tmp/` directory was preserved. No customer data, production
+  website, VPS, DNS, live Stripe objects, or live tax settings changed.
