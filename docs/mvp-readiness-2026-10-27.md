@@ -1172,3 +1172,27 @@ applicable gates above have evidence.
 - The checkout was synced at `23fd87b` before this note; the pre-existing
   untracked `tmp/` directory was preserved. No customer data, production
   website, VPS, DNS, live Stripe objects, or live tax settings changed.
+
+## Headless Chromium member agent-picker acceptance — 2026-10-28 10:55 UTC
+
+- In the isolated restore copy at `127.0.0.1:3084`, two disposable `USER`
+  accounts signed in through the actual login page. Both returned HTTP 200 for
+  the authenticated user and agent-list requests, saw the same single shared
+  `Juniper & Slate Studio Workflow Assistant`, and could read its basic detail
+  (HTTP 200). Both received HTTP 403 for expanded agent configuration and
+  version history, confirming viewer-only access.
+- A separate disposable member opened the model picker, switched to “My
+  Agents,” saw the shared assistant, and selected it; the chat header reflected
+  the selection. No message was sent, so this did not call a model or consume
+  provider usage.
+- All three disposable accounts were deleted through LibreChat's supported
+  account-deletion paths. The restored database again lists only its five
+  baseline synthetic accounts; no temporary `mvp-ui-*` account remains. The
+  restore API was restarted after the offline cleanup and is healthy; its login
+  page returns HTTP 200.
+- This closes the member sign-in, shared-agent discovery/selection, and viewer
+  ACL checks in headless Chromium. It does not close a member-facing grounded
+  chat with citations using customer-owned chat and embeddings credentials,
+  provider billing ownership, Stripe sandbox/deferred-billing rehearsal, tax
+  review, or production VPS acceptance. No live billing, DNS, VPS, or customer
+  data was used.
