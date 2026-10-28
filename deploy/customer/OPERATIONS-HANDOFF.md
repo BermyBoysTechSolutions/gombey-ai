@@ -25,11 +25,14 @@ record, not in this reusable source file.
 ## Founding-offer cap (operator-controlled)
 
 The public offer is limited to the first three deployments across all tiers.
-Stripe's launch coupons and codes are product-specific, with a three-use limit
-per tier; they do not enforce one shared three-customer cap. The three current
-founding kickoff links are reusable and have no Stripe completion restriction.
-Do not publish them on the website, in an email signature, or in a reusable
-campaign template.
+The live launch coupons currently have the intended per-tier amounts and
+three-use limits, but direct Stripe reads show they have no product restriction
+(`applies_to` is absent). Do not share or apply the current monthly promotion
+codes until product-scoped replacements have been created and cross-tier
+rejection has passed in a dedicated sandbox. Per-tier redemption limits also
+do not enforce one shared three-customer cap. The three current founding kickoff
+links are reusable and have no Stripe completion restriction. Do not publish
+them on the website, in an email signature, or in a reusable campaign template.
 
 - Keep a three-slot register in an access-controlled operator record outside
   GitHub. Track slot number, tier, proposal reference, status (available,
@@ -41,9 +44,10 @@ campaign template.
   issuing the written proposal and use its stated validity; mark the slot
   assigned only after the scope is accepted and kickoff payment clears. Release
   a declined or expired hold. Share only the matching tier's private kickoff
-  link after confirming its slot, and later use its matching monthly code at
-  the separate subscription enrollment. The monthly code is not a substitute
-  for customer consent to recurring billing.
+  link after confirming its slot. At separate subscription enrollment, use
+  only the verified product-scoped monthly code associated with that tier, once
+  such a replacement has passed sandbox testing. The monthly code is not a
+  substitute for customer consent to recurring billing.
 - After three slots are assigned, stop sharing all founding kickoff links and
   quote standard pricing for new clients. Stripe will not enforce this
   cross-tier cap. If an assigned customer cancels or receives a refund, record

@@ -3102,9 +3102,11 @@ applicable gates above have evidence.
   months. The combined savings across setup and the first 12 paid monthly
   periods are $1,105, $1,705, and $2,905 respectively. Do not describe the
   older setup-only discount as the current offer. The monthly founding
-  amounts rely on the existing product-scoped promotion-code/coupon setup;
-  the exact 30-day-trial interaction still needs
-  the dedicated sandbox rehearsal in `docs/STRIPE-BILLING-TEST-PLAN.md`.
+  amounts rely on tier-named promotion codes, but a later direct Stripe
+  retrieval found the coupons are not product-restricted; do not share or apply
+  those codes until scoped replacements pass sandbox tests. The exact
+  30-day-trial interaction still needs the dedicated sandbox rehearsal in
+  `docs/STRIPE-BILLING-TEST-PLAN.md`.
 - The Stripe product descriptions preserve the intentional deployment ladder:
   Cloud Workspace uses a customer-dedicated VPS with cloud inference;
   Workspace Appliance deploys the workspace on a Beelink SER5 but still uses
@@ -3179,3 +3181,27 @@ applicable gates above have evidence.
   fulfillment, or tax calculation. The promotion and deferred-billing flow
   remain unverified until an isolated Stripe sandbox is connected and the full
   checkout lifecycle is rehearsed. The live account was not used for a test.
+
+## Current Stripe coupon and payment-link safety correction — 2026-10-28
+
+- Direct read-only `GET` retrieval of each of the three live launch coupons
+  returned no `applies_to` field. This supersedes earlier report sections that
+  described them as product-scoped. The coupons are fixed $50/$100/$200
+  monthly discounts for 12 months, each capped at three redemptions, with zero
+  used and no coupon redemption deadline; their active promotion codes have
+  three-use caps and no expiry. Metadata/names do not restrict a coupon to a
+  tier, so a wrong-tier code could produce a monthly amount that differs from
+  the public offer. No current monthly promotion code should be shared or
+  applied in a customer checkout.
+- The three existing monthly subscription links remain inactive. Create
+  product-scoped replacement coupons/codes in a dedicated sandbox, test that
+  each is rejected on both other products, and replace/deactivate the live
+  codes only after that passes. Keep the first-three-deployments global cap as
+  a manual operator check; the separate per-code caps do not enforce it.
+- A fresh read-only Tax check returned `pending` settings with no head-office
+  address, zero active registrations, and no threshold-monitoring locations or
+  `computed_at` timestamp. This provides no tax-obligation determination. The
+  active setup links still have `automatic_tax` enabled but no saved-payment
+  reuse agreement or recurring subscription data; do not send them as an
+  automated setup-plus-subscription flow. No Stripe settings, coupons, codes,
+  links, or payments were changed.

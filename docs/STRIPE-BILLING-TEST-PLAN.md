@@ -49,8 +49,10 @@ verified yet.
    Local AI. This is the current offer; it is not a $1,000 setup-only discount.
 
    The founding offer is advertised for the first three deployments total; the
-   Stripe coupon/promotion-code limits are per tier, so the operator must
-   enforce the cross-tier cap manually. Re-check current catalog and signed
+   Stripe redemption limits are per coupon/promotion code, not a shared cap,
+   and the current codes are not product-restricted. The operator must enforce
+   both the correct tier and the global cross-tier cap manually until safe,
+   product-scoped replacements are tested. Re-check current catalog and signed
    proposal immediately before each test or customer invoice.
 
 For an initial pilot, use a Stripe-hosted kickoff checkout only after the
@@ -98,14 +100,20 @@ use.
   amounts, monthly amount, promotion duration, cancellation terms, and tax
   treatment before making test objects. Do not change the live catalog as part
   of this rehearsal.
-- The current live launch coupons are product-scoped through `applies_to`, and
-  the matching active promotion codes each allow three redemptions (zero used
-  at the 2026-10-28 read-only check). Verify in sandbox that each code works
-  for its matching product and is rejected for the other two; do not create
-  replacement live coupons unless that test finds a defect. Per-tier
-  three-redemption caps do not enforce the site's first-three-deployments
-  total across all tiers; the operator must track the global count and stop
-  offering the launch discount after the third accepted deployment.
+- The current live launch coupons repeat fixed monthly discounts for 12 months:
+  $50/month for Cloud Workspace, $100/month for Workspace Appliance, and
+  $200/month for Private Local AI. Direct read-only retrieval of each coupon on
+  2026-10-28 returned no `applies_to` field, so none is product-restricted;
+  tier names/metadata are not enforcement. Each coupon and active promotion
+  code allows three redemptions, with zero used and no coupon `redeem_by` or
+  code `expires_at`. Do not share or apply these codes in a customer checkout:
+  the wrong tier's fixed amount could produce a monthly price different from
+  the public offer. In a dedicated sandbox, create and verify product-scoped
+  replacement coupons/codes and prove each is rejected for the other products
+  before replacing the live codes. Per-tier three-redemption caps still do not
+  enforce the site's first-three-deployments total across all tiers; the
+  operator must track that global count and stop offering the launch discount
+  after the third accepted deployment.
 - Confirm the founding monthly amount-only discount produces exactly 12 paid
   periods at the advertised price, then transitions to the standard price.
   Promotion-code eligibility, first charge date, and coupon duration must be
@@ -126,19 +134,28 @@ use.
   address or add a registration until the owner/accountant confirms the
   appropriate business details and tax treatment. [Stripe
   Tax and Payment Links](https://docs.stripe.com/tax/payment-links).
-- The three current active live Payment Links collect only the 50% founding
-  kickoff installment; they do not create a subscription, save a future-use
-  payment method, or enable off-session reuse. Three separate monthly
-  subscription links are inactive. At the 2026-10-28 read-only check each uses
-  the standard monthly price, permits promotion codes, requires payment-method
-  collection, starts a 30-day trial, and has automatic tax disabled. Those
-  links are only a fallback because they require a separate customer checkout.
-  In the sandbox, test a kickoff checkout with Customer creation and
+- A fresh 2026-10-28 read-only API check confirmed the three active live
+  Payment Links collect only the 50% founding kickoff installment. They have
+  `payment_method_collection=if_required`, no `payment_intent_data`, no
+  `subscription_data`, and no `consent_collection.payment_method_reuse_agreement`.
+  They do not save a future-use payment method, record off-session reuse
+  consent, or create a subscription. Their `automatic_tax.enabled` flag is
+  true, but Tax Settings are pending and there are no active registrations;
+  Stripe will not calculate tax until the merchant/accountant resolves setup.
+  Do not send these links or describe tax as configured.
+- The three separate monthly subscription Payment Links remain inactive. Each
+  uses its standard monthly Price, allows promotion codes, requires payment
+  method collection, sets a 30-day trial with cancellation if no method is
+  available, and has automatic tax disabled. These are only a fallback because
+  they require a separate customer checkout. Their actual trial, promotion,
+  payment-failure, consent, and tax behavior has not been rehearsed.
+- In the sandbox, test a kickoff checkout with Customer creation and
   `payment_intent_data.setup_future_usage=off_session`, plus explicit consent,
   then create the subscription at accepted delivery from that Customer's saved
   method. Verify the matching launch rate, consent record, tax treatment,
   failure/authentication recovery, and test-clock timeline before using any
-  live link.
+  live link. No live Payment Link or account setting was changed during the
+  read-only check.
 - Identify the existing sandbox products/prices/coupons or create disposable
   test-only objects. Avoid copying live IDs into test mode; Stripe objects are
   mode-specific.

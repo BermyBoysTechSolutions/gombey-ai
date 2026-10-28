@@ -144,17 +144,20 @@ implemented and rehearsed.
 
 The 2026-10-28 read-only check found that the live monthly subscription links
 are inactive and use standard monthly prices with promotion-code entry enabled.
-The three launch coupons are restricted to their matching products; each
-promotion code allows up to three redemptions, so the advertised first-three-
-deployments-total cap still requires manual cross-tier tracking. The Stripe
-sandbox rehearsal has not passed and the live account has no active Tax
-registrations. The active kickoff links have automatic tax enabled, while the
-inactive monthly links have it disabled. Do not activate or send a live
-monthly link or accept live payment until the sandbox amount/discount/consent
-cases and owner/accountant tax treatment are resolved. Do not describe the
-first charge as 30 days after delivery unless the saved-method flow is tested
-and the subscription is created at accepted delivery, or the customer completes
-the fallback subscription checkout on that date.
+The three launch coupons currently have no product restriction (`applies_to`
+is absent from direct Stripe retrieval), and each promotion code allows up to
+three redemptions. Do not share or apply the existing monthly codes until
+product-scoped replacements pass cross-tier rejection tests in a dedicated
+sandbox; the advertised first-three-deployments-total cap also requires manual
+cross-tier tracking. The Stripe sandbox rehearsal has not passed and the live
+account has no active Tax registrations. The active kickoff links have
+automatic tax enabled, while the inactive monthly links have it disabled. Do
+not activate or send a live monthly link or accept live payment until the
+sandbox amount/discount/consent cases and owner/accountant tax treatment are
+resolved. Do not describe the first charge as 30 days after delivery unless the
+saved-method flow is tested and the subscription is created at accepted
+delivery, or the customer completes the fallback subscription checkout on that
+date.
 See the [Stripe sandbox rehearsal plan](../../docs/STRIPE-BILLING-TEST-PLAN.md)
 for exact test cases and no-go criteria.
 
