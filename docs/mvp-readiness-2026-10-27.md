@@ -253,12 +253,12 @@ after the corresponding implementation and acceptance test.
 | Public claim | Current evidence | Gate still open |
 |---|---|---|
 | Cloud: dedicated VPS per customer | Separate Compose project, secrets, database, network, and storage were tested locally. | Public VPS, DNS/TLS, firewall, reboot, and restore acceptance. |
-| Cloud: up to 5 named accounts with admin/member roles | Five total accounts (one admin, four members) were provisioned on isolated restore with public registration disabled. One disposable member passed interactive shared-agent and privacy checks; a second member still needs provider-backed retrieval. | Repeat grounded retrieval with the intended customer-owned provider key, verify key isolation/revocation, and rehearse account recovery. |
-| Cloud: one workflow, one custom agent, shared knowledge | One synthetic shared File Search agent and admin-managed Viewer access are configured. Local lexical-mock upload/index/query/delete plumbing passed. | Real customer-template semantic retrieval/citations with a member account and customer-owned model + embeddings credentials. |
+| Cloud: up to 5 named accounts with admin/member roles | Five accounts (one admin, four members) were provisioned with registration disabled. Two members passed shared-agent ACL checks; an earlier disposable member passed interactive login/privacy checks. Synthetic grounded File Search answers with citations and unsupported-query abstention passed through API harnesses on primary and restore staging. These were not a simultaneous two-member visible-browser run and used temporary owner test credentials. | Visible-browser two-member run; repeat with approved customer-owned model and embeddings keys; verify key isolation/revocation and account recovery. |
+| Cloud: one workflow, one custom agent, shared knowledge | Shared File Search agent and admin-managed Viewer access are configured. Synthetic 31–36-page manuals were retrieved with expected facts/citations; unsupported facts were abstained; scope and deletion checks passed. | Repeat the full flow in the actual member UI with intended customer-owned model + embeddings credentials and record citations/deletion evidence. |
 | Cloud: connector, only if separately scoped and accepted | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. Production Cloud copy excludes connectors from base scope. | Keep connectors out of the base offer until a named integration passes compatibility, permission, and data-path acceptance tests. |
 | Cloud: managed hosting, updates, backups, restore checks | Encrypted local snapshot and isolated full restore passed. New deployment wording requires a per-customer backup/recovery plan. | Secure/remove legacy plaintext test snapshots; define cadence/retention and portable key escrow; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
 | Cloud: setup guide, onboarding, 1.5 support hours and 2-business-day response | Reusable pilot scope/acceptance worksheet and operator handoff runbook are now in `deploy/customer/`. | Rehearse onboarding, support intake/time tracking, response target, and recovery on a real deployment. |
-| Cloud: customer-owned provider billing | One disposable user's Qwen chat succeeded with that user's own key; a second user without a key was denied rather than inheriting it. | Verify a member's grounded chat end-to-end and confirm actual usage appears in the intended provider account. |
+| Cloud: customer-owned provider billing | An earlier disposable user-scoped Qwen chat succeeded and a no-key member was denied rather than inheriting a peer's key. Provider-account usage was not confirmed. Current staging chat-provider keys are placeholders; OpenClaw CLI currently fails local config validation. | Configure the test/customer-owned provider key through the approved secure path, repeat the member test, and confirm usage in that provider account. |
 | Appliance: standard Beelink SER5 included, on-site workspace, primary data hosted there | No SER5 has been commissioned for acceptance. | Confirm hardware SKU/cost; test install, storage, network/power failure, remote recovery, security, backup, and restore on the actual device. |
 | Appliance: 10 users, three custom agents, one connector/tool | Current customer template has one shared agent and no MCP connector. Two-member authorization has passed. | Seed/configure three agents; test ten accounts; connect the named tool and enforce human approval for writes. |
 | Appliance: monitoring, updates, encrypted off-device backup, restore test | Local backup/restore artifacts exist for staging only. | Implement and test monitoring, update rollback, encrypted off-device backup, and actual-device restore. |
@@ -336,16 +336,15 @@ applicable gates above have evidence.
   The advertised “first three deployments” cap is not a Stripe-enforced global
   cap and must be tracked across all tiers by the operator unless the offer is
   redesigned.
-- A fresh object-level read found all three coupons valid and unused
-  (`times_redeemed=0`), with `max_redemptions=3`; each associated promotion code
-  also has a three-redemption limit. However, none of the coupon responses has
-  an `applies_to` product list. The per-tier names/metadata therefore do not
-  prove product restriction: the codes may be usable on a different tier's
-  subscription link. Stripe documents that product scope is set when creating
-  a coupon and is not editable afterward except for its name. Keep monthly
-  links inactive; create and test product-scoped replacement coupons/codes in
-  sandbox before any live monthly link is sent. See [Stripe coupon product
-  restrictions](https://docs.stripe.com/billing/subscriptions/coupons).
+- Correction from the 06:14 EDT expanded coupon read: the earlier
+  non-expanded response was insufficient to determine product scope. All
+  three live coupons do have `applies_to` lists, each matching its
+  corresponding active product; all three were valid and unused
+  (`times_redeemed=0`) and each promotion code allows three redemptions. Keep
+  monthly links inactive until sandbox tests prove each code is accepted for
+  its matching product and rejected for the other two. The site's
+  first-three-deployments cap is still manual across tiers. See [Stripe coupon
+  product restrictions](https://docs.stripe.com/billing/subscriptions/coupons).
 - The current GETs show six products total (three current active products and
   three inactive historical Plus/Pro/Max products), 15 active prices (standard
   and founding setup installments plus three standard recurring prices), and
@@ -1103,3 +1102,18 @@ applicable gates above have evidence.
   status` currently fails local configuration schema validation. No key was
   extracted, copied, or exposed, and no model request was made; repair or use
   of that credential path remains unresolved.
+
+## Credential and runbook consistency recheck — 2026-10-28 06:17 EDT
+
+- Read-only runtime classification (values withheld): the primary staging RAG
+  container has a non-placeholder embeddings key, but key identity and
+  billing-account ownership are unverified. The restore-copy RAG key is
+  placeholder/unset. The running primary LibreChat API's OpenRouter, OpenAI,
+  Anthropic, and Google chat-key variables are placeholders.
+- `openclaw models status` fails before model discovery because the local
+  OpenClaw config does not pass the installed CLI's schema validation. No key
+  was extracted or copied, no OpenClaw config was changed, and no model request
+  was made. The requested low-cost model test remains open.
+- Corrected the pilot scope's stale statement about coupon eligibility and
+  updated the readiness matrix with the latest member/API evidence and its
+  limits. `git diff --check` passed; no app or customer runtime state changed.

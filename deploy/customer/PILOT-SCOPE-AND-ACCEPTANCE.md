@@ -131,13 +131,18 @@ automatically save/reuse its payment method. Gombey does not currently automate
 the transition from kickoff to delivery or subscription signup; the operator
 handles the separate invoices and subscription enrollment.
 
-As of 2026-10-28, the live monthly subscription links are inactive, the Stripe
-sandbox rehearsal has not passed, launch discounts are not restricted to their
-matching products, and Stripe Tax has no active registrations. Do not activate
-or send a live monthly link or accept a live payment until the sandbox cases,
-product-scoped discount rules, tax treatment, and customer consent flow are
-resolved. Do not describe the first charge as 30 days after delivery unless the
-customer completed subscription checkout on the delivery-acceptance date.
+As of the 2026-10-28 read-only check, the live monthly subscription links are
+inactive and use standard monthly prices with promotion-code entry enabled.
+The three launch coupons are restricted to their matching products; each
+promotion code allows up to three redemptions, so the advertised first-three-
+deployments-total cap still requires manual cross-tier tracking. The Stripe
+sandbox rehearsal has not passed and the live account has no active Tax
+registrations. The active kickoff links have automatic tax enabled, while the
+inactive monthly links have it disabled. Do not activate or send a live
+monthly link or accept live payment until the sandbox amount/discount/consent
+cases and owner/accountant tax treatment are resolved. Do not describe the
+first charge as 30 days after delivery unless the customer completed
+subscription checkout on the delivery-acceptance date.
 See the [Stripe sandbox rehearsal plan](../../docs/STRIPE-BILLING-TEST-PLAN.md)
 for exact test cases and no-go criteria.
 
