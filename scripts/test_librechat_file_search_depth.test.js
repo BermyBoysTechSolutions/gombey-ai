@@ -7,7 +7,7 @@ const upstreamSnippet = `
 const body = {
   file_id: file.file_id,
   query,
-  k: 10
+  k: 5
 };
 const formattedResults = validResults.flatMap((result) => result.data.map(([docInfo, distance]) => ({
   filename: docInfo.metadata.source.split("/").pop(),
@@ -34,8 +34,16 @@ test('is idempotent after both verified limits are applied', () => {
   assert.equal(twice.source, once);
 });
 
+test('accepts the already-raised per-file depth while raising the merge cap', () => {
+  const alreadyRaised = upstreamSnippet.replace('k: 5', 'k: 10');
+  const result = patchSource(alreadyRaised);
+  assert.equal(result.changed, true);
+  assert.match(result.source, /k: 20/);
+  assert.match(result.source, /\.slice\(0, 20\)/);
+});
+
 test('refuses an unknown per-file candidate depth', () => {
-  assert.throws(() => patchSource(upstreamSnippet.replace('k: 10', 'k: 7')), /found 7/);
+  assert.throws(() => patchSource(upstreamSnippet.replace('k: 5', 'k: 7')), /found 7/);
 });
 
 test('refuses an unknown merged context limit', () => {
@@ -43,10 +51,10 @@ test('refuses an unknown merged context limit', () => {
 });
 
 test('refuses either unrecognized source shape', () => {
-  assert.throws(() => patchSource('const body = { query, k: 10 };'), /per-file File Search depth; found 0/);
-  assert.throws(() => patchSource(upstreamSnippet.replace('const formattedResults =', 'const results =')), /merged File Search context limit; found 0/);
+  assert.throws(() => patchSource('const body = { query, k: 5 };'), /per-file File Search depth.*found 0/);
+  assert.throws(() => patchSource(upstreamSnippet.replace('const formattedResults =', 'const results =')), /merged File Search context limit.*found 0/);
 });
 
 test('refuses ambiguous duplicate matches without changing source', () => {
-  assert.throws(() => patchSource(`${upstreamSnippet}\n${upstreamSnippet}`), /per-file File Search depth; found 2/);
+  assert.throws(() => patchSource(`${upstreamSnippet}\n${upstreamSnippet}`), /per-file File Search depth.*found 2/);
 });

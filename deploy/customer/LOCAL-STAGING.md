@@ -1234,10 +1234,12 @@ confirmed revoked and replaced.
   Unrelated-entity retrieval did not expose the target fact. All three
   temporary file IDs were deleted and verified absent.
 - Updated the deployment startup patch so the pinned LibreChat source raises
-  both per-file retrieval depth and final merged passage cap to twenty. The
-  actual pinned candidate bundle was checked in memory; the exact two source
-  patterns matched once each and the transformation was idempotent. No app
-  container was patched or restarted. Six source-shape/unit tests pass.
+  both per-file retrieval depth and final merged passage cap to twenty. A
+  disposable container running the exact pinned v0.8.8 image successfully
+  patched its pristine 5/10 source; it was removed after the check. The actual
+  candidate bundle was also checked in memory for exact-once matches and
+  idempotence. No existing app container was patched or restarted. Seven
+  source-shape/unit tests pass.
 - This is not yet the member-visible answer-quality test with GPT-6 Luna, and
   the larger context may increase prompt usage. Keep the new long-corpus UI
   test open before declaring large-document behavior production-ready.

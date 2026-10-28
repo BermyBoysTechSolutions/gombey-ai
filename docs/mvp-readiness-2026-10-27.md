@@ -3298,10 +3298,12 @@ applicable gates above have evidence.
   were deleted and verified absent.
 - Updated the customer template's LibreChat startup patch to raise both
   per-file search depth and merged model context from 10 to 20, with
-  fail-closed source-shape checks. The patch was tested in-memory against the
-  actual pinned candidate LibreChat bundle; it changed exactly one of each
-  target, was idempotent, and made no runtime/container changes. Six patch
-  unit tests pass.
+  fail-closed source-shape checks. It accepts the pristine upstream per-file
+  depth of 5, the earlier patched depth of 10, or the target 20; the merge cap
+  must be 10 or 20. A disposable container of the exact pinned LibreChat
+  v0.8.8 image successfully applied the startup patch to the pristine 5/10
+  source, then was removed. The candidate bundle also passed an in-memory
+  check for exact-once matching and idempotence. Seven patch unit tests pass.
 - This is a retrieval API regression, not yet a member-visible GPT-6 Luna
   response test with these new PDFs. The larger context can increase prompt
   size; validate with the chosen customer model before offering long-document

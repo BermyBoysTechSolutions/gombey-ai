@@ -4,10 +4,9 @@ const sourcePath = '/app/packages/api/dist/index.cjs';
 const perFileDepthPattern = /(file_id:\s*file\.file_id,\s*query,\s*k:\s*)(\d+)/g;
 const mergedContextLimitPattern =
   /(const formattedResults = validResults\.flatMap\([\s\S]*?\.sort\(\(a, b\) => a\.distance - b\.distance\)\.slice\(0,\s*)(\d+)(\))/g;
-const VERIFIED_LIMITS = new Set([10, 20]);
 const TARGET_LIMIT = 20;
 
-function replaceVerifiedLimit(source, pattern, label) {
+function replaceVerifiedLimit(source, pattern, label, verifiedLimits) {
   const matches = [...source.matchAll(pattern)];
   if (matches.length !== 1) {
     throw new Error(
@@ -17,9 +16,9 @@ function replaceVerifiedLimit(source, pattern, label) {
   }
 
   const currentLimit = Number(matches[0][2]);
-  if (!VERIFIED_LIMITS.has(currentLimit)) {
+  if (!verifiedLimits.has(currentLimit)) {
     throw new Error(
-      `Expected the pinned upstream ${label} to be 10 or 20; found ${currentLimit}. ` +
+      `Expected a verified upstream ${label}; found ${currentLimit}. ` +
         'Refusing to apply an unverified patch.',
     );
   }
@@ -36,11 +35,17 @@ function replaceVerifiedLimit(source, pattern, label) {
 }
 
 function patchSource(source) {
-  const perFile = replaceVerifiedLimit(source, perFileDepthPattern, 'per-file File Search depth');
+  const perFile = replaceVerifiedLimit(
+    source,
+    perFileDepthPattern,
+    'per-file File Search depth (5, 10, or 20)',
+    new Set([5, 10, 20]),
+  );
   const merged = replaceVerifiedLimit(
     perFile.source,
     mergedContextLimitPattern,
-    'merged File Search context limit',
+    'merged File Search context limit (10 or 20)',
+    new Set([10, 20]),
   );
   return { source: merged.source, changed: perFile.changed || merged.changed };
 }
