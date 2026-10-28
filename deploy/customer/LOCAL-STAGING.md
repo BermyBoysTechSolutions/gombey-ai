@@ -1036,3 +1036,26 @@ confirmed revoked and replaced.
 - Candidate and restored workspace use the same pinned LibreChat image digest.
   Both changes are confined to synthetic local databases; no production role,
   customer account, live provider key, public endpoint, or VPS was changed.
+
+## Member-side Qwen text inference follow-up (2026-10-28)
+
+- The current OpenClaw OpenRouter credential was accepted by the provider's
+  model-list endpoint (HTTP 200) and by a direct synthetic Qwen completion
+  (HTTP 200, exact marker returned). This confirms the current credential is
+  accepted, but does not prove an older credential was revoked or that a spend
+  limit is configured. The value remained in memory and was not written to
+  source or either deployment environment file.
+- A disposable `USER` authenticated to primary staging in isolated Chromium,
+  selected `Qwen 3.5 9B (OpenRouter test)` in the rendered UI, and received the
+  exact synthetic reply `QWEN-STAGING-OK`. LibreChat's custom endpoint key
+  must be saved under the exact name `OpenRouter`; the API stores its value as
+  serialized JSON with `apiKey` and `baseURL`. A raw string/lowercase
+  diagnostic write failed; the corrected endpoint-scoped value passed.
+- The disposable account was removed with LibreChat's supported deletion CLI
+  after stopping only the target staging API. Transaction history was retained.
+  Mongo verification found zero matching user, key, conversation, and message
+  records; the exact host/container credential files were removed. Ports 3083,
+  3084, and 3085 returned HTTP 200 after the primary API restarted.
+- This establishes member-side text inference, not shared-agent document
+  retrieval, citations, or File Search. No customer data or live billing was
+  involved; the production customer template and VPS were unchanged.

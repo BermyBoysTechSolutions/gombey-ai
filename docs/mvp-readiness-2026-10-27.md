@@ -1882,3 +1882,29 @@ applicable gates above have evidence.
   still not connected, so the billing lifecycle has not been rehearsed.
 - This pass made no Stripe writes and created no billing objects. No customer
   data, production deployment, DNS, or VPS was changed.
+
+## Member-side Qwen text inference confirmed — 2026-10-28 15:52 EDT
+
+- The current OpenClaw OpenRouter credential was accepted by the provider's
+  model-list endpoint (HTTP 200) and by a direct synthetic Qwen completion
+  (HTTP 200, exact marker returned). This proves the credential currently
+  works; it does not independently prove any older key was revoked or that a
+  spend limit is configured. The key stayed in memory and was not printed,
+  committed, or written to a deployment environment file.
+- In isolated Chromium, a disposable `USER` signed into primary staging,
+  selected `Qwen 3.5 9B (OpenRouter test)` in the rendered chat UI, and got the
+  exact synthetic reply `QWEN-STAGING-OK`. The endpoint-scoped member key must
+  be saved under the exact endpoint name `OpenRouter` and as a JSON envelope
+  containing `apiKey` and `baseURL`; a raw-string/lowercase diagnostic write
+  produced an error and was replaced before the passing test. No test data was
+  sent to the model besides the one-line synthetic prompt.
+- Deleted the disposable member with LibreChat's supported CLI after stopping
+  only the target staging API. Transaction history was left untouched. A
+  database check confirmed no matching user, key, conversation, or message;
+  host and container credential files were removed. Staging API and local
+  restore/candidate health endpoints returned HTTP 200 after restart.
+- This closes ordinary member-side provider-backed text chat for Qwen. It does
+  not close member-side File Search, semantic retrieval through the Gombey
+  agent UI, citations, uploaded-document deletion, or the production VPS gate.
+  No customer records, live billing, production deployment, DNS, or VPS was
+  changed.
