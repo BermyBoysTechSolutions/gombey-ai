@@ -2666,3 +2666,19 @@ applicable gates above have evidence.
   is described with that deployment/inference mode. The page also states that
   hardware-specific scope and local model performance require validation.
 - No tier names, prices, products, Stripe records, or public copy were changed.
+
+## Fresh local regression and isolation rerun — 2026-10-28 16:22 EDT
+
+- Re-ran customer initialization, customer preflight/Compose validation,
+  encrypted-backup safety, RAG smoke CLI (5 tests), RAG fail-closed source
+  patch (4 tests), embeddings-key setter (7 tests), and File Search depth
+  patch (5 tests); all passed.
+- Re-ran the read-only cross-project isolation checker for all three pairs
+  among the customer candidate, primary staging, and restored-copy Compose
+  projects. Each pair had disjoint networks and storage, own-service Mongo DNS,
+  blocked cross-project DNS/TCP to API, MongoDB, Meilisearch, pgvector, and RAG,
+  and no published internal-service ports.
+- Candidate login returned HTTP 200. No services were restarted; no persistent
+  data, external provider keys, customer data, billing records, or Stripe state
+  were changed. These local checks still do not establish public VPS exposure,
+  customer-provider billing, or payment/deferred-subscription acceptance.
