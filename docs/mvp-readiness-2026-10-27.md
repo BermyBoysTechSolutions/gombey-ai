@@ -2625,7 +2625,25 @@ applicable gates above have evidence.
   MiB, pgvector 33 MiB, and Meilisearch 65 MiB. This is not a load test and
   does not establish a safe production concurrency or VPS size.
 - The shared Colima VM runs multiple active Gombey and unrelated test
-  containers. I did not stop it, relocate its disk, prune images/volumes, or
-  otherwise risk disrupting those workloads. Keep new persistent test data on
-  the external volume; moving the VM itself requires a separately planned
-  maintenance window and verified rollback.
+  containers. I did not stop it, relocate its disk, or prune any containers or
+  volumes. Keep new persistent test data on the external volume; moving the VM
+  itself requires a separately planned maintenance window and verified
+  rollback.
+
+## Targeted Colima image cleanup and recheck — 2026-10-28 16:18 EDT
+
+- Inspected dangling image IDs against every running and stopped container.
+  Removed seven recent untagged RAG build images with no container references;
+  retained all container-referenced images, every container, and every volume.
+  One stale image ID remained inconsistent between Docker's image list and
+  inspect calls, so it was left untouched.
+- Ran Colima's documented `fstrim` procedure; the guest reported 2.6 GiB
+  trimmed from `/`. The candidate API, RAG, MongoDB, pgvector, and Meilisearch
+  remained running; `/login` still returned HTTP 200. No application or data
+  volume was stopped or deleted.
+- macOS still reported 12 GiB available afterward and the Colima disk file
+  remained about 30 GiB. The guest trim therefore did not yet reclaim visible
+  host capacity. A full Colima-home relocation is pending owner choice because
+  it would interrupt all Docker apps and make them depend on the external SSD.
+  Colima's official [FAQ](https://github.com/abiosoft/colima/blob/main/docs/FAQ.md)
+  documents both `COLIMA_HOME` and VM disk-space recovery behavior.
