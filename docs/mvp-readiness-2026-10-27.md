@@ -3149,3 +3149,14 @@ applicable gates above have evidence.
   two member accounts using the admin-owned knowledge agent. This runtime
   recheck did not exercise a browser login, provider-side billing, production
   Stripe checkout, or the Hostinger VPS. All of those gates remain explicit.
+
+## Personal demo network-binding observation — 2026-10-28
+
+- A read-only Docker port inspection found the personal `gombey-ai-portal`
+  container published on `0.0.0.0:3080` and `[::]:3080`, while the dedicated
+  customer-test APIs are bound only to `127.0.0.1` on ports 3083–3086. This
+  means the personal portal listens on all host interfaces; actual reachability
+  still depends on the Mac's firewall and network/router rules. The production
+  demo tunnel targets loopback, so the all-interface publish is not needed for
+  that tunnel. No port binding or running container was changed; review whether
+  LAN access is intended and restrict it to loopback if it is not.
