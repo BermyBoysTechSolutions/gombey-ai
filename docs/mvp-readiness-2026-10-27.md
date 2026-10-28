@@ -963,3 +963,17 @@ applicable gates above have evidence.
   entity scoping only. It does not prove shared-agent permissions, long-PDF
   retrieval, member-facing citations, or provider privacy. No corpus or
   customer data was uploaded; no production services changed.
+
+## Fail-closed RAG integration and storage audit — 2026-10-28 05:11 EDT
+
+- `scripts/test_rag_fail_closed_integration.sh` passed with a disposable
+  Compose project. A synthetic upload to a loopback-only invalid embeddings
+  endpoint returned HTTP 500 and stored zero vectors; the test removed its
+  temporary API/database containers, networks, and vector volume.
+- Confirmed primary staging app data, uploads, Mongo data, vector data, and
+  Meilisearch data bind to `/Volumes/Mac Mini SSD/Gombey AI Local Staging`.
+  Colima's sparse 100-GiB VM disk file remains on the internal drive (about
+  30 GiB allocated, about 14 GiB free on the host). Avoid additional large
+  image builds until storage is reviewed; no VM or persistent data was moved.
+- This is staging-only evidence. Authenticated long-document/shared-agent
+  member checks and public VPS acceptance remain open.
