@@ -2258,6 +2258,10 @@ applicable gates above have evidence.
   sent; persistent member File Search/provider acceptance remains open until a
   fresh authorized test/customer-owned embeddings key is entered through the
   hidden-input helper and the member test is repeated.
+- Clarified the credential runbook: per-user chat-provider keys and the
+  server-side embeddings key are separate, and a local candidate must target
+  the exact `.env` file used by that Compose project. This avoids silently
+  updating the default deployment or a different sibling stack.
 - The offer mapping remains as designed: dedicated VPS/cloud inference;
   on-site Beelink SER5/cloud inference; and selected Mac Studio, DGX Spark, or
   Strix Halo hardware/local inference. The Cloud Workspace template does not

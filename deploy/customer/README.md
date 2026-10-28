@@ -168,17 +168,33 @@ have appeared in a shared note. Never paste provider keys into chat, shell
 history, screenshots, or the repository.
 
 The separate server-side embeddings key is entered at a hidden prompt with
-`python3 scripts/set_rag_embeddings_key.py`. Use a newly rotated, low-limit
-customer-owned key; the helper updates only `RAG_OPENAI_API_KEY`, requires an
-owner-owned mode-600 file, and never displays the value. Afterward, recreate
-only the local RAG API service for the key to take effect:
+`python3 scripts/set_rag_embeddings_key.py`. This is distinct from the
+per-user OpenRouter chat key entered in LibreChat: adding a chat key does not
+configure document embeddings. Use a newly rotated, low-limit customer-owned
+embeddings key; the helper updates only `RAG_OPENAI_API_KEY`, requires an
+owner-owned mode-600 file, and never displays the value.
+
+For a production deployment, the helper defaults to `deploy/customer/.env`.
+For a separate local staging project, first set
+`GOMBEY_CUSTOMER_ENV_PATH` to the exact protected `.env` file passed to that
+project's Compose commands. Do not rely on the default path for a named
+candidate or sibling deployment: that could update a different stack's
+credentials. Then enter the key and recreate only that same project's RAG API:
 
 ```bash
-GOMBEY_LOCAL_DATA_ROOT="/Volumes/Mac Mini SSD/Gombey AI Local Staging" \
-  docker compose --env-file deploy/customer/.env \
+export GOMBEY_CUSTOMER_ENV_PATH="/absolute/path/to/the/target-stack/.env"
+export GOMBEY_LOCAL_DATA_ROOT="/absolute/path/to/the/target-stack/data-root"
+python3 scripts/set_rag_embeddings_key.py
+
+docker compose --env-file "$GOMBEY_CUSTOMER_ENV_PATH" \
   -f deploy/customer/compose.yaml -f deploy/customer/compose.local.yaml \
   up -d --force-recreate rag_api
 ```
+
+Run the Compose command from the same source checkout and with the same
+Compose project settings used to start that staging stack. For a production
+VPS, follow its dedicated Compose commands instead of applying the local
+overlay.
 
 Do not paste keys into chat, shell arguments, screenshots, or repository files.
 If an embeddings key must be disabled before rotation, run the helper with
