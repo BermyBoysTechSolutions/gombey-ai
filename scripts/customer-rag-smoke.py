@@ -12,6 +12,7 @@ finally block.
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
@@ -125,6 +126,18 @@ def delete_fixture():
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run a synthetic, self-cleaning retrieval smoke test against the "
+            "RAG service configured in this environment."
+        ),
+        epilog=(
+            "Run inside the target RAG container with: "
+            "docker exec -i <rag-container> python - < scripts/customer-rag-smoke.py"
+        ),
+    )
+    parser.parse_args()
+
     passed = False
     try:
         status, result = embed()
@@ -169,16 +182,26 @@ def main() -> int:
         print(f"RAG smoke failed: {type(error).__name__}", file=sys.stderr)
         passed = False
     finally:
-        status, _ = delete_fixture()
-        print(f"synthetic vector cleanup HTTP {status}")
-        if status not in (200, 404):
-            print("cleanup requires follow-up; do not use this RAG service for real data", file=sys.stderr)
+        try:
+            status, _ = delete_fixture()
+            print(f"synthetic vector cleanup HTTP {status}")
+            if status not in (200, 404):
+                print(
+                    "cleanup requires follow-up; do not use this RAG service for real data",
+                    file=sys.stderr,
+                )
+                passed = False
+            status, remaining = ids_for(ENTITY_ID)
+            remaining_ids = collect_ids(remaining)
+            absent = status == 200 and FILE_ID not in remaining_ids
+            print(f"post-cleanup ID check HTTP {status}; vector_absent={absent}")
+            passed = passed and absent
+        except (OSError, TimeoutError, ValueError) as error:
+            print(
+                f"synthetic vector cleanup could not be confirmed: {type(error).__name__}",
+                file=sys.stderr,
+            )
             passed = False
-        status, remaining = ids_for(ENTITY_ID)
-        remaining_ids = collect_ids(remaining)
-        absent = status == 200 and FILE_ID not in remaining_ids
-        print(f"post-cleanup ID check HTTP {status}; vector_absent={absent}")
-        passed = passed and absent
 
     return 0 if passed else 1
 

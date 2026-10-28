@@ -866,3 +866,30 @@ applicable gates above have evidence.
   anything. No event type, availability, or website link changed. Reconnect
   Calendly with event-type write permission, then create/verify the three
   events and update the separate landing-page CTA links.
+
+## Fresh synthetic RAG and failure-path verification — 2026-10-28
+
+- The primary loopback staging RAG service passed a fresh synthetic
+  ingest/scope/query/delete check: ingestion, own-scope and unrelated-scope
+  checks, and retrieval all returned HTTP 200; the test file ID appeared in
+  its own-scope listing and not in the unrelated-scope listing; the scoped
+  query returned the unique marker; delete returned HTTP 200; and the
+  post-delete ID check confirmed the vector was absent.
+- Re-ran the disposable fail-closed integration using the protected mode-600
+  staging environment file. The deliberately unavailable loopback embeddings
+  endpoint made the synthetic upload return HTTP 500 and left zero vectors;
+  the test's dedicated containers, networks, and volume were removed.
+- The read-only two-deployment isolation check passed again: disjoint Docker
+  networks, own-service DNS works, cross-deployment Mongo DNS is blocked in
+  both directions, internal database/search/RAG services publish no host
+  ports, and persistent data roots are distinct. Both staging login routes
+  returned HTTP 200.
+- Hardened `customer-rag-smoke.py`: `--help` now exits without contacting a
+  service, and an unavailable endpoint reports cleanup uncertainty rather
+  than emitting a traceback. Two CLI regression tests were added. Customer
+  init/preflight, encrypted-backup safety, 13 Python tests, seven
+  embeddings-helper tests, four fail-closed patch tests, and shell syntax
+  checks passed.
+- Tests used synthetic-only fixtures. This does not prove a customer-owned
+  provider account, a second member's provider billing, public VPS/DNS/TLS,
+  or customer acceptance. No VPS, DNS, billing, or production data changed.
