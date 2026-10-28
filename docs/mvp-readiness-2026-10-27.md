@@ -2603,3 +2603,11 @@ applicable gates above have evidence.
   They do not replace a customer-owned provider-billing check, Stripe sandbox
   rehearsal, public VPS DNS/TLS/firewall/reboot/restore acceptance, or hardware
   acceptance. No customer data, account, provider key, or payment was used.
+
+## Hostinger inventory access recheck — 2026-10-28 16:12 EDT
+
+- Retried the read-only `vps_virtual-machines_list` operation. It timed out
+  after 300 seconds, so the account's current VPS inventory remains unverified;
+  this is not evidence that the account has no VPS. No Hostinger CLI is
+  installed as a local fallback. No Hostinger write, purchase, DNS change, or
+  server operation was attempted.
