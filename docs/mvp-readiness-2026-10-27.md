@@ -1410,6 +1410,10 @@ applicable gates above have evidence.
   127.0.0.1:3085; no authenticated interaction was possible with the current
   synthetic candidate credentials. The prior headless member-agent checks
   remain valid, but a visible-browser walkthrough is still open.
+- A read-only Hostinger VPS inventory request again remained pending for more
+  than two minutes and was stopped without a result. Existing account VPS
+  availability remains unknown; no purchase, power, DNS, or network action
+  was issued.
 - No production app, public website, live Stripe state, VPS, DNS, or customer
   data was changed. The MVP goal remains open on customer-owned provider proof,
   Stripe sandbox and tax/consent rehearsal, off-device recovery, and approved
