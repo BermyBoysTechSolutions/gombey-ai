@@ -2585,3 +2585,21 @@ applicable gates above have evidence.
   a sandbox billing rehearsal remains blocked until a sandbox is connected.
   This was a read-only audit: no products, Prices, links, invoices, customer
   subscriptions, payments, or tax settings were created or changed.
+
+## Fresh local pre-VPS regression and isolation run — 2026-10-28 16:05 EDT
+
+- The candidate API and RAG containers report healthy, and the candidate
+  `/login` endpoint returned HTTP 200. No containers were restarted or stopped.
+- Re-ran customer initialization, customer preflight, encrypted-backup safety,
+  RAG smoke CLI (5 tests), fail-closed patch (4 tests), embeddings-key setter
+  (7 tests), and File Search retrieval-depth (5 tests); all passed.
+- Re-ran the read-only isolation checker for every pair among the candidate,
+  primary staging, and restored-copy Compose projects. All three pairs passed:
+  networks and persistent storage are distinct; each API resolves only its own
+  Mongo service; cross-project service DNS and private-IP TCP to API, MongoDB,
+  Meilisearch, pgvector, and RAG are blocked; and internal service ports are
+  unpublished.
+- These results revalidate local code and dedicated-deployment boundaries.
+  They do not replace a customer-owned provider-billing check, Stripe sandbox
+  rehearsal, public VPS DNS/TLS/firewall/reboot/restore acceptance, or hardware
+  acceptance. No customer data, account, provider key, or payment was used.
