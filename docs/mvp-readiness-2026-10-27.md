@@ -1019,3 +1019,18 @@ applicable gates above have evidence.
   UI acceptance, dedicated Stripe sandbox access and billing rehearsal, tax
   review, and owner-approved VPS hostname/spend plus public network/restore
   acceptance.
+
+## Post-resume staging verification — 2026-10-28 09:28 UTC
+
+- Re-ran customer-init, customer-preflight, backup-safety, and all 13 Python
+  regression tests; all passed. The staging Compose configuration validates,
+  and its API and RAG containers report healthy. Both loopback login routes
+  (`3083` and `3084`) return HTTP 200.
+- A fresh synthetic RAG smoke against the current staging embeddings
+  configuration passed: embedding, own-scope ID check, unrelated-scope
+  isolation, exact-marker retrieval, deletion, and post-delete absence all
+  returned expected results. The configured credential was not printed. This
+  was synthetic-only and may incur a tiny provider charge.
+- No customer documents, production state, Stripe objects, public website,
+  VPS, or DNS were changed. This does not replace the authenticated member UI
+  test: no native-browser interaction control is available in this session.
