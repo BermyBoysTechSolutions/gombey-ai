@@ -603,3 +603,31 @@ applicable gates above have evidence.
   preflight, encrypted-backup safety, and all 11 Python unit tests. Test-only
   bytecode caches were removed. No product code, live Stripe state, DNS, or VPS
   was modified.
+
+## MVP continuation verification (2026-10-28)
+
+- Re-ran customer initialization, production preflight unit cases, encrypted
+  backup safety, and all 11 Python unit tests; all passed. The production
+  preflight correctly rejects the local staging environment because its
+  hostname is reserved for testing, not a customer domain.
+- Re-ran the disposable fail-closed RAG integration: synthetic upload against
+  a loopback-only unavailable embeddings endpoint returned HTTP 500, stored
+  zero vectors, and its disposable containers, networks, and database volume
+  were removed.
+- Queried the current primary and restore staging databases read-only: both
+  contain the shared `Juniper & Slate Studio Workflow Assistant` configured
+  for `gpt-6-luna` with `file_search` only. Both login pages returned HTTP 200.
+- Tested Docker DNS in both directions with a positive control: each API
+  resolved its own Mongo service, while neither could resolve the other
+  deployment's Mongo container. Runtime inspection also confirmed separate
+  project-specific networks and separate app, upload, MongoDB, and pgvector
+  data roots on the external SSD. This is local network/storage isolation
+  evidence, not a full security audit or the required customer VPS test.
+- Both running RAG containers currently have placeholder embeddings values,
+  and the primary `.env` is also still a placeholder; the protected helper
+  session is still awaiting the fresh key. Persistent
+  member-side File Search therefore remains unverified with a customer-owned
+  embeddings credential. The remaining browser member sign-in/privacy checks,
+  Stripe sandbox rehearsal, tax review, and cloud VPS acceptance are still
+  open. No customer data, live billing objects, DNS, or VPS resources were
+  created or changed.
