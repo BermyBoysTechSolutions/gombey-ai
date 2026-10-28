@@ -1564,3 +1564,5 @@ applicable gates above have evidence.
   the setup placeholder, and the hidden-input prompt is still waiting. No key
   was used or printed. This improves the smoke runner's local test coverage
   but does not pass provider-backed embeddings or member-facing File Search.
+- Committed and pushed the scoped test/doc change as `9116e02` to
+  `codex/gombey-mvp-preflight-2026-10-27`; unrelated `tmp/` remains untouched.
