@@ -1908,3 +1908,30 @@ applicable gates above have evidence.
   agent UI, citations, uploaded-document deletion, or the production VPS gate.
   No customer records, live billing, production deployment, DNS, or VPS was
   changed.
+
+## Shared long-document retrieval and RAG-scope check — 2026-10-28 12:01 EDT
+
+- A first evaluation pass compared the attached agent corpus with a newer local
+  answer key and used mismatched facts. The apparent misses were a test-fixture
+  mismatch, not evidence of retrieval failure. The actual shared agent corpus
+  is the older synthetic Juniper & Slate set; its three attached PDFs are 31,
+  36, and 31 pages. The newer generated PDFs and their answer key are separate
+  artifacts and the answer key is not uploaded.
+- Re-ran read-only retrieval against the three actual attached file IDs and
+  their shared agent scope. Beacon Trail's campaign/date/churn facts were
+  present in the Campaign Playbook results; Alder & Finch's HOLD state, missing
+  Jamie Rivera written approval, and tentative slot were present in the
+  Delivery Records results; and the two independent release gates plus exact
+  final-version requirement were present in the Operations Manual results.
+  All three requests returned HTTP 200 with six passages, and each result set
+  pointed only to its intended PDF. Relevant PDF pages were retrieved for all
+  three questions.
+- Scope isolation also passed: the shared-agent scope returned all three
+  attached file IDs and five query passages, while an unrelated synthetic
+  scope returned zero IDs and zero passages for the same file/query request.
+- This confirms the configured RAG service can retrieve representative facts
+  from each long PDF and filters by the agent scope. It is not yet a member-side
+  File Search answer/citation-rendering test, does not verify abstention on
+  unknown facts, and does not prove citations in the browser UI. Keep those
+  acceptance items open. No upload, vector mutation, customer data, provider
+  request, billing, public deployment, DNS, or VPS change occurred.

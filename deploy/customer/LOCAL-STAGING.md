@@ -1059,3 +1059,25 @@ confirmed revoked and replaced.
 - This establishes member-side text inference, not shared-agent document
   retrieval, citations, or File Search. No customer data or live billing was
   involved; the production customer template and VPS were unchanged.
+
+## Shared-agent long-document retrieval check (2026-10-28)
+
+- Queried the three already-attached synthetic PDFs through the primary
+  staging RAG API, using the exact shared-agent entity scope. Campaign
+  objective/date/churn facts, an Alder & Finch release decision, and the
+  operations manual's two-gate release rule were found in their respective
+  documents. Each query returned HTTP 200 and six scored passages from the
+  intended source PDF.
+- A separate unrelated synthetic entity returned zero file IDs and zero
+  passages for the same file/query probe. The matching agent scope still
+  reported its three expected file IDs. This is a read-only RAG service check;
+  no vectors, uploaded files, or accounts were created or changed.
+- The PDFs attached to this agent are the earlier synthetic Juniper & Slate
+  corpus (31/36/31 pages), not the newer generated campaign/operations/workflow
+  evaluation set in the source repository. The latter's answer key remains
+  private and was not uploaded. Use an answer key that matches the exact corpus
+  under test.
+- Remaining: invoke File Search from a signed-in member chat, verify the UI
+  answer and visible source citations, test a genuinely absent fact for
+  abstention, and finish member-side file removal/reindex acceptance. Direct
+  retrieval results do not substitute for these UI acceptance checks.
