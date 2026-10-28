@@ -2064,3 +2064,21 @@ applicable gates above have evidence.
   has been uploaded to a separate shared agent or fully evaluated in the UI.
   Billing sandbox, native-browser walkthrough, deletion/retrieval, and public
   VPS acceptance remain open.
+
+## RAG upload, retrieval, and deletion smoke — 2026-10-28
+
+- `scripts/customer-rag-smoke.py` passed against primary staging: synthetic
+  embed accepted (HTTP 200), own-scope ID lookup passed, unrelated-scope
+  lookup did not expose the file, retrieval returned the exact marker, and
+  scoped deletion plus post-delete absence both passed (HTTP 200).
+- The same smoke against the branch candidate failed at embed (HTTP 500). A
+  sanitized runtime check found its `RAG_OPENAI_API_KEY` is still the template
+  placeholder; the scoped ID endpoint returned HTTP 200 and confirmed no
+  vector remained. This is an unconfigured candidate credential, not evidence
+  of a retrieval/code-path failure. Enter a customer-owned test embeddings key
+  through the hidden-input helper before retrying candidate File Search.
+- This exercises backend vector lifecycle, not uploaded-file deletion through
+  the visible app UI. The generated 33/31/33-page PDFs remain local; the
+  already-tested shared agent uses its separate 31/36/31-page synthetic
+  corpus. Do not treat the new corpus as platform-tested until attached to a
+  separate evaluation agent and verified through the member UI.
