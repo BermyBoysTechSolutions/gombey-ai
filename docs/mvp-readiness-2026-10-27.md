@@ -1970,8 +1970,65 @@ applicable gates above have evidence.
   HTTP 200 and Docker reports healthy. The exact temporary credential file and
   isolated browser session were removed/reset.
 - This closes a member-side Qwen File Search answer, visible-citation, and
-  unsupported-fact abstention check for the attached synthetic corpus. It does
-  not yet close a second-member File Search/provider-billing check, customer
-  document removal/reindex acceptance, billing rehearsal, or production VPS
-  acceptance. No customer data, production deployment, DNS, Stripe write, or
-  VPS was involved.
+  unsupported-fact abstention check for the attached synthetic corpus. A
+  second-member shared File Search/provider-key test was completed afterward;
+  see the follow-up below. Customer document removal/reindex acceptance,
+  billing rehearsal, and production VPS acceptance remain open. No customer
+  data, production deployment, DNS, Stripe write, or VPS was involved.
+
+## Second-member shared File Search and provider-key isolation — 2026-10-28
+
+- A second disposable member could see/select the shared read-only agent but
+  could not send a prompt before saving their own provider key; the UI blocked
+  inference with “An API key is required to send messages.” After saving their
+  own authorized OpenRouter key with the normal 12-hour expiry, the member used
+  File Search through `qwen/qwen3.5-9b` and received the correct Renewal Rhythm
+  campaign and 8.1% → 6.7% churn target, with PDF source and page citations.
+- The test temporarily changed only the shared agent's provider/model; its
+  `file_search` tool and three attached file IDs were preserved, and the agent
+  was restored to `openAI` / `gpt-6-luna`. The exact synthetic account was then
+  deleted from its Account settings. Mongo found no matching user or related
+  provider-key, conversation, or message records; the credential file and
+  isolated browser session were removed. Staging health returned HTTP 200.
+- This verifies shared-agent access plus per-member provider-key separation
+  for two members; it is not a blanket proof of all tenant boundaries. This is
+  cloud processing through OpenRouter, not local inference. File removal/
+  reindex, billing rehearsal, and production VPS acceptance remain open. No
+  customer data, live billing, DNS, or public VPS was involved.
+
+## Live Stripe offer/catalog audit — 2026-10-28 (read-only)
+
+- The public pricing page and the connected live Stripe catalog currently agree
+  on three active offers: Cloud Workspace, Workspace Appliance (cloud
+  inference), and Private Local AI. Stripe has 15 active Prices: three standard
+  monthly Prices plus twelve one-time setup-installment Prices (kickoff and
+  accepted-delivery halves, each with standard and launch amounts).
+- Setup totals match the published page: Cloud $2,500 standard / $1,995
+  launch (halves $1,250 / $997.50); Appliance $4,500 / $3,995 (halves $2,250 /
+  $1,997.50); Private Local AI $7,500 / $6,995 (halves $3,750 / $3,497.50).
+  Standard monthly Prices are $399, $699, and $1,499 respectively. The three
+  repeating 12-month coupons reduce monthly by $50, $100, and $200, matching
+  the page's $349, $599, and $1,299 founding rates.
+- The live coupons are not product-restricted, have no end date, and each allow
+  three redemptions independently. Consequently, Stripe does not enforce the
+  website's “first three deployments across all tiers” global cap; that cap
+  remains an operator check. The setup launch Prices also have no automatic
+  global redemption cap. Keep the offers call/proposal-first and check the
+  global count before applying a setup or monthly launch rate.
+- The website says recurring service is a separate checkout with explicit
+  recurring-payment authorization and a 30-day trial; it is not started by the
+  setup payment. Stripe's active monthly Prices have no default trial period,
+  so the 30-day trial must be set on the later subscription checkout. This
+  read-only review did not create invoices, checkout links, subscriptions, or
+  charges. The end-to-end subscription consent, trial, first invoice, payment
+  failure, and cancellation flow remains untested.
+- The only Stripe account available to Codex is Gombey Tech live mode; the
+  Stripe CLI is not installed. Do not rehearse this process in live mode. A
+  connected Stripe sandbox/test-mode account is required before the billing
+  rehearsal. The three retired Plus/Pro/Max product records are inactive; no
+  cleanup write was made.
+- Stripe returned zero Tax registrations. Product tax behavior/tax codes do
+  not themselves register the business or ensure tax collection. Do not enable
+  automatic tax based on this catalog alone; confirm obligations and register
+  with the relevant authority before relying on Stripe Tax. No Tax setting was
+  changed.

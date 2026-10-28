@@ -1107,7 +1107,33 @@ confirmed revoked and replaced.
   file and browser session were removed, the shared agent was restored to
   `openAI` / `gpt-6-luna` with three files and only `file_search`, and staging
   returned to HTTP 200 / Docker healthy.
-- Still open: repeat shared File Search for a second member with that member's
-  own provider key, verify file removal/reindex and old-fact invalidation, and
-  complete production VPS acceptance. No customer data, live Stripe write,
-  production deployment, DNS, or VPS was involved.
+- The second-member shared File Search/provider-key check was completed in a
+  separate synthetic member session (recorded below). Still open: verify file
+  removal/reindex and old-fact invalidation, and complete production VPS
+  acceptance. No customer data, live Stripe write, production deployment, DNS,
+  or VPS was involved.
+
+## Second-member shared File Search and provider-key isolation (2026-10-28)
+
+- A second disposable `USER` could see and select the shared, read-only
+  Juniper & Slate agent. Before adding a key, a synthetic chat was blocked in
+  the UI with “An API key is required to send messages”; it did not inherit
+  another member's provider credential.
+- The member then saved their own authorized OpenRouter key through the normal
+  provider-key settings UI with the displayed 12-hour expiry. With the shared
+  agent temporarily routed to `OpenRouter` / `qwen/qwen3.5-9b`, File Search
+  returned the correct `Renewal Rhythm` campaign and the 8.1% to 6.7% churn
+  target, with source-file and page citations from the attached synthetic PDFs.
+  The agent was restored to `openAI` / `gpt-6-luna`; `file_search` and all three
+  attached file IDs were verified unchanged.
+- The account was deleted from its own Account settings after exact-email
+  confirmation. Mongo checks found no matching user or related key,
+  conversation, or message records; the temporary credential file and
+  isolated browser session were removed. Primary staging is healthy on
+  loopback. This demonstrates two members can use the same shared knowledge
+  agent while each supplies their own provider key. It does not prove every
+  tenant boundary or customer deployment isolation.
+- This was cloud inference: the member prompt and retrieved text went through
+  OpenRouter. No customer data, live Stripe write, public deployment, DNS, or
+  VPS was involved. File removal/reindex and production VPS acceptance remain
+  open.
