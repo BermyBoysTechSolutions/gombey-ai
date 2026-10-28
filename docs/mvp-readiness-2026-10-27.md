@@ -1227,3 +1227,20 @@ applicable gates above have evidence.
   `codex/mvp-offer-scope-2026-10-27` in the website repo. Public production
   retains the previous wording until a website deployment is made. The
   separate hard gates in this matrix remain.
+
+## Provider input status check — 2026-10-28 07:09 EDT
+
+- Read-only container-environment classification found the primary and restore
+  LibreChat API containers both use `user_provided` sentinels for their
+  instance-wide OpenAI/OpenRouter keys. This is consistent with BYOK and is not
+  a usable chat credential for a new synthetic member.
+- Both RAG containers have an embeddings value present, but this check did not
+  inspect or print it and did not verify validity or account ownership. Prior
+  acceptance notes distinguish the primary owner's test setting from the
+  restore copy's rejected credential; do not treat either as customer proof.
+- No account database credentials were queried, no key was copied or revealed,
+  and no provider request was made. A further live member chat needs a valid
+  key entered into that member's own LibreChat provider settings through the
+  approved secure path; existing OpenClaw secrets remain non-exported.
+- Both local stacks remain healthy on loopback ports 3083/3084. No Docker,
+  customer data, Stripe, website, VPS, or DNS state changed.
