@@ -146,9 +146,10 @@ chmod 600 "$GOMBEY_STAGING_BACKUP_DIR"/staging-*
 Validate Mongo archives with `mongorestore --dryRun --archive --gzip` and
 PostgreSQL archives with `pg_restore --list`; inspect tar archives with
 `tar -tf`. A readable archive is not a complete restore test. For that, create
-a second isolated Compose project with fresh volumes and secrets, restore there,
-and verify account separation before considering production readiness. Never
-restore over the active staging database.
+a second isolated Compose project with fresh volumes, restore the same deployment
+secret values there only for decryption compatibility, and verify account
+separation before considering production readiness. Keep that clone isolated
+and loopback-only. Never restore over the active staging database.
 
 Current validation evidence (2026-10-15):
 
@@ -589,3 +590,48 @@ VPS/DNS testing. Do not use the old OpenClaw profile until its key is rotated.
   inference, or Qwen tool calls. No production VPS, public DNS/TLS, billing,
   or customer data was involved. Changes were local to staging before this
   isolated branch update.
+
+## Encrypted backup helper acceptance (2026-10-27)
+
+- Added `scripts/customer-backup.sh`. It requires a mode-600 deployment `.env`
+  and an explicit recovery key in macOS Keychain or a separate mode-600
+  passphrase file; it refuses to emit a plaintext archive. It pauses only the
+  target Compose project's API, RAG, and Meilisearch writers, captures MongoDB,
+  pgvector, Meilisearch data, `/app/data`, uploads, and deployment/config assets,
+  then resumes the services. It writes an AES-256/PBKDF2 encrypted archive and
+  SHA-256 checksum into a mode-700 destination folder.
+- Ran the helper against the isolated `gombey_staging_gombey_test` project.
+  Mongo `mongorestore --dryRun`, pgvector `pg_restore --list`, all three nested
+  tar listings, encrypted decrypt-and-list validation, and SHA-256 verification
+  passed. The staging API returned HTTP 200 after services restarted; only
+  `127.0.0.1:3083` remains published.
+- The staging archive is on the external SSD and encrypted. Its recovery key
+  is stored in the Mac login Keychain as service
+  `Gombey AI Staging Backup Encryption 2026-10-27`, account `sultanyahya`;
+  the key is not present on the external drive. This keychain-backed recovery
+  is tied to this Mac/user and is not yet an off-site recovery plan.
+- The external APFS volume itself is not encrypted and has ownership handling
+  disabled. The active staging bind-mounted data remains plaintext on that
+  volume; it contains synthetic test content only. Do not place real customer
+  data there until storage encryption is enabled or a properly encrypted
+  customer-controlled host is used.
+- Historical plaintext test backups from 2026-10-15 and 2026-10-18 are still
+  present in sibling folders on that external volume (including an older
+  `customer.env`). They are synthetic staging artifacts, not real customer
+  data; I did not delete or rewrite these pre-existing backups. Secure or
+  remove them before putting any real customer data on this drive.
+- Restored the encrypted archive into a new isolated Compose project,
+  `gombey_backup_restore_20261027`, reachable only at `127.0.0.1:3084`. The
+  restored Mongo database has the same counts as source (3 users, 1 agent,
+  3 files, 7 conversations); pgvector restored 102 live rows; Meilisearch,
+  RAG, and the chat API passed health checks. The Gombey login screen loaded in
+  the native Codex browser. No password was entered and no model inference or
+  provider spend occurred.
+- The restore rehearsal's working copy is owner-only under
+  `/Users/sultanyahya/Documents/Codex/.gombey-backup-restore-20261027` and is
+  local synthetic test data. The recovery key is still only in this Mac user's
+  login Keychain; copy it to an approved password manager before treating this
+  as a portable or off-site recovery plan.
+- The source checkout used for capture is dirty, so the backup preserves
+  deployment/config/data but is not a complete source-code snapshot. Keep the
+  exact deployment commit clean and pinned before onboarding a paying customer.

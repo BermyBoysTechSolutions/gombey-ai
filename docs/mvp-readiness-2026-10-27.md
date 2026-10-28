@@ -34,6 +34,19 @@ following cloud-workspace gates pass.
 - An isolated second deployment used separate secrets, network, database, and
   storage; a synthetic marker was absent across deployments. An isolated
   restore drill also completed.
+- `scripts/customer-backup.sh` now refuses plaintext output, writes a checksummed
+  AES-256/PBKDF2 archive, and pauses only the target deployment's app/RAG/search
+  writers during capture. Safety tests pass. A fresh encrypted backup was
+  restored into a second loopback-only deployment; the Mongo account/agent/file/
+  conversation counts matched, pgvector restored 102 rows, Meilisearch and RAG
+  were healthy, and the native browser showed the restored login page.
+- The tested backup key is in this Mac user's login Keychain, not on the
+  external SSD. This is local staging evidence, not an off-site key escrow or
+  backup policy. The external SSD is not encrypted; its staging data remains
+  synthetic only.
+- Older plaintext staging backups (including an older customer `.env`) remain
+  on that unencrypted external volume. They contain synthetic test state; they
+  must be secured or removed before any real customer data is stored there.
 - Three generated synthetic evaluation manuals are 31, 36, and 31 pages. Their
   covers, representative interior pages, and final pages were visually
   inspected. The evaluator answer key is separate and must not be uploaded as
@@ -79,7 +92,7 @@ after the corresponding implementation and acceptance test.
 | Cloud: up to 5 named accounts with admin/member roles | Two members passed shared-agent role and private chat/file authorization checks. | Exercise the actual operator provisioning flow with five accounts; verify invite/reset/revocation procedures. |
 | Cloud: one workflow, one custom agent, shared knowledge | One synthetic shared File Search agent and admin-managed Viewer access are configured. Local lexical-mock upload/index/query/delete plumbing passed. | Real customer-template semantic retrieval/citations with a member account and customer-owned model + embeddings credentials. |
 | Cloud: one supported read-only connector | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. | Connect and acceptance-test one named read-only connector, including customer authorization and data-path review. |
-| Cloud: managed hosting, updates, backups, restore checks | Local backups parsed and an isolated local restore drill passed. | Define cadence/retention; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
+| Cloud: managed hosting, updates, backups, restore checks | Encrypted local snapshot and isolated full restore passed. | Secure/remove legacy plaintext test snapshots; define cadence/retention and portable key escrow; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
 | Cloud: setup guide, onboarding, 1.5 support hours and 2-business-day response | Operator setup and technical runbooks exist. | Produce customer handoff/training materials and an operational support intake, time tracking, and response process. |
 | Cloud: customer-owned provider billing | One disposable user's Qwen chat succeeded with that user's own key; a second user without a key was denied rather than inheriting it. | Verify a member's grounded chat end-to-end and confirm actual usage appears in the intended provider account. |
 | Appliance: standard Beelink SER5 included, on-site workspace, primary data hosted there | No SER5 has been commissioned for acceptance. | Confirm hardware SKU/cost; test install, storage, network/power failure, remote recovery, security, backup, and restore on the actual device. |

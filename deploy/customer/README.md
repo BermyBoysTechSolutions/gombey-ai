@@ -171,7 +171,7 @@ Use [the shared-agent template](shared-agent-template.md) for the repeatable ins
 - Confirm MongoDB, pgvector, Meilisearch, and RAG API have no host-published ports.
 - Confirm each configured chat endpoint works with a customer-owned key and that usage appears in that provider account. Confirm RAG embeddings use only the separate customer-owned embeddings key and usage appears in its provider account.
 - Reboot the VPS and verify chat, HTTPS, and stored test data return.
-- Take a backup of MongoDB, PostgreSQL/pgvector, uploads, and config; restore it to a clean test deployment. Provider snapshots alone are not considered a completed restore test.
+- Take an encrypted backup of MongoDB, PostgreSQL/pgvector, Meilisearch, app data, uploads, and config with `scripts/customer-backup.sh`; restore it to a clean isolated deployment and verify the data. Provider snapshots alone are not considered a completed restore test.
 - Verify access revocation, password reset/support process, and data deletion/retention expectations.
 
 Until the backup/restore, account-isolation, and shared-file tests pass, treat this as an implementation-ready template—not a production-ready service or security guarantee.
@@ -185,4 +185,5 @@ For existing deployments upgraded from LibreChat v0.8.7 or earlier, back up Mong
 - Use a separate Git checkout/branch or immutable release per customer. Do not edit the shared chat UI source for routine branding.
 - Keep a record of the pinned image versions, customer's model provider, DNS, backup destination, and support contact.
 - Updates require a backup, staging/acceptance test, and rollback plan; do not run `docker compose pull` blindly on a customer's live deployment.
+- `scripts/customer-backup.sh` refuses to create an unencrypted archive. Supply either `GOMBEY_BACKUP_KEYCHAIN_SERVICE` on macOS or a non-empty, mode-600 `GOMBEY_BACKUP_PASSPHRASE_FILE` outside the repository and backup directory. Store the recovery key separately from the encrypted archive; on Linux, use a root-only protected/secret-managed path and test recovery before relying on it. Do not keep the key beside backups on an unencrypted external drive. The script briefly pauses API, RAG, and search writers while capturing a consistent snapshot; it does not encrypt the VPS disk or replace off-site retention.
 - Local model serving, custom integrations, autonomous actions, SSO, compliance guarantees, and customer-specific code changes are not in this base pilot.
