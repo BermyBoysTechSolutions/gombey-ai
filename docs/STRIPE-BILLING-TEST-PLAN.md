@@ -1,22 +1,36 @@
 # Stripe billing rehearsal (sandbox only)
 
 Status: prepared, not executed. The connected Stripe account available in this
-Codex session was live-only; no test customer, invoice, subscription, product,
+Codex session is live-only; no test customer, invoice, subscription, product,
 price, or payment method was created. Do not use a live account for this test.
+The preferred flow below captures a payment method once at kickoff and avoids
+asking the customer to enroll again at delivery. It is not implemented or
+verified yet.
 
 ## Intended customer timeline
 
-1. At kickoff, collect 50% of the agreed one-time setup amount.
-2. At delivery, after the customer accepts the agreed checklist, collect the
-   remaining 50% of setup.
-3. At accepted delivery, send a separate recurring-subscription checkout link.
-   The customer must review the monthly terms, provide/confirm a payment
-   method, and affirmatively authorize recurring charges. The link starts a
-   30-day trial; Stripe attempts the first monthly payment when that trial ends.
-   Send it at accepted delivery if the intended first attempt is 30 days after
-   delivery. If the customer completes it later, the 30-day timer starts later.
-   The kickoff setup payment does not create the subscription or automatically
-   reuse its payment method.
+1. At kickoff, collect 50% of the agreed one-time setup amount and, only with
+   explicit consent, save the payment method for the stated setup installment
+   and future monthly subscription charges. The hosted checkout must identify
+   the Stripe Customer and use
+   `payment_intent_data.setup_future_usage=off_session`. Clearly disclose the
+   recurring amount, cadence, first-charge timing, launch duration and later
+   standard rate, cancellation terms, and permission to initiate future
+   off-session charges. Keep a record of the affirmative agreement. The current
+   live kickoff links do not do this and must not be used for the preferred
+   flow.
+2. At delivery, after written acceptance, collect the remaining 50% of setup.
+   Do not create the monthly subscription before delivery is accepted and the
+   delivery installment is paid.
+3. At accepted delivery, create exactly one subscription for the same Stripe
+   Customer, using the saved payment method, with automatic collection and a
+   30-day trial starting at subscription creation. Stripe should attempt the
+   first monthly charge about 30 days after accepted delivery; an off-session
+   attempt can still fail or require customer authentication, so a
+   recovery/contact path is required. This avoids a second customer checkout,
+   but Gombey currently has no billing code or webhook workflow to create the
+   subscription automatically. Until that is built and tested, an operator
+   must perform and verify this delivery-day step in Stripe.
 4. Apply the approved launch rate for its agreed term, then bill the normal
    monthly rate. The current live catalog and public page were read-only
    reconciled on 2026-10-28; use the signed proposal to confirm which tier and
@@ -33,13 +47,21 @@ price, or payment method was created. Do not use a live account for this test.
    enforce the cross-tier cap manually. Re-check current catalog and signed
    proposal immediately before each test or customer invoice.
 
-The initial pilot should be operator-managed with Stripe-hosted payment links
-and invoices. Gombey does not currently have billing code, webhook processing,
-or account provisioning that reacts to Stripe events. “Automatically” means
-Stripe attempts recurring payments after the customer has expressly agreed
-and completed the separate subscription checkout—not that Gombey presently
-automates the transition from kickoff payment to delivery or subscription
-signup.
+For an initial pilot, use a Stripe-hosted kickoff checkout only after the
+saved-payment-method and consent configuration passes in a dedicated sandbox.
+Gombey has no billing code, signed-webhook processing, or account provisioning
+that reacts to Stripe events. Stripe can automate recurring attempts after a
+subscription exists; Gombey does not yet automate the handoff from accepted
+delivery to subscription creation. If a customer declines to save a payment
+method, use the separate subscription-checkout fallback at delivery and state
+that the 30-day timer starts when that later checkout is completed.
+Stripe documents saving a Checkout payment method for off-session use through
+`payment_intent_data.setup_future_usage`, and requires terms, explicit consent,
+and a record of the customer's agreement. An off-session attempt may still fail
+or require authentication; provide a customer recovery path. See [saving
+payment details during Checkout](https://docs.stripe.com/checkout/save-during-payment?ui=full-page),
+[Setup Intents](https://docs.stripe.com/payments/setup-intents), and
+[off-session payments](https://docs.stripe.com/payments/off-session-payments).
 
 ## Sandbox prerequisites
 
@@ -72,15 +94,18 @@ signup.
   not add or remove registrations as part of this sandbox rehearsal. [Stripe
   Tax and Payment Links](https://docs.stripe.com/tax/payment-links).
 - The three current active live Payment Links collect only the 50% founding
-  kickoff installment; they do not create a subscription or authorize a
-  payment method for later use. Three separate monthly subscription links are
-  inactive. At the 2026-10-28 read-only check each uses the standard monthly
-  price, permits promotion codes, requires a payment method, starts a 30-day
-  trial, cancels at trial end if no method is available, and has automatic tax
-  disabled. They are not ready to send: verify the matching founding code,
-  amount, consent text, tax treatment, and trial/invoice timeline in a
-  dedicated sandbox before activation. The monthly enrollment is a separate
-  delivery-day step, not a continuation of kickoff checkout.
+  kickoff installment; they do not create a subscription, save a future-use
+  payment method, or enable off-session reuse. Three separate monthly
+  subscription links are inactive. At the 2026-10-28 read-only check each uses
+  the standard monthly price, permits promotion codes, requires payment-method
+  collection, starts a 30-day trial, and has automatic tax disabled. Those
+  links are only a fallback because they require a separate customer checkout.
+  In the sandbox, test a kickoff checkout with Customer creation and
+  `payment_intent_data.setup_future_usage=off_session`, plus explicit consent,
+  then create the subscription at accepted delivery from that Customer's saved
+  method. Verify the matching launch rate, consent record, tax treatment,
+  failure/authentication recovery, and test-clock timeline before using any
+  live link.
 - Identify the existing sandbox products/prices/coupons or create disposable
   test-only objects. Avoid copying live IDs into test mode; Stripe objects are
   mode-specific.
@@ -92,68 +117,55 @@ signup.
 
 ### 1. Kickoff payment
 
-- Create a test customer and send a one-time invoice for exactly half of the
-  approved setup amount, with the first installment clearly identified.
-- Pay it with a Stripe test payment method.
-- Record the invoice ID, amount, payment status, and event timestamp. The pass
-  signal is `invoice.paid`, not merely a browser success page.
-- Confirm no recurring subscription or second setup charge starts at kickoff.
+- In the sandbox, create a one-time hosted checkout for exactly half of the
+  approved setup amount. Require Customer creation and set
+  `payment_intent_data.setup_future_usage=off_session` so the submitted method
+  is attached to that Customer. Show and record the explicit agreement for the
+  two setup installments and future subscription charges; include timing,
+  cadence, launch duration, standard renewal price, and cancellation terms.
+- Pay with a Stripe test method. Record the checkout/payment IDs, amount,
+  consent evidence, Customer/payment-method association, and event timestamp.
+  The pass signal is a successful server-side payment event, not only a browser
+  success page.
+- Confirm exactly one setup deposit is collected, the intended reusable method
+  is attached to the correct Customer, and no subscription begins at kickoff.
+- Also test declining consent: the method must not be saved for off-session
+  use, and the customer must be offered the separate-checkout fallback instead.
 
-### 2. Obtain explicit recurring-charge consent at delivery
-
-Before saving a payment method for future off-session use, show the customer
-the exact recurring amount (or a clear amount/range if contractually variable),
-frequency, first charge date, launch-price duration and later regular price,
-how cancellation works, and that Stripe may attempt charges when the customer
-is not present. Capture their affirmative consent in the accepted agreement.
-
-The kickoff invoice payment does not, by itself, authorize or save a payment
-method for future off-session subscription billing. In the sandbox, use the
-separate subscription Payment Link/Checkout flow at delivery with payment
-method collection required and a 30-day trial. Confirm the completed
-subscription is attached to the intended customer, has a payment method
-available for automatic collection, and has the expected trial end. Confirm
-the customer-facing checkout and signed agreement both clearly state the
-recurring amount, cadence, first-charge timing, launch-price duration, later
-standard price, cancellation terms, and authorization for off-session charges.
-Stripe documents automatic collection and trial behavior in its
-[subscription overview](https://docs.stripe.com/billing/subscriptions/overview),
-[free-trial guide](https://docs.stripe.com/billing/subscriptions/trials), and
-[collection-method guide](https://docs.stripe.com/billing/collection-method).
-
-### 3. Accepted delivery and separate subscription checkout
+### 2. Delivery and deferred subscription
 
 - Mark acceptance only after the written pilot checklist is approved.
-- Send/pay a second one-time invoice for the other half of setup. Confirm no
-  monthly subscription charge occurs on the delivery date.
-- At accepted delivery, issue/pay the second one-time setup installment and
-  send the separate monthly subscription link. The customer reviews the terms,
-  supplies a payment method, and authorizes recurring billing in that checkout.
-  Complete it on the same day if the target first charge is 30 days after
-  delivery. Verify the created subscription is `trialing`, has the expected
-  trial end, collects payment automatically, and cancels at trial end if no
-  payment method is available. Do not create a second subscription or reuse
-  the kickoff payment method.
-- Apply the approved launch discount/rate only to the intended 12 paid monthly
-  periods, then transition to the standard monthly price. Do not assume how a
-  coupon's duration interacts with a delayed start or trial—verify the actual
-  invoice timeline in the sandbox first.
-- Confirm exactly one subscription is attached to the correct customer and
-  payment method, with trial end 30 days after subscription checkout. Do not
-  describe it as 30 days after delivery unless checkout was completed at
-  accepted delivery.
-
-### 4. Advance time and verify billing
+- Send the second one-time invoice for the remaining half of setup and collect
+  it only after written acceptance. Test both automatic payment from the
+  consented saved method and the recovery path when that payment fails.
+- After acceptance and successful delivery payment, create exactly one
+  subscription for that same Customer using its saved payment method, automatic
+  collection, and `trial_period_days=30`. The customer should not have to enter
+  payment details or enroll again. Record the accepted-delivery and
+  subscription-created timestamps; because creation occurs at accepted
+  delivery, the first subscription invoice should be attempted about 30 days
+  after delivery.
+- Apply the approved launch discount/rate only to the intended paid monthly
+  periods, then transition to the standard monthly price. Do not assume coupon
+  duration interaction with a trial; verify the invoice timeline in the
+  sandbox first.
+- Confirm exactly one subscription is attached to the correct Customer and
+  saved method, is `trialing`, and has the expected trial end. If the customer
+  declined saving a payment method, do not charge off-session; use a separate
+  customer-confirmed subscription checkout and explain that its 30-day timer
+  starts on that later signup.
+### 3. Advance time and verify billing
 
 Use the test clock to advance to one day before the trial ends, the first
 charge, the 12th paid launch-rate invoice, and the first standard-rate
 renewal. Stripe supports [Billing test clocks](https://docs.stripe.com/billing/testing)
 for simulating subscription events over time. At each point, record expected
 and actual dates, invoice line items, discounts, tax, amount due, payment
-status, and notification/webhook receipt. If the subscription checkout is
-completed at accepted delivery, the first monthly invoice must not be earlier
-than 30 days after that timestamp. If checkout is completed later, the timer
-starts then; do not claim a precise delivery-plus-30-day charge.
+status, and notification/webhook receipt. In the preferred flow, the first
+monthly invoice must not be earlier than 30 days after subscription creation
+at accepted delivery. In the fallback, the timer starts when the customer
+completes the separate subscription checkout; do not describe that fallback as
+delivery-plus-30-days if signup happened later.
 
 Stripe recommends handling fulfillment from server-side events such as
 `invoice.paid`; do not rely only on the browser redirect. If a future Gombey
@@ -166,11 +178,12 @@ and [subscription webhooks guide](https://docs.stripe.com/billing/subscriptions/
 
 | Case | Expected result |
 |---|---|
-| Kickoff invoice paid | One half-setup payment; no subscription charge. |
-| Kickoff payment fails | No deployment is treated as paid/started; operator sees failure. |
-| Subscription checkout at delivery | Test method is attached to the correct customer, consent is recorded, and subscription is `trialing` for 30 days. |
+| Kickoff checkout paid | One half-setup payment; explicit consent captured; reusable method attached to the correct Customer; no subscription yet. |
+| Kickoff payment fails | No deployment is treated as paid/started; operator sees failure and no subscription is created. |
+| Consent declined | No off-session use; customer is directed to the separate-checkout fallback. |
 | Delivery invoice paid | Second half-setup payment occurs only after accepted delivery. |
-| Deferred start | No recurring invoice/payment before trial end (30 days after subscription checkout; complete it at delivery for the target delivery-plus-30-day first charge). |
+| Subscription created at delivery | Exactly one `trialing` subscription uses the same Customer/method; no second customer checkout; trial end is 30 days after creation. |
+| Deferred start | No recurring invoice/payment before the 30-day trial ends. |
 | First monthly invoice | Correct agreed launch amount and due date; payment result is visible. |
 | Launch term end | Exactly the approved number of paid periods receive the launch rate; next invoice uses standard price. |
 | Wrong-tier launch code | Each tier's code is rejected by both other tier products; fail until product restrictions are verified. |
@@ -181,11 +194,12 @@ and [subscription webhooks guide](https://docs.stripe.com/billing/subscriptions/
 ## Go/no-go
 
 Do not describe the deferred subscription as configured or promise an
-automatic first charge until every date/amount case above passes in a sandbox.
+automatic first charge until the saved-method, consent, delivery trigger,
+date/amount, failure/recovery, and webhook cases above pass in a sandbox.
 The current approved offer is Cloud Workspace, Workspace Appliance, and
 Private Local AI; see the dated audit in `mvp-readiness-2026-10-27.md` for the
-published prices. Moving a customer from kickoff to the delivery checkout is
-an operator-managed process until the test and billing implementation gates
-pass; Stripe handles recurring attempts only after subscription enrollment.
-Do not use live links for the sandbox rehearsal. No customer charge should
-be created from this runbook.
+published prices. Creating the subscription at accepted delivery is an
+operator-managed step until Gombey's billing/webhook implementation and its
+tests pass; Stripe handles recurring attempts only after subscription
+enrollment. Do not use live links for the sandbox rehearsal. No customer
+charge should be created from this runbook.

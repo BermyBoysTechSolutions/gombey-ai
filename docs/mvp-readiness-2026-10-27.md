@@ -1566,3 +1566,33 @@ applicable gates above have evidence.
   but does not pass provider-backed embeddings or member-facing File Search.
 - Committed and pushed the scoped test/doc change as `9116e02` to
   `codex/gombey-mvp-preflight-2026-10-27`; unrelated `tmp/` remains untouched.
+
+## Stripe billing and offer recheck — 2026-10-28 09:33 EDT
+
+- Read-only Stripe and public-site recheck: `gombeytech.com` returns HTTP 200;
+  the three published service offers and their standard/founding setup and
+  monthly amounts match the active Stripe products/prices. All three active
+  products have an image. No catalog object was changed.
+- Stripe still exposes only the live Gombey Tech account. It has three active
+  one-time kickoff links ($997.50/$1,997.50/$3,497.50), each with
+  `automatic_tax.enabled=true`, no completion cap, no subscription data, and
+  no `payment_intent_data.setup_future_usage`. Thus these links do not save a
+  payment method for a later off-session subscription. Three separate monthly
+  subscription links remain inactive, with standard rates and 30-day trials.
+- Zero Stripe Tax registrations are configured. Treat the live kickoff links
+  as not ready to send until tax treatment is reviewed; enabling automatic tax
+  alone does not establish collection in an unregistered jurisdiction.
+- The 15 active Price objects include duplicates: each of the six one-time
+  installment amounts exists twice. Line-item inspection found one duplicate
+  of each founding kickoff installment used by the active link; the standard
+  setup installments have no active payment link. Do not deactivate or delete
+  prices until sandbox/dependency review confirms they're unused.
+- Updated `docs/STRIPE-BILLING-TEST-PLAN.md` to match the owner's desired
+  no-second-checkout flow: collect explicit off-session consent and save a
+  reusable method at kickoff; after accepted delivery and the second setup
+  installment, create one subscription on that same customer with a 30-day
+  trial. This remains a proposed sandbox test, not a live configuration;
+  Gombey has no billing/webhook code to automate the delivery transition.
+- No Stripe settings, links, prices, invoices, subscriptions, tax settings,
+  website, VPS, or DNS were modified. The dedicated Stripe sandbox and tax
+  review remain prerequisites to a live charge.
