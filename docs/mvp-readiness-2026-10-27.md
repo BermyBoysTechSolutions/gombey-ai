@@ -1054,3 +1054,22 @@ applicable gates above have evidence.
 - No customer documents, production state, Stripe objects, public website,
   VPS, or DNS were changed. This does not replace the authenticated member UI
   test: no native-browser interaction control is available in this session.
+
+## Regression and fail-closed recheck — 2026-10-28 06:08 EDT
+
+- Customer-init, customer-preflight, backup-safety, and all 13 Python
+  regression tests passed again. The read-only primary/restore isolation check
+  passed: separate Compose networks and persistent stores, cross-project
+  Mongo DNS blocked, and internal DB/search/vector/RAG ports unpublished.
+- Re-ran `scripts/test_rag_fail_closed_integration.sh` in its unique disposable
+  Compose project with an intentionally invalid synthetic provider key and a
+  loopback-only endpoint. Synthetic upload returned HTTP 500 and stored zero
+  vectors; the test removed its temporary containers, networks, and volume.
+  No provider request or customer data was used.
+- `git diff --check` passed. The MVP branch was synced with origin at
+  `b3340a5` before this note; the pre-existing untracked `tmp/` was untouched.
+- This does not complete production readiness. Authenticated two-member
+  long-document retrieval/citation acceptance, customer-owned provider billing
+  proof, Stripe sandbox/tax/consent rehearsal, and owner-approved VPS inputs
+  plus public DNS/TLS/reboot/off-host-restore tests remain open. No production,
+  live billing, website, VPS, or DNS state changed.
