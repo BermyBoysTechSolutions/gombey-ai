@@ -49,6 +49,8 @@ services:
       # Retrieve ten candidates per source file before the upstream merge trims
       # the final prompt context to ten results overall.
       - ./patches/librechat-file-search-depth.js:/app/gombey-patches/librechat-file-search-depth.js:ro
+      # Operator-only account recovery utility; requires explicit typed confirmation.
+      - ../../scripts/revoke-user-sessions.js:/app/gombey-patches/revoke-user-sessions.js:ro
       - ../../branding:/app/branding:ro
       - ../../assets/logo.svg:/app/client/public/assets/logo.svg:ro
       - ../../assets/logo.png:/app/client/public/assets/logo.png:ro

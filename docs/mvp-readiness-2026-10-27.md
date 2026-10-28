@@ -2733,3 +2733,30 @@ applicable gates above have evidence.
   inspect ignored configuration or the unrelated untracked `tmp/` directory,
   and cannot cover remote refs that are not fetched locally. Rotate any
   suspected credential regardless of this result.
+
+## Password-reset session-revocation audit — 2026-10-28
+
+- Read the exact reset script shipped in the running pinned LibreChat image
+  (`/app/config/reset-password.js`) and traced the authentication path. The CLI
+  updates the password and writes `passwordVersion`, but the JWT strategy does
+  not read/check `passwordVersion`; the CLI does not delete stored refresh
+  sessions. The default access-token lifetime is 15 minutes and the default
+  refresh-session lifetime is seven days. Therefore the runbook's former claim
+  that the CLI invalidates existing sessions was inaccurate and has been
+  corrected.
+- The built-in password-reset controller does delete all sessions after a
+  successful reset, but that flow depends on working email reset and remains
+  disabled in the customer template until secure delivery is configured and
+  tested.
+- Added a confirmation-gated operator helper that looks up the explicitly
+  entered email and calls LibreChat's supported `deleteAllUserSessions` method
+  for that user only. Five mocked tests cover exact confirmation, account
+  scoping, missing-account/ID fail-closed behavior, and empty input. The helper is
+  mounted read-only into future customer containers; it does not run during
+  startup. Targeted revocation removes refresh sessions but cannot invalidate
+  already-issued access JWTs before their 15-minute default expiry.
+- The runbook now requires password reset followed by targeted refresh-session
+  revocation for routine operator recovery. For immediate compromise
+  containment, it documents deployment-wide rotation of both JWT secrets and
+  the resulting forced logout. No account, session, password, or running
+  service was changed during this audit.

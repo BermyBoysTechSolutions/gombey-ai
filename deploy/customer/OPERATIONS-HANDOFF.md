@@ -154,10 +154,29 @@ campaign template.
 
   It prompts for the account email and hides the new password while it is
   entered; do not pass a password as a command-line argument or store it in
-  this runbook. The command updates the password version, invalidating existing
-  sessions. Coordinate entry/delivery through the separately agreed secure
-  channel and confirm the affected user can sign in afterward. This is an
-  operator-assisted recovery path, not customer self-service.
+  this runbook. In the pinned LibreChat image, this CLI command changes the
+  password but does not revoke sessions. After it succeeds, run the
+  confirmation-gated Gombey helper to revoke that account's stored refresh
+  sessions:
+
+  ```bash
+  docker compose --env-file deploy/customer/.env \
+    -f deploy/customer/compose.yaml exec -it api \
+    node /app/gombey-patches/revoke-user-sessions.js
+  ```
+
+  Enter the same account email and type `REVOKE` exactly. The helper fails
+  closed for an unknown account and deletes only that user's stored refresh
+  sessions. Already-issued access tokens remain valid until expiry (15 minutes
+  by default). For suspected compromise requiring immediate containment,
+  rotate both `JWT_SECRET` and `JWT_REFRESH_SECRET` and restart the API; this
+  logs out every user and requires a controlled outage, so use the incident
+  procedure rather than treating a password reset as sufficient containment.
+  The built-in email reset controller also deletes the user's sessions, but
+  that route must remain disabled until secure email delivery is configured
+  and tested. Coordinate password entry/delivery through the separately agreed
+  secure channel and confirm the affected user can sign in afterward. This is
+  an operator-assisted recovery path, not customer self-service.
 - At termination, follow the written export/deletion plan; remove DNS and
   credentials only after the customer confirms whether data export is needed.
   Provide a deletion confirmation only after checking active volumes and
