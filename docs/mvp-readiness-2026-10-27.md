@@ -2508,3 +2508,32 @@ applicable gates above have evidence.
 - This is runtime evidence for dedicated-deployment isolation on this Colima
   host. It does not establish public VPS ingress controls or protect against a
   privileged host operator.
+
+## Public offer and deferred-billing configuration recheck — 2026-10-28 15:42 EDT
+
+- A fresh read of `https://gombeytech.com` confirms the intended ladder and
+  published pricing: Cloud Workspace/VPS ($2,500 standard setup, $1,995 launch;
+  $399 standard/$349 monthly for 12 months), Workspace Appliance/SER5 with
+  cloud AI ($4,500/$3,995; $699/$599 monthly), and Private Local AI ($7,500/
+  $6,995; $1,499/$1,299 monthly). The page says appliance scope requires
+  hardware-specific validation and written approval; local hardware is quoted
+  separately. This is consistent with the owner's intended tier mapping.
+- Read-only live Stripe reconciliation confirms the three active product names
+  match the public offers, with 15 active Prices: three standard recurring
+  Prices and twelve one-time 50/50 setup-installment Prices (standard and
+  founding kickoff/delivery amounts). Product metadata still maps them to
+  `cloud`, `appliance`, and `local`. No price or link was changed.
+- Current live setup links are active founding kickoff payments ($997.50,
+  $1,997.50, and $3,497.50). `payment_method_collection=if_required` and
+  `payment_intent_data.setup_future_usage` is unset; these links do not
+  currently require or save a card for off-session monthly billing.
+- Separate monthly subscription links remain inactive. Each uses the standard
+  monthly Price, requires payment-method collection, has a 30-day trial and
+  cancels at trial end if no payment method is available, and accepts the
+  tier-specific promotion code. No setup payment is linked to these
+  subscriptions; the first charge is 30 days after a customer completes that
+  separate subscription checkout, not automatically 30 days after delivery.
+  A live subscription list with `status=all` returned zero subscriptions. Do
+  not send or activate links until the dedicated
+  sandbox rehearsal and tax review pass; no live billing or tax settings were
+  changed in this audit.
