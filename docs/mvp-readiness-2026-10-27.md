@@ -1731,3 +1731,15 @@ applicable gates above have evidence.
   VPS was touched. The branch candidate's provider-backed File Search remains
   unverified until its own embeddings credential works and a member retrieval
   test passes.
+
+## Fresh deployment-isolation audit — 2026-10-28 10:36 EDT
+
+- Re-ran `scripts/customer-isolation-check.py` against primary staging vs the
+  clean branch candidate and restored copy vs candidate. Both read-only checks
+  passed: private networks are disjoint, each API resolves its own MongoDB but
+  cannot resolve the other deployment's Mongo container, MongoDB/Meilisearch/
+  pgvector/RAG publish no host ports, and app/upload/database/search/vector
+  persistent roots are distinct.
+- This verifies current local deployment separation only; it does not prove
+  member ACLs, provider billing, public firewall/DNS/TLS, or VPS exposure. No
+  containers or data were modified by the isolation checks.
