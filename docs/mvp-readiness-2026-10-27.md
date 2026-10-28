@@ -66,6 +66,31 @@ following cloud-workspace gates pass.
    Purchase/production setup requires owner approval of exact plan and spend,
    hostname, and DNS control.
 
+## Public-offer claims mapped to evidence
+
+This matrix checks the public pricing page at `gombeytech.com` against the
+current local customer template and acceptance record. “Not verified” means
+the claim must not be presented as already proven; it may still be deliverable
+after the corresponding implementation and acceptance test.
+
+| Public claim | Current evidence | Gate still open |
+|---|---|---|
+| Cloud: dedicated VPS per customer | Separate Compose project, secrets, database, network, and storage were tested locally. | Public VPS, DNS/TLS, firewall, reboot, and restore acceptance. |
+| Cloud: up to 5 named accounts with admin/member roles | Two members passed shared-agent role and private chat/file authorization checks. | Exercise the actual operator provisioning flow with five accounts; verify invite/reset/revocation procedures. |
+| Cloud: one workflow, one custom agent, shared knowledge | One synthetic shared File Search agent and admin-managed Viewer access are configured. Local lexical-mock upload/index/query/delete plumbing passed. | Real customer-template semantic retrieval/citations with a member account and customer-owned model + embeddings credentials. |
+| Cloud: one supported read-only connector | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. | Connect and acceptance-test one named read-only connector, including customer authorization and data-path review. |
+| Cloud: managed hosting, updates, backups, restore checks | Local backups parsed and an isolated local restore drill passed. | Define cadence/retention; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
+| Cloud: setup guide, onboarding, 1.5 support hours and 2-business-day response | Operator setup and technical runbooks exist. | Produce customer handoff/training materials and an operational support intake, time tracking, and response process. |
+| Cloud: customer-owned provider billing | One disposable user's Qwen chat succeeded with that user's own key; a second user without a key was denied rather than inheriting it. | Verify a member's grounded chat end-to-end and confirm actual usage appears in the intended provider account. |
+| Appliance: standard Beelink SER5 included, on-site workspace, primary data hosted there | No SER5 has been commissioned for acceptance. | Confirm hardware SKU/cost; test install, storage, network/power failure, remote recovery, security, backup, and restore on the actual device. |
+| Appliance: 10 users, three custom agents, one connector/tool | Current customer template has one shared agent and no MCP connector. Two-member authorization has passed. | Seed/configure three agents; test ten accounts; connect the named tool and enforce human approval for writes. |
+| Appliance: monitoring, updates, encrypted off-device backup, restore test | Local backup/restore artifacts exist for staging only. | Implement and test monitoring, update rollback, encrypted off-device backup, and actual-device restore. |
+| Appliance: training, support hours, response target, customer-paid cloud inference | These are not established by the local app tests. | Document and rehearse service operations; verify provider account ownership/usage and appliance acceptance with the customer. |
+| Private Local AI: customer workstation, local inference for accepted workflow | No offered Mac Studio, DGX Spark, or Strix Halo system has passed acceptance. Mac mini/Ollama tests do not prove another workstation or blanket privacy. | Procure/commission the selected system; benchmark agreed workload; inspect telemetry, embeddings, connectors, backups, remote support, and every data path. |
+| Private Local AI: 10 users, three agents, two workflows, up to two connectors | Current template exposes one shared File Search agent and no MCP connector. | Build/configure each scoped workflow and connector; test ten-user roles, local model behavior, and write-action approval. |
+| Private Local AI: monitoring, updates, backup/restore, policy review, training, five support hours | Not verified on the advertised hardware. | Deliver and test the operating controls and support process on the commissioned system. |
+| Billing: 50% kickoff, 50% accepted delivery, monthly starts 30 days after delivery, 12-month launch rate | Live catalog has matching products/prices/coupons; no links, invoices, subscriptions, or charges were created. | Rehearse the complete deferred subscription and consent flow in Stripe test mode. Current Stripe connector exposes only the live account. |
+
 ## Separate offer gates
 
 - Workspace Appliance: commission the actual hardware and test power/network
