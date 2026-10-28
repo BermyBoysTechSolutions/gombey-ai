@@ -2237,3 +2237,31 @@ applicable gates above have evidence.
   DNS/TLS, reboot, provider billing, or member UI acceptance.
 - Checks were read-only; no containers, data, environment, accounts, or
   provider credentials were changed.
+
+## Continuation regression and provider-state check — 2026-10-28
+
+- Re-ran customer initialization, customer preflight, and encrypted-backup
+  safety tests; all passed. Re-ran the RAG smoke CLI (5 tests), fail-closed
+  upload patch (4), and protected embeddings-key helper (7); all 16 Python
+  tests passed.
+- Re-ran the three pairwise deployment-isolation checks across primary staging,
+  restored backup, and clean candidate. All passed: private networks and
+  persistent storage are disjoint, own-service DNS resolves, cross-deployment
+  service DNS/TCP is blocked in both directions, and databases/search/RAG have
+  no host-published ports.
+- The login and health endpoints on candidate ports 3083, 3084, and 3085 each
+  returned HTTP 200. These are loopback staging checks, not public VPS
+  acceptance.
+- Inspected the candidate's protected environment without displaying any
+  secret values: the file is owner-only mode `0600`, but `RAG_OPENAI_API_KEY`
+  is still the template placeholder. Therefore no provider-backed request was
+  sent; persistent member File Search/provider acceptance remains open until a
+  fresh authorized test/customer-owned embeddings key is entered through the
+  hidden-input helper and the member test is repeated.
+- The offer mapping remains as designed: dedicated VPS/cloud inference;
+  on-site Beelink SER5/cloud inference; and selected Mac Studio, DGX Spark, or
+  Strix Halo hardware/local inference. The Cloud Workspace template does not
+  certify the appliance or local-inference hardware tiers; those still require
+  commissioning and acceptance on the actual selected device. No tier, price,
+  live Stripe setting, DNS record, production deployment, customer data, or
+  provider credential was changed.

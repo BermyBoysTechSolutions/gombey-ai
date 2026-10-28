@@ -84,6 +84,29 @@ The seeding script runs locally as an operator action, targets exactly one usern
 
 The Mac Mini demo remains a personal/testing instance; it is not the customer deployment. The current public packages are Cloud Workspace, Workspace Appliance, and Private Local AI. The first paid Cloud scope is a dedicated deployment per customer with up to five named accounts, an admin-managed shared File Search agent, and customer-owned model and embeddings billing. Gombey provisions employee accounts; self-service invitations are not included. Member chats remain private, and shared knowledge is used only when a member selects the shared agent.
 
+The owner-confirmed offer ladder is intentional and distinguishes where the
+workspace runs from where model inference runs:
+
+- **Cloud Workspace:** the customer's isolated Gombey deployment runs on a
+  dedicated VPS; model inference is cloud-based through the customer's chosen
+  provider.
+- **Workspace Appliance:** the workspace is deployed on-site on a Beelink
+  SER5 Mini PC, while model inference remains cloud-based through the
+  customer's chosen provider. The SER5 is not, by itself, a local-inference
+  promise.
+- **Private Local AI:** a selected customer workstation—such as a Mac Studio,
+  NVIDIA DGX Spark, or AMD Strix Halo system—runs the accepted local model.
+  Benchmark the agreed workload on the actual hardware before promising model
+  quality or performance. Local model inference alone does not establish that
+  embeddings, backups, telemetry, updates, or optional integrations stay
+  local; verify and disclose each data path separately.
+
+`deploy/customer/` currently provides the dedicated Cloud Workspace template.
+The Appliance and Private Local AI tiers require commissioning and acceptance
+on the actual selected hardware; see the tier-specific open gates in the
+[readiness record](docs/mvp-readiness-2026-10-27.md). This is a delivery-status
+distinction, not a change to the intended tier mapping.
+
 Loopback tests have verified role boundaries, member File Search answers/citations with temporary test credentials, separate local deployment stores, and encrypted backup/restore on synthetic data. This is not production approval: persistent customer-owned embeddings configuration, visible-browser acceptance, Stripe test-mode billing, and public VPS/DNS/TLS/firewall/reboot/off-host-restore checks remain open. See the current readiness record before any customer data is accepted.
 
 ## Configuration
