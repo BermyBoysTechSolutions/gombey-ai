@@ -2325,3 +2325,43 @@ applicable gates above have evidence.
   automatic deferred subscription. Sandbox rehearsal, live tax review, and
   explicit consent for future off-session charges remain prerequisites before
   collecting a customer payment or promising automatic monthly billing.
+
+## Long-document retrieval-depth regression and candidate check — 2026-10-28
+
+- The owner reconfirmed the intended offer ladder: Plus is a VPS with cloud
+  inference; Pro is an on-site Beelink SER5 with cloud inference; Max is a
+  customer workstation for local inference (Mac Studio, DGX Spark, or Strix
+  Halo). This is intentional, not a mismatch; no tier, price, or public copy
+  change was made for this clarification.
+- The loopback candidate's persistent RAG service passed the self-cleaning
+  synthetic smoke after the API restart: embedding, own-scope lookup,
+  unrelated-scope isolation, exact-marker retrieval, scoped deletion, and
+  post-delete absence all returned expected results. The test vector was
+  deleted. The candidate embeddings credential remains in its external-SSD
+  `.env` with owner-only mode `600`; its value was not displayed.
+- Reproduced the JS-C30 retrieval miss directly against the candidate vector
+  store. For “What were the actual observed conversion results for JS-C30?
+  Give exact count,” the JS-C30 page ranked sixth in the Campaign Briefs PDF
+  and was excluded by LibreChat's per-file `k=5`. With per-file `k=10`, page 31
+  entered the combined top ten at rank seven. The final model-context merge
+  remains capped at ten chunks.
+- Added `patches/librechat-file-search-depth.js`, a fail-closed, idempotent
+  startup patch for the pinned LibreChat bundle, five Node regression tests,
+  and the broad-identifier query to the corpus plan. All five tests pass;
+  customer-init, customer-preflight, encrypted-backup, all 16 Python checks,
+  Compose validation, candidate health, and another persistent RAG smoke also
+  passed. The candidate runtime bundle currently reports per-file depth 10.
+- A post-patch member answer was not verified: LibreChat's supported
+  `create-user` CLI did not produce a disposable member in the non-interactive
+  harness, and a database check confirmed no matching test account was
+  created. No member key or provider request was made in that attempt. Earlier
+  member-side shared File Search tests remain evidence for the prior depth-5
+  runtime only; repeat this broad query as a member after the patched runtime
+  is deployed through a Docker-shared checkout.
+- The branch checkout at `/private/tmp` is not mounted into Colima. Attempting
+  to recreate the candidate API from that checkout failed on a host bind mount;
+  the API was restored from its external-SSD Compose source, then the guarded
+  patch was applied to the isolated candidate bundle and its health returned
+  HTTP 200. Candidate databases/uploads were not moved or deleted. This proves
+  the patch against the exact pinned bundle, but the source-controlled startup
+  mount still needs validation from a Colima-shared checkout before VPS use.

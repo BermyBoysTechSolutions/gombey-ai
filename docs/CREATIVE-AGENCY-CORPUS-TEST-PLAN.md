@@ -49,6 +49,15 @@ unsupported additions separately.
    CTA/destination, evidence/claim review, named approver, and a final human QA
    checkpoint; label it a draft.
 
+### Retrieval robustness regression
+
+Run the broad identifier-only wording: “What were the actual observed
+conversion results for JS-C30? Give the exact count.” The expected response
+finds the JS-C30 brief on PDF page 31, distinguishes the 1,483 product-page
+add-to-cart target from completed conversions, and says actual completed
+conversions are not specified. A more specific rephrasing must not be required
+for this fact to be retrieved.
+
 ## Uncertainty and safety checks
 
 9. Ask for JS-C01's click-through rate. The source does not specify it; the

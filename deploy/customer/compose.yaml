@@ -37,7 +37,7 @@ services:
       APP_TITLE: ${GOMBEY_BRAND_NAME:-Gombey AI}
       GOMBEY_BRAND_NAME: ${GOMBEY_BRAND_NAME:-Gombey AI}
       GOMBEY_BRAND_DESCRIPTION: ${GOMBEY_BRAND_DESCRIPTION:-Dedicated AI workspace}
-    command: sh -c "sh /app/branding/apply-branding.sh && node /app/gombey-patches/librechat-agent-route.js && exec node api/server/index.js"
+    command: sh -c "sh /app/branding/apply-branding.sh && node /app/gombey-patches/librechat-file-search-depth.js && node /app/gombey-patches/librechat-agent-route.js && exec node api/server/index.js"
     volumes:
       - ./librechat.yaml:/app/librechat.yaml:ro
       # Shared File Search vectors are stored under the agent ID; upstream v0.8.8
@@ -46,6 +46,9 @@ services:
       # Explicitly pass `false` for the basic-agent handler: Express otherwise
       # supplies `next` as its third argument, which upstream treats as `expanded`.
       - ./patches/librechat-agent-route.js:/app/gombey-patches/librechat-agent-route.js:ro
+      # Retrieve ten candidates per source file before the upstream merge trims
+      # the final prompt context to ten results overall.
+      - ./patches/librechat-file-search-depth.js:/app/gombey-patches/librechat-file-search-depth.js:ro
       - ../../branding:/app/branding:ro
       - ../../assets/logo.svg:/app/client/public/assets/logo.svg:ro
       - ../../assets/logo.png:/app/client/public/assets/logo.png:ro
