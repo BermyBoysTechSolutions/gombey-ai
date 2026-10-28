@@ -651,3 +651,35 @@ applicable gates above have evidence.
   Stripe sandbox rehearsal, tax review, and cloud VPS acceptance are still
   open. No customer data, live billing objects, DNS, or VPS resources were
   created or changed.
+
+## Persistent primary-staging RAG smoke correction (2026-10-28)
+
+- A later state check found the owner-provided OpenRouter embeddings key now
+  present in the primary staging `.env` (owner-only mode `600`) and in its
+  running RAG container. The value was not printed. This corrects the earlier
+  same-day snapshot that said the primary key was still a placeholder; the
+  separate restored copy remains independent and was not changed.
+- Added `scripts/customer-rag-smoke.py`, which accepts no key argument and
+  prints no credential or document body. It writes one unique synthetic file
+  and agent scope, verifies the ID is visible only in that scope, retrieves an
+  exact random marker, deletes the vector, and asserts that it is absent.
+- Ran the script in the primary staging RAG container: embed, own-scope ID,
+  unrelated-scope isolation, and retrieval all returned HTTP 200 with the
+  expected marker; deletion returned HTTP 200 and the post-cleanup check found
+  no vector. Both primary and restore login pages remained HTTP 200.
+- Re-ran the fail-closed upload integration from the clean worktree while
+  referencing (not copying) the protected staging `.env`. The disposable test
+  overrode the embedding endpoint to loopback port 9 and used an invalid
+  synthetic key, returned HTTP 500, stored zero vectors, and removed its own
+  containers, networks, and volume. It made no external provider call.
+- This closes the persistent primary RAG service/credential smoke gate for
+  synthetic tests. It does not make the owner key suitable for customer use,
+  prove customer-owned provider billing, substitute for a visible-browser
+  multi-member session, or prove the public VPS boundary. Customer deployments
+  must use the customer's own embeddings credential.
+- The remaining gates are: member-facing UX/privacy acceptance in the visible
+  app; a dedicated Stripe sandbox rehearsal and customer-consented deferred
+  billing test; owner/tax-advisor resolution of tax setup; review or encryption
+  of local staging storage before any real data; and a separately approved
+  customer VPS/hostname/DNS/TLS/firewall/backup acceptance. No live billing,
+  public DNS, VPS purchase, or customer-data action occurred.

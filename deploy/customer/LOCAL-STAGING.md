@@ -915,3 +915,27 @@ confirmed revoked and replaced.
   restored, and the staging `.env` hash was unchanged. These were sequential
   API-harness checks, not a simultaneous two-member browser session or
   customer-owned billing test.
+
+## Persistent primary RAG credential and repeatable smoke (2026-10-28)
+
+- The primary staging `.env` now has the owner-provided OpenRouter embeddings
+  credential in owner-only mode `600`; the value is never printed. It is for
+  synthetic local tests only, not customer traffic. The isolated restore copy
+  has a separate environment and was not changed.
+- Added `scripts/customer-rag-smoke.py`. Run it inside the intended staging
+  RAG container, where it uses that container's configured key without taking
+  a key argument:
+
+  ```bash
+  docker exec -i gombey_staging_gombey_test-rag_api-1 \
+    python - < scripts/customer-rag-smoke.py
+  ```
+
+- The script was run successfully against primary staging. Synthetic embed,
+  exact-marker retrieval, own-entity lookup, unrelated-entity isolation,
+  deletion, and post-delete absence all passed. It leaves no vector behind.
+- This verifies the persistent primary RAG service with the owner's test key;
+  it does not establish a customer-owned provider or billing configuration.
+  Previous authenticated member File Search/citation checks used a temporary
+  runtime key override and synthetic documents. The user-facing visible-browser
+  check and customer-owned credential/billing check remain open.
