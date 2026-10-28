@@ -1130,6 +1130,22 @@ confirmed revoked and replaced.
   deletion test. No customer data, live billing, public deployment, DNS, or
   VPS was involved.
 
+## MVP readiness regression rerun (2026-10-28)
+
+- Re-ran the RAG smoke CLI (5 tests), fail-closed patch (4), and embeddings-key
+  helper (7): all 16 Python tests passed. Customer init, customer preflight,
+  and encrypted-backup safety tests passed.
+- Re-ran the read-only isolation audit for all three pairs among primary
+  staging, the restored backup, and the branch candidate. Every pair passed:
+  networks and storage roots are disjoint, cross-project DNS and TCP to API,
+  MongoDB, Meilisearch, pgvector, and RAG are blocked, and internal services
+  have no published host ports.
+- The generated synthetic evaluation PDFs are 33, 31, and 33 pages. This
+  confirms the long-file materials exist locally; it does not mean this newer
+  corpus has been uploaded to a separate shared agent or fully evaluated in
+  the UI. Billing sandbox, browser walkthrough, deletion/retrieval, and public
+  VPS acceptance remain open.
+
 ## Second-member shared File Search and provider-key isolation (2026-10-28)
 
 - A second disposable `USER` could see and select the shared, read-only

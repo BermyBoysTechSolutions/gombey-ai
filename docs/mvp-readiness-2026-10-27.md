@@ -2048,3 +2048,19 @@ applicable gates above have evidence.
 - Primary staging remained loopback-only and healthy. This does not replace
   production VPS acceptance or a real-embedding/UI stale-fact deletion test.
   No customer data, live billing, public deployment, DNS, or VPS was involved.
+
+## MVP readiness regression rerun — 2026-10-28
+
+- Re-ran the RAG smoke CLI (5 tests), fail-closed patch (4), and embeddings-key
+  helper (7): all 16 Python tests passed. Customer init, customer preflight,
+  and encrypted-backup safety tests passed.
+- Re-ran the read-only isolation audit for all three pairs among primary
+  staging, restored backup, and branch candidate. All passed: networks and
+  storage roots are disjoint, cross-project DNS/TCP to API, MongoDB,
+  Meilisearch, pgvector, and RAG are blocked, and internal services have no
+  published host ports.
+- The generated synthetic evaluation PDFs are 33, 31, and 33 pages. This
+  confirms the long-file materials exist locally, not that this newer corpus
+  has been uploaded to a separate shared agent or fully evaluated in the UI.
+  Billing sandbox, native-browser walkthrough, deletion/retrieval, and public
+  VPS acceptance remain open.
