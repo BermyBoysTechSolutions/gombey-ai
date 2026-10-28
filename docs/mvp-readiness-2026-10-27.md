@@ -516,12 +516,17 @@ applicable gates above have evidence.
 - The three active live kickoff links are one-time founding deposits only
   ($997.50 Cloud, $1,997.50 Appliance, $3,497.50 Local). They do not create a
   subscription or establish reuse consent for later charges. The separate
-  monthly links are inactive. Those links have a 30-day subscription trial,
-  require a payment method at subscription checkout, and allow promo codes.
-  If enabled and sent only after accepted delivery, that is a viable
-  customer-confirmed second checkout whose trial then runs 30 days; it will
-  not reuse the card from the kickoff payment. A no-second-checkout flow would
-  need a tested save-for-off-session-consent step at kickoff and a subscription
+  monthly links are inactive. A fresh read-only recheck confirmed each is a
+  recurring link at the standard monthly amount ($399/$699/$1,499), with a
+  30-day subscription trial, required payment-method collection, and promo-code
+  entry enabled. The launch code is not automatically applied; the customer
+  must enter the applicable code at this second checkout. These links have
+  `automatic_tax` disabled. If enabled and sent only after accepted delivery,
+  they would provide a customer-confirmed second checkout whose trial then runs
+  30 days; they will not reuse the card from the kickoff payment. The existing
+  `automatic_tax` setting on kickoff links also does not collect tax while the
+  account has no active registrations. A no-second-checkout flow would need a
+  tested save-for-off-session-consent step at kickoff and a subscription
   created after delivery; no such flow is implemented or tested.
 - Live Stripe Tax settings currently report `pending` with no head-office
   address, and the account has no tax registrations. The three active kickoff
