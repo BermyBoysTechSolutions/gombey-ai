@@ -230,11 +230,13 @@ separately quoted and acceptance-gated.
    the owner's subscription/API credentials for customer traffic. The latest
    synthetic request to the normal candidate RAG service failed at the
    OpenRouter embeddings call with HTTP 401 (`Missing Authentication header`).
-   Its health endpoint still returns HTTP 200, so health alone is not proof
-   that embeddings work. No currently working embeddings credential is verified
-   on this persistent stack; enter a fresh authorized test/customer credential
-   through the protected setup path and rerun the member flow before passing
-   this gate.
+   A sanitized runtime check confirms that this container still has the
+   template placeholder, so this is an expected unconfigured-credential
+   failure, not evidence of an application-code or offer mismatch. Its health
+   endpoint still returns HTTP 200, which only proves the service starts. No
+   working embeddings credential is configured on this persistent stack; enter
+   a fresh authorized test/customer credential through the protected setup path
+   and rerun the member flow before passing this gate.
 2. Decide whether model keys are per-member BYOK or customer-managed centrally,
    then test the chosen flow end-to-end for both members.
 3. Keep connectors outside the base Cloud offer. The current shared agent has
@@ -2161,11 +2163,14 @@ applicable gates above have evidence.
   candidate RAG service to its intended networks, both its health endpoint and
   the candidate app health check returned HTTP 200. However, a live synthetic
   embeddings request through that persistent RAG configuration returned HTTP
-  401 (`Missing Authentication header`). Thus the successful member File Search
-  run used a temporary evaluator with a working test credential; it does not
-  prove the persistent candidate RAG/provider path is ready. Refresh the
-  authorized test credential through the protected setup path and repeat the
-  member retrieval test on the normal candidate before closing this gate.
+  401 (`Missing Authentication header`). A sanitized runtime check confirmed
+  the normal RAG container still has the template placeholder. Thus the
+  successful member File Search run used a temporary evaluator with a working
+  test credential; it does not prove the persistent candidate RAG/provider
+  path is ready. Enter a fresh authorized test credential through the protected
+  setup path and repeat the member retrieval test on the normal candidate
+  before closing this gate. This is a missing-credential configuration gate,
+  not evidence of a defect in the tier mapping or product description.
 - The verified offer ladder remains intentional: entry is VPS-hosted cloud
   inference, the middle tier deploys a Beelink SER5 Mini PC with cloud
   inference, and the highest tier offers an on-device local-inference system
