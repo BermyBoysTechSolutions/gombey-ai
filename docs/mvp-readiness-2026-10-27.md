@@ -2432,3 +2432,16 @@ applicable gates above have evidence.
   not a browser UX test or proof of cross-customer tenant isolation. The
   intended deployment ladder remains Plus = customer VPS/cloud inference,
   Pro = on-site SER5/cloud inference, Max = customer hardware/local inference.
+
+## Local pre-VPS regression rerun — 2026-10-28 15:26 EDT
+
+- Re-ran the five File Search retrieval-depth patch tests, four RAG
+  fail-closed patch tests, customer-init tests, customer-preflight tests, and
+  encrypted-backup safety tests; all passed.
+- Re-ran all three pairwise read-only isolation checks across primary staging,
+  the clean candidate, and the restored backup copy. All passed: disjoint
+  networks and persistent storage, blocked cross-project service DNS/TCP, and
+  no published internal service ports.
+- These checks strengthen the local pre-VPS evidence only; they do not replace
+  public DNS/TLS/firewall/reboot/backup-restore acceptance or Stripe sandbox
+  billing rehearsal.
