@@ -2655,3 +2655,14 @@ applicable gates above have evidence.
   are examples; `deploy/customer/.env` is gitignored. This is a targeted
   pattern check, not a comprehensive secret audit, and it did not inspect the
   user's ignored local configuration or unrelated `tmp/` contents.
+
+## Owner-confirmed offer ladder and public-page check — 2026-10-28 16:20 EDT
+
+- The owner reconfirmed that the tier/device progression is intentional, not
+  a mismatch: Plus is a dedicated VPS with cloud inference; Pro is an on-site
+  Beelink SER5 Mini PC with cloud inference; Max is a customer-selected
+  Mac Studio, NVIDIA DGX Spark, or Strix Halo-class system for local inference.
+- Fetched the public landing page read-only and verified that each named tier
+  is described with that deployment/inference mode. The page also states that
+  hardware-specific scope and local model performance require validation.
+- No tier names, prices, products, Stripe records, or public copy were changed.
