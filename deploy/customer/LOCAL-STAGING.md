@@ -148,11 +148,13 @@ For example, the current local staging copies can be checked with
 The command requires the API, MongoDB, Meilisearch, pgvector, and RAG containers
 to be running for both projects. It checks private-network membership, cross-
 project DNS denial, TCP reachability to the other project's known private
-MongoDB IP, host-port exposure of internal services, and distinct persistent
-storage roots. The known-IP TCP probe must time out or report a network/host
-unreachable error; a reachable port or an unexpected socket error fails the
-check. It does not validate authenticated member ACLs, provider billing, public
-DNS/TLS, or a cloud firewall.
+service IPs for the API, MongoDB, Meilisearch, pgvector, and RAG, host-port
+exposure of internal services, and distinct persistent storage roots. Each
+service must be attached to its own project's private network. Every
+cross-project TCP probe must time out or report a network/host unreachable
+error; a reachable port or an unexpected socket error fails the check. It does
+not validate authenticated member ACLs, provider billing, public DNS/TLS, or a
+cloud firewall.
 
 ## Backup and recovery drill
 

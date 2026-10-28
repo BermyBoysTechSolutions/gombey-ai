@@ -12,8 +12,15 @@ from typing import Any
 
 
 SERVICES = ("api", "mongodb", "meilisearch", "vectordb", "rag_api")
-PRIVATE_SERVICES = ("mongodb", "meilisearch", "vectordb")
+PRIVATE_SERVICES = ("api", "mongodb", "meilisearch", "vectordb", "rag_api")
 INTERNAL_SERVICES = ("mongodb", "meilisearch", "vectordb", "rag_api")
+CROSS_PROJECT_TCP_PORTS = {
+    "api": 3080,
+    "mongodb": 27017,
+    "meilisearch": 7700,
+    "vectordb": 5432,
+    "rag_api": 8000,
+}
 DATA_MOUNTS = {
     "api": ("/app/data", "/app/uploads"),
     "mongodb": ("/data/db",),
@@ -59,7 +66,7 @@ def resolve_from(container: str, hostname: str, *, must_resolve: bool) -> None:
 
 
 def probe_tcp_from(container: str, host: str, port: int) -> None:
-    """Require a known private Mongo IP to be unreachable from another project."""
+    """Require a known private service IP/port to be unreachable cross-project."""
     code = (
         "const net=require('net');"
         "const socket=net.createConnection({host:process.env.PROBE_HOST,"
@@ -165,17 +172,23 @@ def main() -> int:
 
     for source_project, target_project in ((projects[0], projects[1]), (projects[1], projects[0])):
         source_api = f"{source_project}-api-1"
-        target_mongo = inspected[target_project]["mongodb"].get("Name", "").lstrip("/")
-        if not target_mongo:
-            raise IsolationCheckError(f"Could not determine target Mongo container for {target_project}")
-        resolve_from(source_api, target_mongo, must_resolve=False)
         private_name = f"{target_project}_private"
-        target_networks = inspected[target_project]["mongodb"].get("NetworkSettings", {}).get("Networks", {})
-        target_network = target_networks.get(private_name)
-        target_ip = target_network.get("IPAddress") if target_network else None
-        if not target_ip:
-            raise IsolationCheckError(f"Could not determine private Mongo IP for {target_project}")
-        probe_tcp_from(source_api, target_ip, 27017)
+        for service, port in CROSS_PROJECT_TCP_PORTS.items():
+            target_container = inspected[target_project][service]
+            target_name = target_container.get("Name", "").lstrip("/")
+            if not target_name:
+                raise IsolationCheckError(
+                    f"Could not determine target {service} container for {target_project}"
+                )
+            resolve_from(source_api, target_name, must_resolve=False)
+            target_networks = target_container.get("NetworkSettings", {}).get("Networks", {})
+            target_network = target_networks.get(private_name)
+            target_ip = target_network.get("IPAddress") if target_network else None
+            if not target_ip:
+                raise IsolationCheckError(
+                    f"Could not determine private {service} IP for {target_project}"
+                )
+            probe_tcp_from(source_api, target_ip, port)
 
     storage_sources: dict[str, dict[str, str]] = {}
     for project in projects:
@@ -196,8 +209,8 @@ def main() -> int:
     print("Isolation check passed (read-only).")
     print(f"Projects: {projects[0]} / {projects[1]}")
     print(f"Networks are disjoint: {', '.join(sorted(network_sets[projects[0]]))} / {', '.join(sorted(network_sets[projects[1]]))}")
-    print("Own Mongo service DNS resolves; cross-project Mongo container DNS is blocked both ways.")
-    print("Cross-project TCP access to the known private Mongo IP is blocked both ways.")
+    print("Own Mongo service DNS resolves; cross-project private-service DNS is blocked both ways.")
+    print("Cross-project private-IP TCP access to API, MongoDB, Meilisearch, pgvector, and RAG ports is blocked both ways.")
     print("MongoDB, Meilisearch, pgvector, and RAG publish no host ports.")
     print("App data, uploads, MongoDB, Meilisearch, and pgvector storage roots are distinct.")
     print("This does not test member authentication/ACL behavior, provider billing, or VPS exposure.")

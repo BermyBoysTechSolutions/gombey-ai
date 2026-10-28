@@ -1812,3 +1812,18 @@ applicable gates above have evidence.
 - Stripe account discovery still returns only the live Gombey Tech account;
   no sandbox is connected. No Stripe object/settings, public site, DNS, VPS,
   customer data, or model-provider request was changed in this check.
+
+## Expanded local deployment-isolation probes — 2026-10-28 10:54 EDT
+
+- Hardened `scripts/customer-isolation-check.py` to require the target API,
+  MongoDB, Meilisearch, pgvector, and RAG containers on the deployment's
+  internal private network. It now checks cross-project container-name DNS and
+  direct TCP reachability to each service's private IP/port in both directions,
+  rather than probing MongoDB alone.
+- The expanded read-only check passed for primary-staging vs candidate and
+  restore-copy vs candidate. Cross-project DNS and private-IP TCP access to all
+  five service ports were blocked in both directions; network/storage
+  separation and internal host-port checks also passed.
+- Updated `deploy/customer/LOCAL-STAGING.md` to document the stronger check.
+  No container, data, provider request, billing object, VPS, or DNS setting was
+  changed.
