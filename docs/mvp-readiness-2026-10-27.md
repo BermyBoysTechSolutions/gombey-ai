@@ -1026,6 +1026,10 @@ applicable gates above have evidence.
   regression tests; all passed. The staging Compose configuration validates,
   and its API and RAG containers report healthy. Both loopback login routes
   (`3083` and `3084`) return HTTP 200.
+- The read-only two-deployment isolation checker passed again: networks and
+  persistent data roots are distinct, each API resolves its own Mongo service,
+  cross-deployment Mongo DNS is blocked both ways, and internal data/search/RAG
+  services publish no host ports.
 - A fresh synthetic RAG smoke against the current staging embeddings
   configuration passed: embedding, own-scope ID check, unrelated-scope
   isolation, exact-marker retrieval, deletion, and post-delete absence all
