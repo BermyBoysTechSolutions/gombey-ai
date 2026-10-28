@@ -221,6 +221,21 @@ separately quoted and acceptance-gated.
   API/data-store checks, not a customer VPS acceptance test or a provider-backed
   File Search run; the latter still needs a known customer-owned chat key and
   verified embeddings billing.
+- Final candidate browser recheck on 2026-10-28: unauthenticated navigation to
+  `/c/new` redirected to `/login`. A disposable candidate `USER` then completed
+  an authenticated login (login HTTP 200; authenticated profile matched that
+  exact test account), saw and selected the shared Juniper & Slate test agent,
+  and retained the configured GPT-6 Luna default. No model generation or file
+  upload was sent. LibreChat's supported self-delete endpoint returned HTTP 200
+  for that disposable account and the browser returned to the login screen.
+  This proves sign-in plus shared-agent discovery/selection only; it does not
+  replace the separate member-edit-denial, grounded browser-answer, or provider
+  billing checks. The test account had no chats, uploads, or provider key.
+- Regression rerun on 2026-10-28: customer-init, customer-preflight,
+  encrypted-backup safety, RAG smoke CLI (5 tests), fail-closed patch (4 tests),
+  embeddings-key setter (7 tests), and File Search depth patch (5 tests) all
+  passed against the candidate source at `820e4b7`. The pre-existing untracked
+  `tmp/` directory was left untouched.
 
 ## Remaining go/no-go gates for the cloud workspace
 
@@ -257,8 +272,9 @@ separately quoted and acceptance-gated.
    Purchase/production setup requires owner approval of exact plan and spend,
    hostname, and DNS control.
 
-The read-only Hostinger VPS inventory request timed out twice on 2026-10-28;
-no VPS inventory was confirmed, and no VPS was purchased or changed.
+The read-only Hostinger VPS inventory request timed out again on 2026-10-28;
+no VPS inventory or current price was confirmed, and no VPS was purchased or
+changed.
 
 ## Public-offer claims mapped to evidence
 
