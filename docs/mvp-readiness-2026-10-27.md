@@ -705,6 +705,12 @@ applicable gates above have evidence.
 - Customer-init, customer-preflight, encrypted-backup safety, and all 11 Python
   unit tests passed. No production/customer data or provider inference was used
   in this verification pass.
+- Account onboarding/recovery remains operator-assisted: the customer
+  template keeps public registration and email password reset disabled; the
+  supported interactive `npm run create-user` and `npm run reset-password`
+  commands are available to an authorized operator. The operations handoff now
+  records identity verification, hidden password entry, session invalidation,
+  and secure delivery expectations. This is not self-service recovery.
 - The mounted external USB SSD is APFS, 1.8 TiB total with about 1.6 TiB free.
   Runtime mount inspection confirms primary and restore app data, uploads, and
   database roots are on that volume. The external volume is not encrypted;

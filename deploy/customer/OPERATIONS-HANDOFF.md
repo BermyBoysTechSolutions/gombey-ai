@@ -99,6 +99,23 @@ record, not in this reusable source file.
 - On departure, disable/revoke the account promptly, verify it cannot sign in,
   and record the date. Do not promise immediate erasure of backups unless the
   agreed retention cycle and deletion procedure support that promise.
+- For a forgotten password, keep public password reset disabled unless a
+  customer email provider has been configured and tested. Verify the request
+  through the customer's agreed admin/support channel, SSH to the approved
+  deployment, change to the deployment repository root, and run the supported
+  interactive reset command:
+
+  ```bash
+  docker compose --env-file deploy/customer/.env \
+    -f deploy/customer/compose.yaml exec api npm run reset-password
+  ```
+
+  It prompts for the account email and hides the new password while it is
+  entered; do not pass a password as a command-line argument or store it in
+  this runbook. The command updates the password version, invalidating existing
+  sessions. Coordinate entry/delivery through the separately agreed secure
+  channel and confirm the affected user can sign in afterward. This is an
+  operator-assisted recovery path, not customer self-service.
 - At termination, follow the written export/deletion plan; remove DNS and
   credentials only after the customer confirms whether data export is needed.
   Provide a deletion confirmation only after checking active volumes and
