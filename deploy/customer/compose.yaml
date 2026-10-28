@@ -143,8 +143,17 @@ services:
       - private
 
   rag_api:
-    image: ${RAG_API_IMAGE}
+    image: gombey-ai/rag-api-fail-closed:0.8.8-gombey1
+    platform: linux/amd64
     restart: unless-stopped
+    # The pinned RAG image currently returns a truthy error object after an
+    # embedding failure, which makes LibreChat report an upload as successful.
+    # Build a tiny derived image to apply a guarded source patch at startup.
+    build:
+      context: ./patches
+      dockerfile: RAG.Dockerfile
+      args:
+        UPSTREAM_RAG_IMAGE: ${RAG_API_IMAGE}
     environment:
       DB_HOST: vectordb
       DB_PORT: "5432"

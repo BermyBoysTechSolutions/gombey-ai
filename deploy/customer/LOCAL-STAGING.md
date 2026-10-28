@@ -1,5 +1,24 @@
 # Mac mini local staging
 
+## RAG failed-embedding handling (2026-10-27)
+
+- The pinned RAG image had an upstream false-success path: embedding failures
+  returned a truthy error object and the upload route could report success.
+- The customer Compose template now builds a small derived image from the
+  pinned AMD64 RAG digest and applies an exact-match, idempotent source patch
+  before startup. Unknown upstream source shapes stop the container rather
+  than silently skipping the fix.
+- Four source-patch unit tests pass. The isolated integration test posts only
+  synthetic text to a loopback dead port, verifies HTTP 500, and confirms zero
+  vectors were written. Its dedicated Docker project, database, networks, and
+  volume were removed afterward.
+- The active staging RAG API is healthy and the UI remains loopback-only. The
+  three existing synthetic manuals remain indexed; no successful embedding or
+  customer data was sent during this failure-path test.
+- Before any semantic retrieval test, rotate the potentially exposed
+  embeddings credential and enter a fresh low-limit customer-owned key through
+  the secure helper. Do not reuse the prior credential.
+
 This procedure runs the customer template as a separate, loopback-only Docker
 Compose project. It does not turn the Mac mini into a public VPS and does not
 validate DNS, public HTTPS, firewall rules, or cloud-provider networking.

@@ -62,13 +62,19 @@ following cloud-workspace gates pass.
   disposable user. A second account without a provider key did not inherit the
   first account's key. This does not prove retrieval or tool calling through
   Qwen.
+- The RAG upload failure path is now fail-closed: an isolated synthetic upload
+  with a loopback-only unavailable embeddings endpoint returned HTTP 500 and
+  left zero vectors in its dedicated disposable database. Four exact-match,
+  idempotency, and source-drift unit tests pass. The active staging RAG service
+  is healthy and its existing 101 synthetic vectors were unchanged.
 
 ## Remaining go/no-go gates for the cloud workspace
 
 1. Repeat grounded retrieval/citation as a second member with the agreed
    customer-owned provider/embedding credentials. Confirm the result and usage
    appear under the intended customer billing account. Do not use Gombey's or
-   the owner's subscription/API credentials for customer traffic.
+   the owner's subscription/API credentials for customer traffic. First
+   rotate the potentially exposed prior embeddings key; do not reuse it.
 2. Decide whether model keys are per-member BYOK or customer-managed centrally,
    then test the chosen flow end-to-end for both members.
 3. Reconcile the public site's read-only-connector claim. The current shared
