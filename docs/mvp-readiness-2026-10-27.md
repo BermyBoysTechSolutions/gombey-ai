@@ -2222,3 +2222,18 @@ applicable gates above have evidence.
   attempts also timed out. No VPS was created or changed; stop retrying this
   inventory call for now and obtain any required account/server details from a
   successful Hostinger read or the owner before production provisioning.
+
+## Fresh three-deployment isolation recheck — 2026-10-28
+
+- Re-ran all three pairwise checks among primary staging, the restored backup,
+  and the clean candidate using `scripts/customer-isolation-check.py`; all
+  three passed. Each pair had disjoint Docker networks and persistent storage,
+  own-service DNS resolution, blocked cross-project private-service DNS and
+  TCP access in both directions, and no published MongoDB, Meilisearch,
+  pgvector, or RAG host ports.
+- The app's only host binding in these stacks remains loopback-only. Login
+  pages on ports 3083, 3084, and 3085 each returned HTTP 200. This is local
+  network/storage and route evidence only; it does not replace VPS firewall,
+  DNS/TLS, reboot, provider billing, or member UI acceptance.
+- Checks were read-only; no containers, data, environment, accounts, or
+  provider credentials were changed.
