@@ -1652,13 +1652,13 @@ applicable gates above have evidence.
 
 ## Fresh restored-copy member ACL check — 2026-10-28
 
-- A read-only probe using an existing synthetic `USER` and `ADMIN` against the
-  restore deployment confirmed that both can list and open the shared Juniper
-  & Slate agent's basic view (HTTP 200); the member is denied expanded
-  configuration and version history (HTTP 403), while the admin can open both
-  (HTTP 200). The probe generated short-lived access tokens in memory using
-  LibreChat's own token helper, created no account or database record, and sent
-  no provider/model request.
+- A read-only probe using all four existing synthetic `USER` accounts and an
+  `ADMIN` against the restore deployment confirmed that every member can list
+  and open the shared Juniper & Slate agent's basic view (HTTP 200), and every
+  member is denied expanded configuration and version history (HTTP 403); the
+  admin can open both (HTTP 200). The probe generated short-lived access
+  tokens in memory using LibreChat's own token helper, created no account or
+  database record, and sent no provider/model request.
 - The initial failed probe was aimed at `/api/agents/v1/agents/...`, which is
   LibreChat's machine-to-machine OIDC management API, and used MongoDB `_id`
   instead of the agent's public `id`. Its 401/404 responses were harness
