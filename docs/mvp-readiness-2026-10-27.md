@@ -277,11 +277,27 @@ applicable gates above have evidence.
   still has placeholders for both the OpenRouter chat key and RAG embeddings
   key. Therefore no second-member provider-backed answer, semantic retrieval,
   citation, or provider-billing check has passed in the current staging state.
-  The earlier one-user synthetic Qwen smoke test remains historical evidence,
+  The disposable-user Qwen smoke recorded below remains historical evidence,
   not evidence that this current staging database has a usable provider key.
 - Hostinger VPS inventory read was requested but did not return during this
   check; no purchase or other Hostinger write was made. Production VPS
   acceptance is still pending explicit hostname and spend approval.
+
+## Disposable member Qwen smoke (2026-10-27; historical)
+
+- A disposable USER entered a low-limit OpenRouter key directly in that
+  account's provider settings, then received the synthetic answer `RESULT=4`
+  from the optional Qwen 3.5 9B model through Gombey. The key was configured
+  with the UI's 12-hour lifetime; its value was not printed or copied into
+  application configuration.
+- A second disposable USER without a key was denied before inference rather
+  than inheriting the first user's credential. Both temporary accounts were
+  deleted after the check, so the current staging database correctly has no
+  user-key records. This verifies a simple member chat and per-user key
+  separation, but not member-side shared File Search retrieval, citations,
+  provider billing, or current-key availability.
+- The stale OpenClaw credential file documented above was not used. No
+  customer data or production service was involved.
 
 ## Continuation audit (2026-10-28)
 
