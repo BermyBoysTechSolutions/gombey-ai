@@ -94,6 +94,24 @@ following cloud-workspace gates pass.
   neither account was modified or deleted. The candidate has no uploaded
   evaluation documents. Its server-side provider settings remain placeholders;
   this count-only audit did not inspect account passwords or user-scoped keys.
+- Candidate RAG authentication was then tested without persisting a credential
+  to its external-SSD `.env`: the first synthetic smoke correctly failed closed
+  because that file still held the embeddings placeholder and stored no vector.
+  For a second run, the already-authorized owner staging embeddings credential
+  was passed only to the candidate RAG container at runtime. Synthetic ingest,
+  own-scope and unrelated-scope checks, exact-marker retrieval, deletion, and
+  post-delete absence all passed. The candidate RAG container was recreated
+  afterward from its placeholder config and returned healthy. This validates
+  provider-backed RAG mechanics with synthetic data; it does not verify a
+  customer-owned key, LibreChat member File Search, shared-agent UX, or chat
+  model access. No credential value was displayed or written to the candidate
+  env file.
+- Continuation regression on 2026-10-28: customer init, deployment preflight,
+  backup-safety, 16 Python tests, the fail-closed upload integration (HTTP 500
+  with zero vectors, using only a disposable loopback endpoint), and both
+  primary/restore-versus-candidate network/storage isolation checks passed.
+  Login routes on ports 3083, 3084, and 3085 plus candidate health all returned
+  HTTP 200. The temporary integration resources were fully removed.
 - `scripts/customer-backup.sh` now refuses plaintext output, writes a checksummed
   AES-256/PBKDF2 archive, and pauses only the target deployment's app/RAG/search
   writers during capture. Safety tests pass. A fresh encrypted backup was
