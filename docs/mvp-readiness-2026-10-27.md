@@ -52,6 +52,12 @@ following cloud-workspace gates pass.
 - An isolated second deployment used separate secrets, network, database, and
   storage; a synthetic marker was absent across deployments. An isolated
   restore drill also completed.
+- A fresh 2026-10-28 runtime inspection confirmed distinct private Docker
+  networks and separate app, upload, MongoDB, pgvector, and Meilisearch data
+  directories for the primary and restore deployments. Only the two app APIs
+  are host-published, bound to `127.0.0.1:3083` and `127.0.0.1:3084`; MongoDB,
+  pgvector, Meilisearch, and RAG have no host-published ports. Both deployments
+  currently store their synthetic staging data on the external SSD.
 - `scripts/customer-backup.sh` now refuses plaintext output, writes a checksummed
   AES-256/PBKDF2 archive, and pauses only the target deployment's app/RAG/search
   writers during capture. Safety tests pass. A fresh encrypted backup was
