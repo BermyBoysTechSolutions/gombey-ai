@@ -623,6 +623,13 @@ applicable gates above have evidence.
   project-specific networks and separate app, upload, MongoDB, and pgvector
   data roots on the external SSD. This is local network/storage isolation
   evidence, not a full security audit or the required customer VPS test.
+- Added `scripts/customer-isolation-check.py` as a repeatable, read-only
+  runtime check and ran it against both active staging projects. It passed
+  checks for internal/disjoint networks, same-project Mongo DNS, blocked
+  cross-project Mongo DNS, no host-published MongoDB/Meilisearch/pgvector/RAG
+  ports, and distinct app, upload, MongoDB, Meilisearch, and pgvector storage
+  sources. It does not test authenticated member ACLs, provider billing, or
+  public VPS exposure.
 - Both running RAG containers currently have placeholder embeddings values,
   and the primary `.env` is also still a placeholder; the protected helper
   session is still awaiting the fresh key. Persistent

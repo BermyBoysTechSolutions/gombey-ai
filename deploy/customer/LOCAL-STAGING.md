@@ -135,6 +135,21 @@ member accounts with LibreChat's supported `npm run create-user` command.
    environment file to the external SSD. Restore only into a fresh isolated
    test project, then repeat the key account and retrieval checks.
 
+For a read-only check of two running Compose projects' runtime network and
+storage boundaries, run:
+
+```bash
+python3 scripts/customer-isolation-check.py PROJECT_A PROJECT_B
+```
+
+For example, the current local staging copies can be checked with
+`python3 scripts/customer-isolation-check.py gombey_staging_gombey_test gombey_backup_restore_20261027`.
+The command requires the API, MongoDB, Meilisearch, pgvector, and RAG containers
+to be running for both projects. It checks private-network membership, cross-
+project DNS denial, host-port exposure of internal services, and distinct
+persistent storage roots. It does not validate authenticated member ACLs,
+provider billing, public DNS/TLS, or a cloud firewall.
+
 ## Backup and recovery drill
 
 Keep backups outside the repository, under a dated, owner-only directory on
