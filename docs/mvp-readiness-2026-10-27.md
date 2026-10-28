@@ -31,6 +31,13 @@ following cloud-workspace gates pass.
 - A separate local staging deployment is loopback-only. Local browser checks
   covered an admin and member, shared-agent Viewer access, private member
   chats/files, and denial of member edits to shared-agent instructions/source.
+- On the isolated restore copy, LibreChat's supported `npm run create-user`
+  command provisioned two additional synthetic `USER` accounts: the instance
+  now has one `ADMIN` and four `USER` accounts (five total) while
+  `ALLOW_REGISTRATION=false`; the restored UI remained HTTP 200. Generated
+  passwords were withheld and not recorded. This verifies provisioning
+  capacity only: the two additional users have not yet been signed in or run
+  through shared-agent/private-data authorization checks.
 - An isolated second deployment used separate secrets, network, database, and
   storage; a synthetic marker was absent across deployments. An isolated
   restore drill also completed.
@@ -89,7 +96,7 @@ after the corresponding implementation and acceptance test.
 | Public claim | Current evidence | Gate still open |
 |---|---|---|
 | Cloud: dedicated VPS per customer | Separate Compose project, secrets, database, network, and storage were tested locally. | Public VPS, DNS/TLS, firewall, reboot, and restore acceptance. |
-| Cloud: up to 5 named accounts with admin/member roles | Two members passed shared-agent role and private chat/file authorization checks. | Exercise the actual operator provisioning flow with five accounts; verify invite/reset/revocation procedures. |
+| Cloud: up to 5 named accounts with admin/member roles | The operator command provisioned five total accounts (one admin, four members) on isolated restore while public registration stayed disabled; two members have passed shared-agent role and private chat/file authorization checks. | Sign in as the two newly provisioned members and verify shared-agent access, private chats/files, and access revocation; document the invite/reset/revocation procedure. |
 | Cloud: one workflow, one custom agent, shared knowledge | One synthetic shared File Search agent and admin-managed Viewer access are configured. Local lexical-mock upload/index/query/delete plumbing passed. | Real customer-template semantic retrieval/citations with a member account and customer-owned model + embeddings credentials. |
 | Cloud: one supported read-only connector | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. | Connect and acceptance-test one named read-only connector, including customer authorization and data-path review. |
 | Cloud: managed hosting, updates, backups, restore checks | Encrypted local snapshot and isolated full restore passed. | Secure/remove legacy plaintext test snapshots; define cadence/retention and portable key escrow; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
