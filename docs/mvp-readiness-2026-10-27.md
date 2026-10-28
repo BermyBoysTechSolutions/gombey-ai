@@ -1600,3 +1600,33 @@ applicable gates above have evidence.
 - No Stripe settings, links, prices, invoices, subscriptions, tax settings,
   website, VPS, or DNS were modified. The dedicated Stripe sandbox and tax
   review remain prerequisites to a live charge.
+
+## Resumed local MVP checks — 2026-10-28 09:38 EDT
+
+- The branch is synchronized with origin at `baa04d3`. Pre-existing untracked
+  `tmp/` is user data and remains untouched.
+- Candidate `127.0.0.1:3085` and restore `127.0.0.1:3084` are healthy; their
+  login and health endpoints return HTTP 200. The read-only deployment
+  isolation check passed again: networks and storage roots are disjoint,
+  cross-project Mongo DNS is blocked, and MongoDB/Meilisearch/pgvector/RAG have
+  no published host ports.
+- Fifteen Python tests, customer initialization, deployment preflight, and
+  encrypted-backup safety tests passed. The disposable fail-closed container
+  integration returned the expected HTTP 500 for a synthetic invalid key,
+  stored zero vectors, and removed its container, database, networks, and
+  volume. The legacy Docker builder emitted a missing-buildx warning but the
+  AMD64 image build and test succeeded under local ARM emulation.
+- The generated synthetic corpus is present locally: the Operations Manual is
+  33 pages, Campaign Briefs 31 pages, and Workflow SOPs 33 pages. The separate
+  answer key is not for upload. These PDFs have not been imported into the
+  branch candidate; no agent or test files are present there.
+- Candidate model configuration defaults to GPT-6 Luna and lists optional
+  DeepSeek V4 Flash and Qwen 3.5 9B OpenRouter test entries. They require a
+  valid owner-controlled provider key. Sanitized candidate env inspection
+  confirms both chat and embeddings credential fields are still setup markers;
+  the protected key-entry prompt remains open. No key was copied from another
+  profile or used.
+- Provider-backed File Search, citations, member-visible shared-agent access,
+  Stripe sandbox/Tax and consent rehearsal, off-host recovery, and approved
+  public VPS acceptance remain open gates. No live Stripe/site/DNS/VPS or
+  customer-data change occurred.
