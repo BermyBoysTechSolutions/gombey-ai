@@ -824,11 +824,11 @@ applicable gates above have evidence.
   after accepted delivery, its first payment would be attempted 30 days after
   that second checkout; it is not an automatic continuation of the kickoff
   payment. No active subscription was found.
-- The live coupons and promotion codes each allow three redemptions and have
-  zero redemptions, but the coupon API responses omit `applies_to`; therefore
-  the promotion codes are not proven tier-restricted. Replace/test them with
-  product-scoped coupons in sandbox before activating or sharing a monthly
-  link. The three-deployment cross-tier cap remains operator-enforced.
+- The initial unexpanded coupon responses omitted `applies_to`, so product
+  scope was not established at this point in the audit. A later expanded
+  read-only retrieval (recorded below) confirmed that each coupon is restricted
+  to its matching product. The codes still have separate three-redemption
+  ceilings, so the three-deployment cross-tier cap remains operator-enforced.
 - Stripe Tax Settings remain `pending` because `head_office` is missing, with
   zero tax registrations. The live account is still the only connected Stripe
   account. No Stripe, website, VPS, DNS, or customer-data state was changed.
@@ -949,9 +949,11 @@ applicable gates above have evidence.
   specific launch eligibility, and tax behavior in a dedicated Stripe sandbox.
   The account connection still exposes only the live Gombey Tech account; no
   sandbox or live billing object was created or changed.
-- Current live monthly links remain inactive, launch coupons lack product
-  restrictions, and Tax has zero active registrations. These are hard no-go
-  conditions for live charges. No production or customer state changed.
+- At this 05:05 snapshot, live monthly links remained inactive, coupon product
+  scope had not yet been verified, and Tax had zero active registrations. The
+  05:20 expanded read below confirmed matching product restrictions; sandbox
+  and tax review are still hard gates for live recurring charges. No billing or
+  customer state changed in this earlier snapshot.
 
 ## Staging RAG synthetic smoke — 2026-10-28 05:07 EDT
 
