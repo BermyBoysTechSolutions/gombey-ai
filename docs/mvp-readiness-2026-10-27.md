@@ -1468,3 +1468,27 @@ applicable gates above have evidence.
   set to a placeholder, and the running candidate RAG container has no
   embeddings key. Positive File Search acceptance remains blocked until an
   owner-approved test key is entered through a protected path.
+
+## Resumed verification — 2026-10-28
+
+- Re-ran customer initialization, deployment preflight, encrypted-backup
+  safety, all 13 Python unit tests, and all four RAG fail-closed tests; all
+  passed. `customer-isolation-check.py` again confirmed the branch-matched
+  candidate and restore copy use disjoint networks and storage, cannot resolve
+  each other's Mongo service, and expose no database/search/vector/RAG host
+  ports. Candidate `/health` and `/login` both return HTTP 200; only its API is
+  published, on `127.0.0.1:3085`.
+- One isolated OpenClaw request to DeepSeek V4 Flash returned the expected
+  synthetic result (`63`) with HTTP 200; OpenRouter reported `$0` for that
+  request. This validates the saved OpenClaw model profile only. It does not
+  configure or validate provider access inside the Gombey candidate.
+- The candidate `.env` remains mode 600 and has no usable chat-provider or
+  embeddings credential. No real credential was written there, and no
+  candidate agent, test account, file, or conversation was created. The native
+  Codex browser is open to the candidate login, but an authenticated browser
+  walkthrough is still pending.
+- The candidate's positive embeddings/File Search test therefore remains
+  blocked. Other open gates remain customer-owned provider proof, Stripe
+  sandbox and tax/consent rehearsal, off-device recovery, and approved public
+  VPS acceptance. No live billing, production website, VPS, DNS, or customer
+  data changed.
