@@ -97,12 +97,13 @@ following cloud-workspace gates pass.
    staging embeddings setting remains a placeholder and needs a fresh key.
 2. Decide whether model keys are per-member BYOK or customer-managed centrally,
    then test the chosen flow end-to-end for both members.
-3. Reconcile the public site's read-only-connector claim. The current shared
-   agent has File Search only; no MCP/calendar/CRM integration or write-action
-   workflow has passed acceptance. A local website-source draft removes the
-   connector from the base Cloud offer and gates hardware-specific claims; it
-   is not deployed. Do not advertise a connector as included unless one named
-   integration passes authorization, data-path, and acceptance tests.
+3. Keep connectors outside the base Cloud offer. The current shared agent has
+   File Search only; no MCP/calendar/CRM integration or write-action workflow
+   has passed acceptance. The capability-bounded offer copy was promoted to
+   production on 2026-10-27 (deployment `dpl_6vwirUwoQtYfnwfngaj1pmq6XtCN`);
+   hardware and connector-dependent work remains acceptance-gated. Do not
+   advertise a connector as included unless one named integration passes
+   authorization, data-path, and acceptance tests.
 4. Run a Stripe test-mode rehearsal: kickoff payment, accepted-delivery
    payment, saved payment method and explicit recurring-charge consent, first
    subscription charge 30 days after delivery, founding discount, and
@@ -161,7 +162,7 @@ after the corresponding implementation and acceptance test.
 | Cloud: dedicated VPS per customer | Separate Compose project, secrets, database, network, and storage were tested locally. | Public VPS, DNS/TLS, firewall, reboot, and restore acceptance. |
 | Cloud: up to 5 named accounts with admin/member roles | Five total accounts (one admin, four members) were provisioned on isolated restore with public registration disabled. One disposable member passed interactive shared-agent and privacy checks; a second member still needs provider-backed retrieval. | Repeat grounded retrieval with the intended customer-owned provider key, verify key isolation/revocation, and rehearse account recovery. |
 | Cloud: one workflow, one custom agent, shared knowledge | One synthetic shared File Search agent and admin-managed Viewer access are configured. Local lexical-mock upload/index/query/delete plumbing passed. | Real customer-template semantic retrieval/citations with a member account and customer-owned model + embeddings credentials. |
-| Cloud: one supported read-only connector | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. The production copy now excludes connectors from base Cloud scope. | Keep connectors out of the base offer until a named integration passes compatibility, permission, and data-path acceptance tests. |
+| Cloud: connector, only if separately scoped and accepted | Customer template has no MCP server. A synthetic calendar sandbox exists on a separate test network; it is not a customer connector. Production Cloud copy excludes connectors from base scope. | Keep connectors out of the base offer until a named integration passes compatibility, permission, and data-path acceptance tests. |
 | Cloud: managed hosting, updates, backups, restore checks | Encrypted local snapshot and isolated full restore passed. New deployment wording requires a per-customer backup/recovery plan. | Secure/remove legacy plaintext test snapshots; define cadence/retention and portable key escrow; test off-host backup, VPS patch/update procedure, recovery target, monitoring, and restore on the actual VPS. |
 | Cloud: setup guide, onboarding, 1.5 support hours and 2-business-day response | Reusable pilot scope/acceptance worksheet and operator handoff runbook are now in `deploy/customer/`. | Rehearse onboarding, support intake/time tracking, response target, and recovery on a real deployment. |
 | Cloud: customer-owned provider billing | One disposable user's Qwen chat succeeded with that user's own key; a second user without a key was denied rather than inheriting it. | Verify a member's grounded chat end-to-end and confirm actual usage appears in the intended provider account. |
@@ -204,10 +205,10 @@ applicable gates above have evidence.
   explicit consent and saved payment method, monthly charge 30 days after
   accepted delivery, launch-rate period, and standard-price renewal.
 - Stripe's connected account access in this session was live-only; no test
-  customer or billing objects were created and no live settings changed. The
-  exact pricing/name conflict documented above remains unresolved, so the plan
-  requires the currently approved signed offer and sandbox catalog rather than
-  guessing or changing prices.
+  customer or billing objects were created and no live billing settings
+  changed. Pricing and active tier names were reconciled to the current
+  Cloud Workspace / Workspace Appliance / Private Local AI offer above; use
+  that signed offer and a matching sandbox catalog for the rehearsal.
 - The recommended test uses a future-start subscription schedule or an
   equivalent Stripe-supported deferred start, then advances a test clock to
   verify the first charge and launch-to-standard transition. Exact invoice
