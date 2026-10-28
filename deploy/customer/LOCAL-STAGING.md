@@ -147,9 +147,12 @@ For example, the current local staging copies can be checked with
 `python3 scripts/customer-isolation-check.py gombey_staging_gombey_test gombey_backup_restore_20261027`.
 The command requires the API, MongoDB, Meilisearch, pgvector, and RAG containers
 to be running for both projects. It checks private-network membership, cross-
-project DNS denial, host-port exposure of internal services, and distinct
-persistent storage roots. It does not validate authenticated member ACLs,
-provider billing, public DNS/TLS, or a cloud firewall.
+project DNS denial, TCP reachability to the other project's known private
+MongoDB IP, host-port exposure of internal services, and distinct persistent
+storage roots. The known-IP TCP probe must time out or report a network/host
+unreachable error; a reachable port or an unexpected socket error fails the
+check. It does not validate authenticated member ACLs, provider billing, public
+DNS/TLS, or a cloud firewall.
 
 ## Backup and recovery drill
 

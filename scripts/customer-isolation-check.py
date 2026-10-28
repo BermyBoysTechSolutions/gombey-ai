@@ -58,6 +58,40 @@ def resolve_from(container: str, hostname: str, *, must_resolve: bool) -> None:
     run(command)
 
 
+def probe_tcp_from(container: str, host: str, port: int) -> None:
+    """Require a known private Mongo IP to be unreachable from another project."""
+    code = (
+        "const net=require('net');"
+        "const socket=net.createConnection({host:process.env.PROBE_HOST,"
+        "port:Number(process.env.PROBE_PORT),timeout:2000});"
+        "let finished=false;"
+        "function finish(message,status){if(finished)return;finished=true;"
+        "console.log(message);socket.destroy();process.exit(status);};"
+        "socket.once('connect',()=>{console.error('protected TCP port was reachable');"
+        "finish('reachable',1);});"
+        "socket.once('timeout',()=>finish('blocked',0));"
+        "socket.once('error',(error)=>{"
+        "if(['ENETUNREACH','EHOSTUNREACH','ETIMEDOUT'].includes(error.code))"
+        "finish('blocked',0);"
+        "else{console.error('unexpected TCP probe result: '+(error.code||'unknown'));"
+        "finish('unexpected',1);}});"
+    )
+    run(
+        [
+            "docker",
+            "exec",
+            "-e",
+            f"PROBE_HOST={host}",
+            "-e",
+            f"PROBE_PORT={port}",
+            container,
+            "node",
+            "-e",
+            code,
+        ]
+    )
+
+
 def published_bindings(container: dict[str, Any]) -> list[str]:
     bindings = container.get("HostConfig", {}).get("PortBindings") or {}
     return [
@@ -135,6 +169,13 @@ def main() -> int:
         if not target_mongo:
             raise IsolationCheckError(f"Could not determine target Mongo container for {target_project}")
         resolve_from(source_api, target_mongo, must_resolve=False)
+        private_name = f"{target_project}_private"
+        target_networks = inspected[target_project]["mongodb"].get("NetworkSettings", {}).get("Networks", {})
+        target_network = target_networks.get(private_name)
+        target_ip = target_network.get("IPAddress") if target_network else None
+        if not target_ip:
+            raise IsolationCheckError(f"Could not determine private Mongo IP for {target_project}")
+        probe_tcp_from(source_api, target_ip, 27017)
 
     storage_sources: dict[str, dict[str, str]] = {}
     for project in projects:
@@ -156,6 +197,7 @@ def main() -> int:
     print(f"Projects: {projects[0]} / {projects[1]}")
     print(f"Networks are disjoint: {', '.join(sorted(network_sets[projects[0]]))} / {', '.join(sorted(network_sets[projects[1]]))}")
     print("Own Mongo service DNS resolves; cross-project Mongo container DNS is blocked both ways.")
+    print("Cross-project TCP access to the known private Mongo IP is blocked both ways.")
     print("MongoDB, Meilisearch, pgvector, and RAG publish no host ports.")
     print("App data, uploads, MongoDB, Meilisearch, and pgvector storage roots are distinct.")
     print("This does not test member authentication/ACL behavior, provider billing, or VPS exposure.")

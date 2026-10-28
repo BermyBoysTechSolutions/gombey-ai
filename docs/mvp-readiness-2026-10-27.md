@@ -1756,3 +1756,16 @@ applicable gates above have evidence.
   embeddings-key helper suites pass; `git diff --check` is clean.
 - This is harness/test coverage only. No live provider request, customer data,
   live Stripe, production website, DNS, or VPS was changed.
+
+## Known-private-IP isolation check — 2026-10-28 10:39 EDT
+
+- Extended `scripts/customer-isolation-check.py` to probe TCP/27017 from each
+  API container to the other project's MongoDB private IP. The check accepts
+  only a timeout or explicit host/network-unreachable result; a successful
+  connection or unexpected socket error fails closed.
+- Primary-vs-candidate and restore-vs-candidate audits both passed in both
+  directions. DNS was blocked and direct-IP TCP timed out; own-service DNS,
+  distinct networks/storage, and no internal host ports also passed. The audit
+  is read-only and remains local-container evidence, not a VPS firewall test.
+- Updated `deploy/customer/LOCAL-STAGING.md` with the expanded check contract.
+  No container/data or external service was modified.
