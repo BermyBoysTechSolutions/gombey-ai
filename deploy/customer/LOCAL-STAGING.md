@@ -736,10 +736,17 @@ confirmed revoked and replaced.
   was absent from staging and the temporary collection was dropped. This
   verifies separation between these local deployment data stores; it does not
   establish pooled multi-tenant isolation inside one deployment.
+- Four `USER` accounts returned their own conversation/file metadata lists.
+  One had two conversations; all six attempts by the other three accounts to
+  fetch either conversation returned HTTP 404. All four personal file lists
+  were empty, so this recheck could not exercise cross-member file preview;
+  the earlier synthetic-file preview-denial test remains the evidence for
+  that path.
 - Registration remains disabled in the restored UI. An attempted direct
   synthetic account creation failed before creating an account; no temporary
-  account remains. The read-only checks used two existing `USER` records and
-  did not expose their identifiers or other personal data.
+  account remains. Agent permission checks used two existing `USER` records;
+  conversation/file metadata checks covered four. No identifiers or other
+  personal data were exposed.
 - The member-side semantic retrieval/citation check is still blocked: the RAG
   API is stopped and both protected environment files contain the unconfigured
   embeddings placeholder. The owner reported rotating/adding a replacement

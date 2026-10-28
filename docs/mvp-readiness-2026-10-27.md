@@ -217,6 +217,12 @@ applicable gates above have evidence.
   User-Agent gate and returned an SSE `Illegal request` envelope with HTTP
   200. The corrected Chromium-User-Agent GET checks above are the valid result;
   the earlier 200 was not evidence of an ACL bypass.
+- Four member accounts returned their own conversation/file metadata lists.
+  One account had two conversations; all six cross-member attempts by the
+  other three accounts to fetch those conversations returned HTTP 404. All
+  four personal file lists were empty, so file-preview isolation was not
+  repeated in this pass; the earlier synthetic-file denial remains the
+  evidence for that route.
 - Staging and restored-copy MongoDB and pgvector paths are separate. A unique
   temporary marker written only to the restored MongoDB was absent from
   staging, and its probe collection was removed afterward. This demonstrates
