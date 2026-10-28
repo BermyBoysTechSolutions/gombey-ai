@@ -1845,3 +1845,40 @@ applicable gates above have evidence.
 - Updated `deploy/customer/LOCAL-STAGING.md` to document the stronger check.
   No container, data, provider request, billing object, VPS, or DNS setting was
   changed.
+
+## Continued MVP preflight — 2026-10-28 11:31 EDT
+
+- Fresh local regression: customer-init, customer-preflight, encrypted-backup
+  safety, the five RAG smoke CLI tests, four fail-closed patch tests, and seven
+  embeddings-key helper tests all passed. Read-only isolation checks passed
+  again for primary staging vs candidate and restored copy vs candidate:
+  cross-project DNS/TCP was blocked, service ports were not host-published,
+  and each deployment's persistent storage remained distinct.
+- In isolated Chromium (not the owner's Chrome), a disposable `USER` signed in
+  to primary staging and discovered the shared synthetic Juniper & Slate
+  assistant (HTTP 200). Storing a user-scoped OpenRouter key returned HTTP
+  201, and the key metadata endpoint returned HTTP 200. The assistant's actual
+  provider-backed answer was not verified in this pass: repeated test logins
+  reached the app's five-minute rate limit (HTTP 429). The disposable account
+  was then deleted with LibreChat's supported command after stopping only the
+  target API; the user-scoped key was removed with it, the temporary credential
+  file was removed, and primary staging returned to HTTP 200. No existing
+  account was changed. The provider-backed member answer remains unverified in
+  this pass.
+- Read-only live Stripe recheck (only the live Gombey Tech account is
+  connected): three active products and their standard monthly prices remain
+  Cloud Workspace $399, Workspace Appliance $699, and Private Local AI $1,499;
+  the three valid, unused, product-scoped launch coupons reduce those amounts
+  by $50/$100/$200 for 12 months. The active setup links charge only the
+  respective 50% founding kickoff: $997.50, $1,997.50, and $3,497.50.
+  Each active link has no subscription data and no `setup_future_usage`, uses
+  `payment_method_collection=if_required`, and has automatic tax enabled.
+- The three monthly subscription links are inactive. Each carries a 30-day
+  trial and is a separate checkout; it is not automatically enrolled by the
+  setup-payment links. No subscriptions of any status or tax registrations
+  were returned. Automatic tax on the active links therefore does not establish
+  tax collection; do not send them until the owner/accountant resolves tax
+  registration and confirms the applicable treatment. A Stripe sandbox is
+  still not connected, so the billing lifecycle has not been rehearsed.
+- This pass made no Stripe writes and created no billing objects. No customer
+  data, production deployment, DNS, or VPS was changed.
