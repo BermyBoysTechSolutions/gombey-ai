@@ -2177,3 +2177,34 @@ applicable gates above have evidence.
   such as Mac Studio, DGX Spark, or Strix Halo, with hardware/site scope quoted
   separately. No public prices, Stripe products, payment links, DNS, or
   production services were changed during these checks.
+
+## Public offer and live billing follow-up — 2026-10-28
+
+- Fetched the current public pricing page and confirmed its deployment ladder:
+  dedicated cloud VPS, Beelink SER5 appliance with cloud AI, and a Mac Studio,
+  DGX Spark, or Strix Halo workstation for locally validated inference. This
+  matches the owner's intended offer; no tier rename or price edit is needed.
+- Read the live Stripe catalog and all six Payment Links without mutation. The
+  three active links are one-time founding setup kickoff payments of $997.50
+  (Cloud), $1,997.50 (Workspace Appliance), and $3,497.50 (Private Local AI).
+  The three monthly subscription links remain inactive; each is configured at
+  its standard monthly amount ($399/$699/$1,499), permits the matching launch
+  promotion code, and starts a 30-day trial. If used after accepted delivery,
+  this fallback starts the 30-day clock when the customer completes that
+  separate subscription checkout, not at delivery automatically.
+- The public launch prices remain $1,995/$3,995/$6,995 setup and $349/$599/
+  $1,299 monthly for 12 months, versus standard setup of $2,500/$4,500/$7,500
+  and standard monthly of $399/$699/$1,499. Standard active Stripe Prices
+  plus the existing 12-month coupons yield those advertised monthly rates.
+  Promotion codes are tier-specific but each permits up to three redemptions;
+  the public first-three-deployments-total cap still needs manual cross-tier
+  enforcement.
+- Rechecked live tax state: zero active Stripe Tax registrations. The active
+  setup links have automatic tax enabled, while the inactive monthly links have
+  automatic tax disabled. Do not represent either as tax-ready until the owner
+  and qualified tax advisor settle registration and treatment.
+- The connected Stripe tool currently exposes only the live account. No
+  sandbox context is available in this session, so no billing rehearsal was
+  run; no mode switch, checkout, invoice, subscription, charge, catalog, link,
+  or tax setting was changed. Connect a dedicated sandbox before rehearsing
+  the deferred subscription and payment-method-consent flow.
