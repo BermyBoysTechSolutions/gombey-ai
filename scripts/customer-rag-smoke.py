@@ -125,6 +125,41 @@ def delete_fixture():
     )
 
 
+def cleanup_fixture(*, ingest_succeeded: bool) -> bool:
+    """Delete only a vector that is confirmed present, then verify absence."""
+    status, current_ids = ids_for(ENTITY_ID)
+    print(f"pre-cleanup ID check HTTP {status}")
+
+    if status == 200 and FILE_ID not in collect_ids(current_ids):
+        print("synthetic vector cleanup not needed; vector_absent=True")
+        return True
+
+    if status != 200 and not ingest_succeeded:
+        # A failed ingest must not trigger a blind DELETE. The scoped API could
+        # not tell us whether anything was stored, so preserve the failure and
+        # require a direct storage check rather than claiming cleanup succeeded.
+        print(
+            "synthetic cleanup unverified: ingest failed and scoped ID check "
+            "was unavailable; inspect the target vector store",
+            file=sys.stderr,
+        )
+        return False
+
+    status, _ = delete_fixture()
+    print(f"synthetic vector cleanup HTTP {status}")
+    if status not in (200, 404):
+        print(
+            "cleanup requires follow-up; do not use this RAG service for real data",
+            file=sys.stderr,
+        )
+        return False
+
+    status, remaining = ids_for(ENTITY_ID)
+    absent = status == 200 and FILE_ID not in collect_ids(remaining)
+    print(f"post-cleanup ID check HTTP {status}; vector_absent={absent}")
+    return absent
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
@@ -139,6 +174,7 @@ def main() -> int:
     parser.parse_args()
 
     passed = False
+    ingest_succeeded = False
     try:
         status, result = embed()
         print(f"synthetic embed HTTP {status}")
@@ -146,6 +182,7 @@ def main() -> int:
             return_code = 1
         else:
             return_code = 0
+            ingest_succeeded = True
 
         if return_code == 0:
             status, own_ids = ids_for(ENTITY_ID)
@@ -183,19 +220,8 @@ def main() -> int:
         passed = False
     finally:
         try:
-            status, _ = delete_fixture()
-            print(f"synthetic vector cleanup HTTP {status}")
-            if status not in (200, 404):
-                print(
-                    "cleanup requires follow-up; do not use this RAG service for real data",
-                    file=sys.stderr,
-                )
-                passed = False
-            status, remaining = ids_for(ENTITY_ID)
-            remaining_ids = collect_ids(remaining)
-            absent = status == 200 and FILE_ID not in remaining_ids
-            print(f"post-cleanup ID check HTTP {status}; vector_absent={absent}")
-            passed = passed and absent
+            cleanup_verified = cleanup_fixture(ingest_succeeded=ingest_succeeded)
+            passed = passed and cleanup_verified
         except (OSError, TimeoutError, ValueError) as error:
             print(
                 f"synthetic vector cleanup could not be confirmed: {type(error).__name__}",

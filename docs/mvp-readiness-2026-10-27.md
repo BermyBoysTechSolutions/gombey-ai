@@ -1519,3 +1519,34 @@ applicable gates above have evidence.
   no sandbox is connected. A Stripe account-management authorization URL was
   generated for the owner to connect a dedicated sandbox. No sandbox, live
   billing object, invoice, subscription, checkout, or charge was created.
+
+## Branch candidate RAG recheck — 2026-10-28
+
+- Rechecked the branch-matched candidate on `127.0.0.1:3085`: `/health` and
+  `/login` return HTTP 200. Its embeddings configuration is still the
+  unconfigured placeholder. The synthetic positive RAG smoke therefore
+  returned HTTP 500 at embed and cannot be counted as retrieval acceptance.
+- The smoke's scoped ID and delete endpoints also returned HTTP 500. A direct,
+  read-only PostgreSQL catalog check found zero public tables in the candidate
+  vector database, so the failed request created no vector records. No
+  customer or evaluation-document content was sent.
+- Hardened `scripts/customer-rag-smoke.py` to check the unique entity/file scope
+  before deleting, avoid a blind delete after a failed ingest when the scoped
+  check is unavailable, and report cleanup uncertainty explicitly. Added a
+  regression test proving a failed ingest with an empty scope does not issue a
+  delete. The full Python suite now passes 14 tests; customer init, preflight,
+  encrypted-backup safety, and four fail-closed patch tests also pass.
+- A fresh rotated embeddings credential is still required to run positive
+  File Search on this candidate. No credential was read from the older
+  OpenClaw profile or written to the candidate environment; the existing
+  primary/restore synthetic test results remain separate evidence.
+- Restarted only the isolated candidate's API, MongoDB, Meilisearch, pgvector,
+  and RAG services. Each returned healthy; candidate `/health` and `/login`
+  stayed HTTP 200, and its synthetic database counts were unchanged (two
+  accounts, zero agents/files/conversations/provider-key records). The
+  candidate and restored-copy isolation check passed again with disjoint
+  networks/storage and no database, search, vector, or RAG host ports.
+- The candidate's API and RAG Compose configuration hashes match the
+  branch-mounted Compose files. This verifies config alignment, not a
+  successful embeddings/provider integration. No customer or evaluation
+  documents were uploaded.
