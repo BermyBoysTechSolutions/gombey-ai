@@ -2276,6 +2276,10 @@ applicable gates above have evidence.
   `livemode=true`. The Stripe CLI is not installed in this environment, so no
   sandbox account or sandbox API context was available. No live API write,
   checkout, invoice, subscription, or charge was made.
+- A fresh read-only `GET /v1/tax/registrations?status=active` returned an empty
+  list. Automatic-tax flags alone therefore do not establish that tax will be
+  collected; the owner and qualified tax advisor must determine applicable
+  obligations and live configuration before sending links.
 - Rechecked the official Stripe billing/payment guidance against the prepared
   rehearsal plan: a one-time Checkout payment does not by default make its
   payment method reusable. Off-session reuse requires the appropriate
