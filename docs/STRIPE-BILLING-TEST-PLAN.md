@@ -49,32 +49,38 @@ signup.
   amounts, monthly amount, promotion duration, cancellation terms, and tax
   treatment before making test objects. Do not change the live catalog as part
   of this rehearsal.
-- The live per-tier launch coupons currently have redemption caps but no
-  `applies_to` product list. A tier-specific name/code is not a Stripe
-  restriction. Create product-scoped replacement coupons and promotion codes
-  in sandbox, and verify each code is accepted only for its matching product
-  and rejected for both other tiers before any live recurring link is enabled.
+- The current live launch coupons are product-scoped through `applies_to`, and
+  the matching active promotion codes each allow three redemptions (zero used
+  at the 2026-10-28 read-only check). Verify in sandbox that each code works
+  for its matching product and is rejected for the other two; do not create
+  replacement live coupons unless that test finds a defect. Per-tier
+  three-redemption caps do not enforce the site's first-three-deployments
+  total across all tiers; the operator must track the global count and stop
+  offering the launch discount after the third accepted deployment.
 - Confirm the founding monthly amount-only discount produces exactly 12 paid
   periods at the advertised price, then transitions to the standard price.
   Promotion-code eligibility, first charge date, and coupon duration must be
   tested together with the 30-day subscription trial; if Stripe's actual trial
   and coupon behavior differs from the public promise, correct the live terms
   before accepting a customer.
-- The live account's three existing Payment Links have automatic tax enabled,
-  while the live account currently has zero active Tax registrations. Stripe
-  documents that it calculates tax only in jurisdictions with an active
-  registration. Have the owner/accountant resolve the live tax treatment before
-  sending a live link or describing tax as configured; do not add or remove
-  registrations as part of this sandbox rehearsal. [Stripe Tax and Payment
-  Links](https://docs.stripe.com/tax/payment-links).
+- The live account's three active kickoff Payment Links have automatic tax
+  enabled, while the account has zero active Tax registrations at the
+  2026-10-28 read-only check. The three inactive monthly links have automatic
+  tax disabled. Stripe documents that it calculates tax only in jurisdictions
+  with an active registration. Have the owner/accountant resolve live tax
+  treatment before sending any live link or describing tax as configured; do
+  not add or remove registrations as part of this sandbox rehearsal. [Stripe
+  Tax and Payment Links](https://docs.stripe.com/tax/payment-links).
 - The three current active live Payment Links collect only the 50% founding
-  kickoff installment; they do not create a subscription or save a payment
-  method for later use. Three separate monthly subscription links are
-  currently inactive; each has `payment_method_collection=always`, a 30-day
-  trial, and `missing_payment_method=cancel`. They are a possible delivery-
-  day enrollment step, not a continuation of the kickoff checkout. Recreate
-  this flow in a dedicated sandbox and verify exact terms before activating
-  or sending a live monthly link.
+  kickoff installment; they do not create a subscription or authorize a
+  payment method for later use. Three separate monthly subscription links are
+  inactive. At the 2026-10-28 read-only check each uses the standard monthly
+  price, permits promotion codes, requires a payment method, starts a 30-day
+  trial, cancels at trial end if no method is available, and has automatic tax
+  disabled. They are not ready to send: verify the matching founding code,
+  amount, consent text, tax treatment, and trial/invoice timeline in a
+  dedicated sandbox before activation. The monthly enrollment is a separate
+  delivery-day step, not a continuation of kickoff checkout.
 - Identify the existing sandbox products/prices/coupons or create disposable
   test-only objects. Avoid copying live IDs into test mode; Stripe objects are
   mode-specific.

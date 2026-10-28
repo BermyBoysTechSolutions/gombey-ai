@@ -1073,3 +1073,33 @@ applicable gates above have evidence.
   proof, Stripe sandbox/tax/consent rehearsal, and owner-approved VPS inputs
   plus public DNS/TLS/reboot/off-host-restore tests remain open. No production,
   live billing, website, VPS, or DNS state changed.
+
+## Public offer and Stripe live-mode recheck — 2026-10-28 06:14 EDT
+
+- Fetched the current public landing page and compared its three launch tiers
+  with a read-only live Stripe catalog read. Product names, standard/setup and
+  founding setup amounts, and monthly rates agree. All three Stripe products
+  have an image. The public first-three-deployments limit is not globally
+  enforced by Stripe: the product-specific promotion codes each allow three
+  redemptions, so the total cap must be tracked manually.
+- The three active Payment Links are one-time founding kickoff installments.
+  The three inactive subscription links use standard monthly prices, allow
+  promotion codes, require a payment method, provide a 30-day trial, and cancel
+  if no payment method is available at trial end. Automatic tax is disabled on
+  these monthly links. Their coupon, amount, consent, and date behavior still
+  need sandbox rehearsal before activation.
+- The three active kickoff links have automatic tax enabled, but a fresh
+  read-only query returned zero active Stripe Tax registrations. Do not send
+  live links or claim tax is configured until the owner/accountant resolves
+  applicable tax treatment. No Stripe objects, charges, or settings were
+  changed; the connected account list still exposes only Gombey Tech live mode.
+- The billing runbook was corrected to match these current facts. MVP remains
+  open on sandbox/consent/tax rehearsal, authenticated two-member
+  shared-document retrieval and citations, customer-owned chat-provider proof,
+  and approved public VPS acceptance.
+- The running staging LibreChat API currently has placeholder/unset chat keys
+  for OpenRouter, OpenAI, Anthropic, and Google (values withheld). The user had
+  authorized a low-cost OpenRouter test via OpenClaw, but `openclaw models
+  status` currently fails local configuration schema validation. No key was
+  extracted, copied, or exposed, and no model request was made; repair or use
+  of that credential path remains unresolved.
