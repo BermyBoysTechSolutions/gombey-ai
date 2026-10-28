@@ -1223,6 +1223,7 @@ applicable gates above have evidence.
   assertions, and `git diff --check`. This is source-only on
   `codex/mvp-offer-scope-2026-10-27`; no production deployment, prices, Stripe,
   VPS, DNS, or customer data were changed.
-- This copy change is prepared for commit/push after final source review. Public
-  production will retain the previous wording until a website deployment is
-  made. The separate hard gates in this matrix remain.
+- This copy change is committed as `08b1f93` and pushed to
+  `codex/mvp-offer-scope-2026-10-27` in the website repo. Public production
+  retains the previous wording until a website deployment is made. The
+  separate hard gates in this matrix remain.
