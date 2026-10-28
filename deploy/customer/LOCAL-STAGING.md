@@ -1113,6 +1113,23 @@ confirmed revoked and replaced.
   acceptance. No customer data, live Stripe write, production deployment, DNS,
   or VPS was involved.
 
+## Cross-deployment isolation and RAG failure-path rerun (2026-10-28)
+
+- `scripts/customer-isolation-check.py` passed between the primary local
+  staging deployment and the restored backup clone: separate Docker networks,
+  private internal networks, distinct storage roots, no published internal
+  service ports, and no cross-deployment DNS or TCP reachability to API,
+  MongoDB, Meilisearch, pgvector, or RAG services.
+- `scripts/test_rag_fail_closed_patch.py` passed 4/4 checks; customer init and
+  preflight scripts passed. The disposable RAG integration test also passed
+  with a synthetic invalid embedding credential and unreachable endpoint: the
+  upload failed closed with HTTP 500 and wrote zero vectors. Its temporary
+  Compose project, volume, and network were removed by the test script.
+- Primary staging remained loopback-only and healthy. These tests do not
+  replace a production VPS acceptance run or a real-embedding/UI stale-fact
+  deletion test. No customer data, live billing, public deployment, DNS, or
+  VPS was involved.
+
 ## Second-member shared File Search and provider-key isolation (2026-10-28)
 
 - A second disposable `USER` could see and select the shared, read-only

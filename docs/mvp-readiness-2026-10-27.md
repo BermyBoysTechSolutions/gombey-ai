@@ -2032,3 +2032,19 @@ applicable gates above have evidence.
   automatic tax based on this catalog alone; confirm obligations and register
   with the relevant authority before relying on Stripe Tax. No Tax setting was
   changed.
+
+## Local cross-deployment isolation and RAG failure-path verification — 2026-10-28
+
+- `scripts/customer-isolation-check.py` passed between primary local staging
+  and the restored backup clone: separate Docker networks, private internal
+  networks, distinct storage roots, no published internal service ports, and
+  no cross-deployment DNS or TCP reachability to API, MongoDB, Meilisearch,
+  pgvector, or RAG services.
+- `scripts/test_rag_fail_closed_patch.py` passed 4/4 checks. Customer init and
+  preflight scripts passed. The disposable RAG integration test used a
+  synthetic invalid embedding credential and unreachable endpoint; upload
+  failed closed with HTTP 500 and wrote zero vectors. Its temporary Compose
+  project, volume, and network were removed by the test script.
+- Primary staging remained loopback-only and healthy. This does not replace
+  production VPS acceptance or a real-embedding/UI stale-fact deletion test.
+  No customer data, live billing, public deployment, DNS, or VPS was involved.
