@@ -1424,3 +1424,33 @@ applicable gates above have evidence.
   data was changed. The MVP goal remains open on customer-owned provider proof,
   Stripe sandbox and tax/consent rehearsal, off-device recovery, and approved
   public VPS acceptance.
+
+## Candidate and Calendly continuation — 2026-10-28 08:39 EDT
+
+- Rechecked branch-matched candidate `e31577f` on loopback port 3085. Login
+  and health both return HTTP 200. Its database contains two synthetic test
+  accounts (one ADMIN and one USER), but zero agents, files, conversations,
+  or user API-key records. The candidate has no usable RAG embeddings key;
+  production preflight correctly rejects the placeholder configuration.
+- The candidate's synthetic RAG smoke therefore returned HTTP 500 at embed,
+  and its cleanup endpoint could not confirm cleanup. A separate read-only
+  pgvector row count returned zero, so no vector was stored. Do not count this
+  as grounded retrieval acceptance. A separate fail-closed integration using
+  an invalid key and a loopback-only endpoint passed: upload returned HTTP 500,
+  zero vectors were written, and its disposable containers, networks, and
+  volume were removed.
+- Candidate-versus-restore isolation passed again: networks and persistent
+  data roots are separate, cross-project Mongo discovery is blocked both
+  ways, and MongoDB, Meilisearch, pgvector, and RAG have no published host
+  ports. Customer init/preflight tests, encrypted-backup safety, all 13 Python
+  unit tests, four fail-closed patch tests, and `git diff --check` passed.
+- Calendly still lists only the existing active generic 30-minute event. Three
+  requests to create Plus/Pro/Max-specific event types were denied by the
+  connected account; no event types were created or altered. Write-capable
+  Calendly authorization is still required before linking tier-specific
+  booking pages on the website.
+- No real data, provider request, Stripe object, production website, VPS, or
+  DNS was changed. Member-facing shared File Search, customer-owned provider
+  billing, visible-browser acceptance, Calendly write access, Stripe sandbox
+  and tax/consent rehearsal, encrypted off-device recovery, and approved
+  public VPS acceptance remain open.
