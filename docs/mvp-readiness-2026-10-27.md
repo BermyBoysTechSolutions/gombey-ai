@@ -2483,3 +2483,16 @@ applicable gates above have evidence.
   successful customer-owned provider transaction, public VPS acceptance, or
   live billing readiness. The connected Stripe session still exposes only
   live mode, and live tax setup remains unresolved as recorded above.
+
+## Candidate provider-backed RAG smoke — 2026-10-28 15:41 EDT
+
+- Ran `scripts/customer-rag-smoke.py` inside the isolated candidate RAG
+  service using its configured OpenRouter endpoint and
+  `openai/text-embedding-3-small`. Synthetic embedding, own-scope lookup,
+  unrelated-scope exclusion, and retrieval of a unique marker all returned
+  HTTP 200. The test deleted its vector and verified it was absent afterward.
+- The candidate web API remained healthy and returned HTTP 200 after the
+  smoke test. No customer content was used. This proves the configured
+  embeddings route works, but does not independently establish which OpenRouter
+  account owns the credential or prove customer billing ownership; verify that
+  in the provider dashboard before a customer deployment.
