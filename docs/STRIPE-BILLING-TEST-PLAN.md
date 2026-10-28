@@ -115,7 +115,8 @@ and [subscription webhooks guide](https://docs.stripe.com/billing/subscriptions/
 
 Do not describe the deferred subscription as configured or promise an
 automatic first charge until every date/amount case above passes in a sandbox.
-The live catalog currently has conflicting historic instructions about tier
-names and launch reductions; reconcile that commercial decision before any
-customer invoice is sent. No customer charge should be created from this
-runbook.
+The current approved offer is Cloud Workspace, Workspace Appliance, and
+Private Local AI; see the dated audit in `mvp-readiness-2026-10-27.md` for the
+published prices. The recurring schedule is an operator-managed process until
+the test and billing implementation gates pass. Do not use live links for the
+sandbox rehearsal. No customer charge should be created from this runbook.

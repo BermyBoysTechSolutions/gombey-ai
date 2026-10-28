@@ -148,14 +148,15 @@ after the corresponding implementation and acceptance test.
   backup, monitoring, and restore claims. Product names, prices, coupons,
   checkout/payment links, invoices, subscriptions, and charges were not
   changed or created in this update.
-- Stripe currently has three active descriptive products and 15 active prices,
-  including setup installments and recurring prices, plus three 12-month
-  coupons with per-coupon redemption caps. The latest Stripe work reported no
-  active subscriptions or payment links; no invoice or charge was created in
-  this update. The connector exposed only the live account; test-mode access
-  was not available, so deferred billing and saved-payment-method consent have
-  not been rehearsed. The first-three-deployments limit remains manually
-  enforced across the three coupons.
+- The 2026-10-27 Stripe snapshot found three active descriptive products and 15
+  active prices, including setup installments and recurring prices, plus three
+  12-month coupons with per-coupon redemption caps. At that snapshot, there
+  were no active subscriptions or payment links; no invoice or charge was
+  created in that update. Treat that as historical, not current account status.
+  The connector exposed only the live account; test-mode access was not
+  available, so deferred billing and saved-payment-method consent had not been
+  rehearsed. The first-three-deployments limit remains manually enforced
+  across the three coupons.
 
 | Public claim | Current evidence | Gate still open |
 |---|---|---|
@@ -257,3 +258,38 @@ applicable gates above have evidence.
   Do not reuse it; the replacement must be entered through the intended
   provider-specific secure path, and the prior key's revocation must be
   confirmed before any further provider call.
+
+## Continuation audit (2026-10-28)
+
+- Current local cloud staging and the separate restored-copy stack both
+  answered their loopback health checks (HTTP 200). The app publishes only
+  `127.0.0.1:3083`; the restore copy publishes only `127.0.0.1:3084`. MongoDB,
+  pgvector, Meilisearch, and RAG have no host-published ports. Customer-init,
+  customer-preflight, and six embeddings-key helper tests passed in this pass.
+  These are local checks, not proof of public DNS/TLS or external-provider
+  availability.
+- The second staging member can list the shared agent, but its synthetic
+  provider-backed turn failed before inference with `no_user_key`. No OpenRouter
+  key record was present for that member or the staging admin; the shared agent
+  was restored to GPT-6 Luna after the bounded attempt. No credential was
+  copied between accounts. Do not count member-two semantic retrieval as
+  passed until a test user supplies its own key through the app's secure
+  provider-key UI, or the owner deliberately chooses and tests a centrally
+  managed customer key model.
+- Read-only production review of `gombeytech.com` and the connected live Stripe
+  catalog confirms the current approved offer is Cloud Workspace, Workspace
+  Appliance, and Private Local AI—not the earlier Plus/Pro/Max draft. The page
+  shows Cloud at $399/$349 monthly and $2,500/$1,995 setup; Appliance at
+  $699/$599 monthly and $4,500/$3,995 setup; Local AI at $1,499/$1,299 monthly
+  and $7,500/$6,995 setup. The three active Stripe products and their active
+  standard/founding prices match those published figures. The setup reductions
+  are $505 each; the launch monthly reductions run for 12 months. Earlier
+  Plus/Pro/Max products are inactive and are not the current offer.
+- The website remains call-first. Setup is described as 50% at kickoff and 50%
+  at accepted delivery; recurring service is scheduled to begin 30 days after
+  delivery, subject to written terms and saved-payment-method consent. This
+  lifecycle is not yet automated or sandbox-tested; the billing test plan
+  remains the acceptance gate.
+- Production VPS acceptance, DNS/TLS, reboot persistence, public firewall
+  checks, off-host backup/restore, and the member-key retrieval test remain
+  open. No VPS was purchased or configured.
