@@ -29,6 +29,22 @@ following cloud-workspace gates pass.
   suite passed; both loopback staging login pages returned HTTP 200 and the
   staging app/RAG containers were healthy. The deployment branch was clean
   and matched its GitHub remote after verification.
+- Continuation recheck on 2026-10-28: customer-init, customer-preflight,
+  encrypted-backup safety, all 15 Python checks across the RAG smoke CLI,
+  fail-closed patch, and embeddings-key suites passed. A fresh synthetic RAG
+  ingest, own-scope lookup, unrelated-scope isolation check, retrieval, and
+  scoped delete also returned HTTP 200; the unique synthetic vector was absent
+  afterward. No customer data or chat-model request was used.
+- Sanitized runtime config audit on 2026-10-28: the primary staging, restore,
+  and clean-candidate stacks all list GPT-6 Luna plus the optional Qwen 3.5 9B
+  and DeepSeek V4 Flash test models. The clean candidate at `127.0.0.1:3085`
+  has `maxContextTokens: 128000`; the older primary and restore stacks do not.
+  The candidate's checked-out source remains detached at `e31577f`, while the
+  pushed MVP branch is `4d1e0a7`; its local LibreChat config contains the
+  128k setting, but it is not an exact checkout of the pushed branch. Before
+  VPS acceptance, deploy the exact pushed commit to a clean isolated candidate
+  and repeat the relevant runtime checks rather than treating this older
+  candidate as branch-exact.
 - A targeted scan for common credential prefixes across tracked files and
   available Git history found only the `OPENROUTER_KEY` placeholder in
   `.env.example`. No dedicated secret scanner is installed, so this is a
