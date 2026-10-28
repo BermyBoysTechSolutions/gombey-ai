@@ -2758,5 +2758,22 @@ applicable gates above have evidence.
 - The runbook now requires password reset followed by targeted refresh-session
   revocation for routine operator recovery. For immediate compromise
   containment, it documents deployment-wide rotation of both JWT secrets and
-  the resulting forced logout. No account, session, password, or running
-  service was changed during this audit.
+  the resulting forced logout. The source inspection itself changed no real
+  account, password, or running service.
+
+## Targeted session-revocation runtime acceptance — 2026-10-28 20:40 EDT
+
+- Loaded the helper and pinned LibreChat model layer in an isolated,
+  no-network container; `findUser` and `deleteAllUserSessions` were present.
+- In the existing loopback-only candidate database, created one synthetic
+  refresh session under a freshly generated, non-account ObjectId, invoked the
+  helper with the exact confirmation, and verified the session could no longer
+  be found. The helper used the actual LibreChat `deleteAllUserSessions`
+  implementation; only the email-to-synthetic-ID lookup was stubbed. Cleanup
+  ran in a `finally` path.
+- The temporary helper copy was SHA-256-matched to the tracked source and
+  removed from the API container afterward. The disposable runtime container
+  was removed; candidate `/health` remained HTTP 200. No real account,
+  password, provider credential, or customer data was used, and no service was
+  restarted. The Compose mount is validated statically; a full deployment
+  recreation remains unperformed to avoid disrupting the active candidate.
