@@ -2647,3 +2647,11 @@ applicable gates above have evidence.
   it would interrupt all Docker apps and make them depend on the external SSD.
   Colima's official [FAQ](https://github.com/abiosoft/colima/blob/main/docs/FAQ.md)
   documents both `COLIMA_HOME` and VM disk-space recovery behavior.
+
+## Tracked-secret scan — 2026-10-28 16:19 EDT
+
+- A basic high-confidence scan of tracked files for common OpenAI/OpenRouter,
+  GitHub, and Slack token prefixes returned no matches. Tracked `.env` files
+  are examples; `deploy/customer/.env` is gitignored. This is a targeted
+  pattern check, not a comprehensive secret audit, and it did not inspect the
+  user's ignored local configuration or unrelated `tmp/` contents.
