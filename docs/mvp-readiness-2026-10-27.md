@@ -1197,3 +1197,7 @@ applicable gates above have evidence.
   provider billing ownership, Stripe sandbox/deferred-billing rehearsal, tax
   review, or production VPS acceptance. No live billing, DNS, VPS, or customer
   data was used.
+- The Hostinger read-only VPS inventory request was attempted again but timed
+  out; no inventory result was available. No VPS purchase, setup, power, DNS,
+  or nameserver action was issued, so existing account VPS state remains
+  unverified.
