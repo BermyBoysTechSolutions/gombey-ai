@@ -848,3 +848,21 @@ applicable gates above have evidence.
   changed. This hardens fresh customer setup; existing deployments still need
   an explicit, carefully planned namespace migration if they were created under
   the legacy rule.
+
+## Per-tier booking-link gate — 2026-10-28
+
+- Read-only review found one active Calendly event type: the generic 30-minute
+  Zoom meeting at `https://calendly.com/ianinho/30min`. Its event-specific
+  bookable schedule uses `America/New_York` hours; the account profile timezone
+  is `Europe/Berlin`. Neither setting was changed.
+- The current public offer page routes its call CTAs to general workflow
+  discussions rather than distinct tier-specific meeting pages. For the
+  requested split, the proposed events are: Cloud Workspace discovery (30
+  minutes), Workspace Appliance device-fit review (45 minutes), and Private
+  Local AI workload/hardware review (45 minutes), preserving the existing
+  event's Zoom location and New York availability.
+- Attempted to create the first event as inactive through the connected
+  Calendly integration; Calendly returned “Permission Denied” before creating
+  anything. No event type, availability, or website link changed. Reconnect
+  Calendly with event-type write permission, then create/verify the three
+  events and update the separate landing-page CTA links.
