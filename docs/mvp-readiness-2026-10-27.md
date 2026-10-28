@@ -317,6 +317,20 @@ applicable gates above have evidence.
   The advertised “first three deployments” cap is not a Stripe-enforced global
   cap and must be tracked across all tiers by the operator unless the offer is
   redesigned.
+- A fresh object-level read found all three coupons valid and unused
+  (`times_redeemed=0`), with `max_redemptions=3`; each associated promotion code
+  also has a three-redemption limit. However, none of the coupon responses has
+  an `applies_to` product list. The per-tier names/metadata therefore do not
+  prove product restriction: the codes may be usable on a different tier's
+  subscription link. Stripe documents that product scope is set when creating
+  a coupon and is not editable afterward except for its name. Keep monthly
+  links inactive; create and test product-scoped replacement coupons/codes in
+  sandbox before any live monthly link is sent. See [Stripe coupon product
+  restrictions](https://docs.stripe.com/billing/subscriptions/coupons).
+- The current GETs show six products total (three current active products and
+  three inactive historical Plus/Pro/Max products), 15 active prices (standard
+  and founding setup installments plus three standard recurring prices), and
+  nine inactive historical prices. No active subscription was found.
 - The Payment Links report `automatic_tax.enabled=true`, but this alone does
   not mean tax is being collected. Verify active tax registration for any
   relevant jurisdiction before using a live checkout link or invoice.
@@ -783,3 +797,35 @@ applicable gates above have evidence.
   three numbered PDFs to a separate shared File Search test agent, then repeat
   the key retrieval and abstention checks as two distinct members and verify
   private-chat/file isolation. Keep the answer key out of the agent.
+
+## Final regression and billing recheck — 2026-10-28 (read-only)
+
+- Re-ran customer-init and customer-preflight tests, encrypted-backup safety,
+  all seven embeddings-key helper tests, and the two-deployment isolation
+  checker; all passed. Both loopback login routes (3083 and 3084) returned
+  HTTP 200.
+- Re-ran the fail-closed RAG integration using only `.env.example`, an invalid
+  synthetic key, and a loopback-only unavailable endpoint. The disposable
+  upload returned HTTP 500, wrote zero vectors, and its uniquely named
+  containers, networks, and database volume were removed. No real provider
+  request, customer content, or active staging data was used.
+- Re-read live Stripe products, prices, payment links, coupons, promotion codes,
+  subscriptions, Tax Settings, and registrations. The three active kickoff
+  links are one-time 50% founding deposits; they have `subscription_data=null`,
+  `payment_intent_data=null`, `payment_method_collection=if_required`, and
+  `automatic_tax.enabled=true`. They do not set up a deferred subscription or
+  guarantee reuse consent for the card used at kickoff.
+- The three monthly links remain inactive. Each uses its standard monthly rate,
+  requires a payment method at that separate checkout, starts a 30-day trial,
+  allows promotion-code entry, and has automatic tax disabled. If sent only
+  after accepted delivery, its first payment would be attempted 30 days after
+  that second checkout; it is not an automatic continuation of the kickoff
+  payment. No active subscription was found.
+- The live coupons and promotion codes each allow three redemptions and have
+  zero redemptions, but the coupon API responses omit `applies_to`; therefore
+  the promotion codes are not proven tier-restricted. Replace/test them with
+  product-scoped coupons in sandbox before activating or sharing a monthly
+  link. The three-deployment cross-tier cap remains operator-enforced.
+- Stripe Tax Settings remain `pending` because `head_office` is missing, with
+  zero tax registrations. The live account is still the only connected Stripe
+  account. No Stripe, website, VPS, DNS, or customer-data state was changed.

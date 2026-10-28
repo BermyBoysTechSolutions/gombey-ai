@@ -42,6 +42,15 @@ sale-to-deployment workflow.
   amounts, monthly amount, promotion duration, cancellation terms, and tax
   treatment before making test objects. Do not change the live catalog as part
   of this rehearsal.
+- The live per-tier launch coupons currently have redemption caps but no
+  `applies_to` product list. A tier-specific name/code is not a Stripe
+  restriction. Create product-scoped replacement coupons and promotion codes
+  in sandbox, and verify each code is accepted only for its matching product
+  and rejected for both other tiers before any live recurring link is enabled.
+- Confirm the founding monthly amount-only discount produces exactly 12 paid
+  periods at the advertised price, then transitions to the standard price.
+  Promotion-code eligibility, first charge date, and coupon duration must be
+  tested together with the delayed subscription schedule.
 - The live account's three existing Payment Links have automatic tax enabled,
   while the live account currently has zero active Tax registrations. Stripe
   documents that it calculates tax only in jurisdictions with an active
@@ -129,6 +138,7 @@ and [subscription webhooks guide](https://docs.stripe.com/billing/subscriptions/
 | Deferred start | No recurring invoice/payment before delivery + 30 days. |
 | First monthly invoice | Correct agreed launch amount and due date; payment result is visible. |
 | Launch term end | Exactly the approved number of paid periods receive the launch rate; next invoice uses standard price. |
+| Wrong-tier launch code | Each tier's code is rejected by both other tier products; fail until product restrictions are verified. |
 | Renewal failure | Failed invoice is visible and the operator has a clear retry/customer-contact path; no duplicate subscription is created. |
 | Cancellation | Customer can cancel according to the agreement; schedule/subscription stops at the agreed time. |
 | Cleanup | All disposable test subscriptions/schedules are canceled and no live object is created. |
