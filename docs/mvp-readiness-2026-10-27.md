@@ -263,7 +263,10 @@ applicable gates above have evidence.
 
 - Re-ran `bash scripts/test_customer_init.sh`,
   `bash scripts/test_customer_preflight.sh`, and the scripts' Python unittest
-  suite: all passed (six Python tests).
+  suite: all passed. On the current MVP branch, the encrypted-backup safety
+  tests also pass (`bash scripts/test_customer_backup.sh`), and the Python
+  unittest suite passes all 11 tests, including embeddings-key and RAG
+  fail-closed checks.
 - The active staging API and isolated restore API both returned HTTP 200 at
   their loopback health endpoints. Docker reports the staging API, RAG API,
   MongoDB, and pgvector healthy; the restore API, MongoDB, and pgvector are
