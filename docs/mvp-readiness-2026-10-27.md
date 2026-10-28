@@ -71,7 +71,11 @@ following cloud-workspace gates pass.
   answer. The member and associated key/chat records were deleted and verified
   absent. This was an authenticated API harness check, not a visible-browser
   UX check. The RAG API is healthy, but its current embeddings key remains a
-  placeholder; this run did not exercise file retrieval or citations.
+  placeholder. The same OpenClaw credential completed a separate direct
+  OpenRouter `openai/text-embedding-3-small` smoke (HTTP 200, 1,536 dimensions,
+  14 input tokens), but the key was not put in the staging RAG environment and
+  the RAG pipeline, file retrieval, and citations remain unverified by this
+  run.
 - The RAG upload failure path is now fail-closed: an isolated synthetic upload
   with a loopback-only unavailable embeddings endpoint returned HTTP 500 and
   left zero vectors in its dedicated disposable database. Four exact-match,

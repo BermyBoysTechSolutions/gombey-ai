@@ -803,6 +803,9 @@ confirmed revoked and replaced.
   filter; the successful retry used a Chromium User-Agent. Do not treat that
   filter artifact as a provider failure or claim this specific Qwen request
   verified the visual UI flow.
-- The RAG API is healthy, but its embeddings key is still a placeholder and
-  the request above did not invoke embeddings. Current semantic retrieval and
-  citation behavior remain a separate staging gate.
+- The OpenClaw credential also completed a direct OpenRouter
+  `openai/text-embedding-3-small` smoke using synthetic text: HTTP 200, 1,536
+  vector dimensions, and 14 input tokens. No key was written to the staging
+  RAG environment. The RAG API is healthy, but its configured embeddings key
+  remains a placeholder; this direct provider check did not exercise the RAG
+  service, file search, or citations.
