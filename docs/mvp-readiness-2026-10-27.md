@@ -2865,8 +2865,8 @@ applicable gates above have evidence.
   does not replace customer-owned provider billing, Stripe sandbox/deferred
   billing, public VPS/DNS/TLS/firewall/restore acceptance, or hardware
   commissioning. The owner's intended tier ladder remains VPS/cloud,
-  SER5/cloud, then customer workstation/local inference; it is intentional,
-  not a mismatch.
+  SER5/cloud, then customer local inference on a Mac Studio, DGX Spark, or
+  Strix Halo-class system; it is intentional, not a mismatch.
 
 ## Two-member shared File Search and cleanup — 2026-10-28 17:47 EDT
 
@@ -2903,8 +2903,9 @@ applicable gates above have evidence.
   vector volume.
 - No customer data, public VPS/DNS/TLS, production site, Stripe product,
   payment, or invoice was changed. The intended tier ladder remains VPS/cloud
-  (Plus), SER5/cloud (Pro), and workstation/local inference (Max); this test
-  does not constitute production deployment acceptance.
+  (Plus), SER5/cloud (Pro), and local inference on a Mac Studio, DGX Spark, or
+  Strix Halo-class system (Max); this test does not constitute production
+  deployment acceptance.
 
 ## Current-branch member least-privilege profile — 2026-10-28 17:47 EDT
 
