@@ -1630,3 +1630,22 @@ applicable gates above have evidence.
   Stripe sandbox/Tax and consent rehearsal, off-host recovery, and approved
   public VPS acceptance remain open gates. No live Stripe/site/DNS/VPS or
   customer-data change occurred.
+
+## Live offer and capability alignment recheck — 2026-10-28 09:42 EDT
+
+- `https://gombeytech.com` returned HTTP 200 and the page title is `Gombey AI`.
+  The live page lists Cloud Workspace ($2,500 standard/$1,995 launch setup;
+  $399 standard/$349 monthly for 12 months), Workspace Appliance ($4,500/
+  $3,995 setup; $699/$599 monthly), and Private Local AI ($7,500/$6,995 setup;
+  $1,499/$1,299 monthly). It labels the founding offer as the first three
+  deployments and distinguishes launch from renewal pricing.
+- The cloud offer says VPS, DNS/TLS, and recovery checks must pass before
+  customer data is loaded. Appliance and local-inference offers explicitly
+  require hardware-specific validation, workload fit, and written scope; the
+  page also says hardware is quoted separately and makes no blanket privacy
+  guarantee. Keep those offers acceptance-gated rather than representing them
+  as already verified deployments.
+- The page's three-deployment cap is operationally enforced by a private shared
+  allocation register; Stripe's individual live promo codes are not a global
+  cross-tier cap. No public copy, live Stripe object, or checkout link was
+  changed in this review.
