@@ -37,8 +37,10 @@ if ! command -v openssl >/dev/null 2>&1; then
   exit 1
 fi
 
-PROJECT_SUFFIX="$(printf '%s' "$SITE_DOMAIN" | tr '[:upper:]' '[:lower:]' | tr '.-' '__' | tr -cd 'a-z0-9_' | cut -c1-30)"
-PROJECT_NAME="gombey_${PROJECT_SUFFIX:-customer}"
+DOMAIN_CANONICAL="$(printf '%s' "$SITE_DOMAIN" | tr '[:upper:]' '[:lower:]')"
+PROJECT_SUFFIX="$(printf '%s' "$DOMAIN_CANONICAL" | tr '.-' '__' | tr -cd 'a-z0-9_' | cut -c1-22)"
+DOMAIN_HASH="$(printf '%s' "$DOMAIN_CANONICAL" | openssl dgst -sha256 | awk '{print substr($NF, 1, 20)}')"
+PROJECT_NAME="gombey_${PROJECT_SUFFIX:-customer}_${DOMAIN_HASH}"
 MONGO_PASSWORD="$(openssl rand -hex 32)"
 POSTGRES_PASSWORD="$(openssl rand -hex 32)"
 MEILI_MASTER_KEY="$(openssl rand -hex 32)"
@@ -52,6 +54,7 @@ TEMP_ENV="$(mktemp "${CUSTOMER_ENV}.tmp.XXXXXX")"
 trap 'if [[ -n "${TEMP_ENV:-}" ]]; then rm -f "$TEMP_ENV"; fi' EXIT
 {
   printf 'COMPOSE_PROJECT_NAME=%s\n' "$PROJECT_NAME"
+  printf 'GOMBEY_PROJECT_NAME_SCHEME=sha256-v1\n'
   printf 'SITE_DOMAIN=%s\n' "$SITE_DOMAIN"
   printf 'ACME_EMAIL=%s\n' "$ACME_EMAIL"
   printf 'GOMBEY_BRAND_NAME=%s\n' "$BRAND_NAME"

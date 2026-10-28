@@ -15,9 +15,12 @@ fail() {
 run_case() {
   local name="$1" host="$2" email="$3" expected="$4"
   local env_path="$TEST_ROOT/$name.env" output_path="$TEST_ROOT/$name.out"
+  local suffix project_name
+  suffix="$(printf '%s' "$host" | tr '[:upper:]' '[:lower:]' | tr '.-' '__' | tr -cd 'a-z0-9_' | cut -c1-30)"
+  project_name="gombey_${suffix:-customer}"
 
-  printf 'SITE_DOMAIN=%s\nACME_EMAIL=%s\nALLOW_REGISTRATION=false\nALLOW_PASSWORD_RESET=false\n' \
-    "$host" "$email" > "$env_path"
+  printf 'SITE_DOMAIN=%s\nACME_EMAIL=%s\nCOMPOSE_PROJECT_NAME=%s\nALLOW_REGISTRATION=false\nALLOW_PASSWORD_RESET=false\n' \
+    "$host" "$email" "$project_name" > "$env_path"
   chmod 600 "$env_path"
 
   if GOMBEY_CUSTOMER_ENV_PATH="$env_path" bash "$PREFLIGHT_SCRIPT" >"$output_path" 2>&1; then
@@ -100,5 +103,26 @@ if GOMBEY_CUSTOMER_ENV_PATH="$DUPLICATE_SECRET_ENV" bash "$PREFLIGHT_SCRIPT" > "
 fi
 grep -Fq "security secrets must be unique" "$TEST_ROOT/duplicate-secret.out" || \
   fail "duplicate secrets failed for the wrong reason"
+
+COPIED_PROJECT_ENV="$TEST_ROOT/copied-project.env"
+sed 's/^COMPOSE_PROJECT_NAME=.*/COMPOSE_PROJECT_NAME=gombey_other_customer_0123456789abcdef0123/' \
+  "$VALID_ENV" > "$COPIED_PROJECT_ENV"
+chmod 600 "$COPIED_PROJECT_ENV"
+if GOMBEY_CUSTOMER_ENV_PATH="$COPIED_PROJECT_ENV" bash "$PREFLIGHT_SCRIPT" > "$TEST_ROOT/copied-project.out" 2>&1; then
+  fail "preflight accepted a Compose project name copied from another deployment"
+fi
+grep -Fq "COMPOSE_PROJECT_NAME does not match SITE_DOMAIN" "$TEST_ROOT/copied-project.out" || \
+  fail "copied project name failed for the wrong reason"
+
+# Existing deployments created before the scheme marker keep their exact
+# legacy project name through upgrades; changing it could create empty volumes.
+LEGACY_ENV="$TEST_ROOT/legacy.env"
+LEGACY_PROJECT_SUFFIX="$(printf '%s' 'chat.acmeai.com' | tr '[:upper:]' '[:lower:]' | tr '.-' '__' | tr -cd 'a-z0-9_' | cut -c1-30)"
+LEGACY_PROJECT_NAME="gombey_${LEGACY_PROJECT_SUFFIX:-customer}"
+sed -e '/^GOMBEY_PROJECT_NAME_SCHEME=/d' \
+  -e "s/^COMPOSE_PROJECT_NAME=.*/COMPOSE_PROJECT_NAME=$LEGACY_PROJECT_NAME/" \
+  "$VALID_ENV" > "$LEGACY_ENV"
+chmod 600 "$LEGACY_ENV"
+GOMBEY_CUSTOMER_ENV_PATH="$LEGACY_ENV" bash "$PREFLIGHT_SCRIPT" >/dev/null
 
 echo "customer-preflight tests passed"

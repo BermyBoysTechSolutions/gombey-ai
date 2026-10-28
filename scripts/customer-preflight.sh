@@ -27,6 +27,8 @@ grep -q '^ALLOW_PASSWORD_RESET=false$' "$CUSTOMER_ENV" || fail "password reset m
 # values as plain text instead of sourcing the environment file as shell code.
 SITE_DOMAIN="$(sed -n 's/^SITE_DOMAIN=//p' "$CUSTOMER_ENV" | head -n 1)"
 ACME_EMAIL="$(sed -n 's/^ACME_EMAIL=//p' "$CUSTOMER_ENV" | head -n 1)"
+COMPOSE_PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' "$CUSTOMER_ENV" | head -n 1)"
+PROJECT_NAME_SCHEME="$(sed -n 's/^GOMBEY_PROJECT_NAME_SCHEME=//p' "$CUSTOMER_ENV" | head -n 1)"
 HOSTNAME_RE='^([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$'
 EMAIL_RE='^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
 if [[ ! "$SITE_DOMAIN" =~ $HOSTNAME_RE || "$SITE_DOMAIN" =~ ^[0-9.]+$ ]]; then
@@ -49,6 +51,32 @@ is_reserved_domain() {
 is_reserved_domain "$SITE_DOMAIN" && fail "SITE_DOMAIN uses a reserved testing/example domain; set a real public hostname"
 ACME_DOMAIN="${ACME_EMAIL##*@}"
 is_reserved_domain "$ACME_DOMAIN" && fail "ACME_EMAIL uses a reserved testing/example domain; set a real deliverable email address"
+
+# New deployments use a collision-resistant Docker resource namespace derived
+# from the canonical hostname. Keep validating the legacy naming convention
+# for pre-existing deployments so a routine update cannot create fresh empty
+# volumes by changing their Compose project name.
+DOMAIN_CANONICAL="$(printf '%s' "$SITE_DOMAIN" | tr '[:upper:]' '[:lower:]')"
+case "$PROJECT_NAME_SCHEME" in
+  sha256-v1)
+    PROJECT_SUFFIX="$(printf '%s' "$DOMAIN_CANONICAL" | tr '.-' '__' | tr -cd 'a-z0-9_' | cut -c1-22)"
+    DOMAIN_HASH="$(printf '%s' "$DOMAIN_CANONICAL" | openssl dgst -sha256 | awk '{print substr($NF, 1, 20)}')"
+    EXPECTED_PROJECT_NAME="gombey_${PROJECT_SUFFIX:-customer}_${DOMAIN_HASH}"
+    [[ "$COMPOSE_PROJECT_NAME" == "$EXPECTED_PROJECT_NAME" ]] || \
+      fail "COMPOSE_PROJECT_NAME does not match SITE_DOMAIN; initialize a fresh per-customer deployment"
+    ;;
+  "")
+    # Legacy .env files predate GOMBEY_PROJECT_NAME_SCHEME. Preserve their
+    # exact old domain-derived value; never rewrite it during preflight.
+    LEGACY_PROJECT_SUFFIX="$(printf '%s' "$DOMAIN_CANONICAL" | tr '.-' '__' | tr -cd 'a-z0-9_' | cut -c1-30)"
+    LEGACY_PROJECT_NAME="gombey_${LEGACY_PROJECT_SUFFIX:-customer}"
+    [[ "$COMPOSE_PROJECT_NAME" == "$LEGACY_PROJECT_NAME" ]] || \
+      fail "COMPOSE_PROJECT_NAME does not match the legacy SITE_DOMAIN naming rule"
+    ;;
+  *)
+    fail "unsupported GOMBEY_PROJECT_NAME_SCHEME; use a supported deployment initializer"
+    ;;
+esac
 
 for setting in OPENAI_API_KEY OPENAI_MODELS ANTHROPIC_API_KEY ANTHROPIC_MODELS GOOGLE_KEY GOOGLE_MODELS OPENROUTER_KEY RAG_OPENAI_API_KEY RAG_OPENAI_BASEURL EMBEDDINGS_MODEL; do
   setting_line="$(grep -m 1 "^${setting}=" "$CUSTOMER_ENV" || true)"
@@ -77,6 +105,7 @@ for setting in MONGO_ROOT_PASSWORD POSTGRES_PASSWORD MEILI_MASTER_KEY JWT_SECRET
 done
 
 command -v python3 >/dev/null 2>&1 || fail "python3 is required to inspect the rendered Compose configuration"
+command -v openssl >/dev/null 2>&1 || fail "openssl is required to verify the Compose project namespace"
 
 docker compose \
   --env-file "$CUSTOMER_ENV" \

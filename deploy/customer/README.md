@@ -40,9 +40,15 @@ On the VPS, clone this repository into a customer-specific directory, then run:
 The script creates a mode-600 `deploy/customer/.env` with new, per-customer
 secrets. It never prints them and refuses to overwrite an existing file or
 symlink. The file is assembled in a mode-600 temporary file and linked into
-place without replacing a path that appears concurrently. Run
+place without replacing a path that appears concurrently. New initializations
+derive `COMPOSE_PROJECT_NAME` from the canonical hostname plus an 80-bit SHA-256
+suffix, and preflight verifies that namespace to avoid collisions between
+long hostnames with the same prefix. Never copy a customer's `.env` to another
+deployment. Existing unmarked `.env` files retain their legacy project name so
+an upgrade cannot silently switch to empty Docker volumes. Run
 `bash scripts/test_customer_init.sh` to check permissions, distinct generated
-secrets, invalid hostnames, existing files, and dangling symlinks.
+secrets, collision-resistant project names, invalid hostnames, existing files,
+and dangling symlinks.
 
 By default, the direct provider variables and `OPENROUTER_KEY` are
 `user_provided`: each employee enters their own API key in LibreChat, where the

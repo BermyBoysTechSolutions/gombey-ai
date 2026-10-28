@@ -30,12 +30,38 @@ assert_mode_600 "$VALID_ENV"
 grep -qx 'ALLOW_REGISTRATION=false' "$VALID_ENV" || fail "registration is not disabled"
 grep -qx 'ALLOW_PASSWORD_RESET=false' "$VALID_ENV" || fail "password reset is not disabled"
 grep -qx 'RAG_OPENAI_API_KEY=REPLACE_WITH_CUSTOMER_OWNED_EMBEDDINGS_API_KEY' "$VALID_ENV" || fail "embeddings placeholder is missing"
+grep -qx 'GOMBEY_PROJECT_NAME_SCHEME=sha256-v1' "$VALID_ENV" || fail "project-name scheme marker is missing"
+PROJECT_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' "$VALID_ENV")"
+[[ "$PROJECT_NAME" =~ ^gombey_[a-z0-9_]+_[a-f0-9]{20}$ ]] || fail "Compose project name is not normalized and collision-resistant"
+[[ "${#PROJECT_NAME}" -le 63 ]] || fail "Compose project name exceeds 63 characters"
 
 secret_count="$(grep -Ec '^(MONGO_ROOT_PASSWORD|POSTGRES_PASSWORD|MEILI_MASTER_KEY|JWT_SECRET|JWT_REFRESH_SECRET|CREDS_KEY|CREDS_IV)=' "$VALID_ENV")"
 unique_secret_count="$(grep -E '^(MONGO_ROOT_PASSWORD|POSTGRES_PASSWORD|MEILI_MASTER_KEY|JWT_SECRET|JWT_REFRESH_SECRET|CREDS_KEY|CREDS_IV)=' "$VALID_ENV" | cut -d= -f2- | sort -u | wc -l | tr -d '[:space:]')"
 [[ "$secret_count" == "7" && "$unique_secret_count" == "7" ]] || fail "expected seven distinct generated secrets"
 temp_count="$(find "$(dirname "$VALID_ENV")" -maxdepth 1 -name 'customer.env.tmp.*' -print | wc -l | tr -d '[:space:]')"
 [[ "$temp_count" == "0" ]] || fail "temporary file was not cleaned up"
+
+# Long hostnames that previously shared the same truncated prefix must still
+# resolve to distinct Docker project names.
+COLLISION_A_ENV="$TEST_ROOT/collision-a.env"
+COLLISION_B_ENV="$TEST_ROOT/collision-b.env"
+COLLISION_A_DOMAIN="customer-deployment-gombey-agency-alpha.example.test"
+COLLISION_B_DOMAIN="customer-deployment-gombey-agency-bravo.example.test"
+GOMBEY_CUSTOMER_ENV_PATH="$COLLISION_A_ENV" bash "$INIT_SCRIPT" \
+  "$COLLISION_A_DOMAIN" ops@example.test >/dev/null
+GOMBEY_CUSTOMER_ENV_PATH="$COLLISION_B_ENV" bash "$INIT_SCRIPT" \
+  "$COLLISION_B_DOMAIN" ops@example.test >/dev/null
+COLLISION_A_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' "$COLLISION_A_ENV")"
+COLLISION_B_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' "$COLLISION_B_ENV")"
+[[ "$COLLISION_A_NAME" != "$COLLISION_B_NAME" ]] || fail "long customer hostnames collided in Compose project naming"
+
+# DNS hostnames are case-insensitive; canonical casing must not fork the same
+# deployment into two project names.
+CASE_ENV="$TEST_ROOT/case.env"
+GOMBEY_CUSTOMER_ENV_PATH="$CASE_ENV" bash "$INIT_SCRIPT" \
+  CHAT.EXAMPLE.TEST ops@example.test >/dev/null
+CASE_NAME="$(sed -n 's/^COMPOSE_PROJECT_NAME=//p' "$CASE_ENV")"
+[[ "$CASE_NAME" == "$PROJECT_NAME" ]] || fail "hostname casing changed the Compose project name"
 
 EXISTING_ENV="$TEST_ROOT/existing.env"
 printf 'preserve-this-file\n' > "$EXISTING_ENV"

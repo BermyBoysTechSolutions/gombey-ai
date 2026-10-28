@@ -829,3 +829,22 @@ applicable gates above have evidence.
 - Stripe Tax Settings remain `pending` because `head_office` is missing, with
   zero tax registrations. The live account is still the only connected Stripe
   account. No Stripe, website, VPS, DNS, or customer-data state was changed.
+
+## Customer Compose namespace collision guard — 2026-10-28
+
+- Found that the pre-existing initializer truncated sanitized hostnames at 30
+  characters before forming `COMPOSE_PROJECT_NAME`; two long hostnames sharing
+  that prefix could therefore collide and target one Docker resource namespace.
+- Fresh initialization now canonicalizes hostname casing, uses a shorter prefix
+  plus an 80-bit SHA-256 suffix, and marks the naming scheme. Production preflight
+  verifies the new name against the hostname. Existing unmarked env files keep
+  their exact legacy project name so a routine upgrade cannot silently create
+  new empty volumes.
+- Added regression checks for long-hostname collisions, case-insensitive DNS
+  names, copied/mismatched new project names, and legacy preflight compatibility.
+  Customer-init and preflight tests, backup-safety, all 11 Python tests, all 7
+  embeddings-helper tests, and current two-project isolation checks passed.
+- No existing `.env`, running Docker project, VPS, DNS, or customer data was
+  changed. This hardens fresh customer setup; existing deployments still need
+  an explicit, carefully planned namespace migration if they were created under
+  the legacy rule.
