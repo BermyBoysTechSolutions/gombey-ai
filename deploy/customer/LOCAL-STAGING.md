@@ -1243,3 +1243,20 @@ confirmed revoked and replaced.
 - This is not yet the member-visible answer-quality test with GPT-6 Luna, and
   the larger context may increase prompt usage. Keep the new long-corpus UI
   test open before declaring large-document behavior production-ready.
+
+## Candidate runtime activation of long-corpus patch — 2026-10-28
+
+- Updated only the clean detached `source-patch-test-4c8fa7d` checkout's
+  mounted `librechat-file-search-depth.js` to match the pushed branch patch,
+  then restarted only `gombey_candidate_gombeytech_c_85b100786028cbd5901b-api-1`.
+- The candidate's running v0.8.8 bundle now contains exactly one per-file
+  depth of 20 and one merged context limit of 20, with no remaining distance-
+  sorted 10-passage cap. `/health` and `/login` each returned HTTP 200 on
+  three consecutive checks and Docker reports the API healthy. The candidate
+  login page is open in the Codex in-app browser.
+- No agent, account, file, conversation, provider key, billing setting, or
+  customer data was changed by this runtime check. No model or embedding
+  request was made. Primary staging, backup restore, current demo, and public
+  services were not restarted. The candidate's persistent embeddings key is
+  still a template placeholder, so member-visible long-document testing still
+  requires the protected test-key setup and a disposable evaluation agent.

@@ -3308,3 +3308,20 @@ applicable gates above have evidence.
   response test with these new PDFs. The larger context can increase prompt
   size; validate with the chosen customer model before offering long-document
   performance as a guarantee. No customer material was used.
+
+## Candidate runtime activation — 2026-10-28
+
+- Applied the pushed two-limit File Search patch to the isolated candidate's
+  mounted, clean detached `source-patch-test-4c8fa7d` checkout and restarted
+  only the candidate API container. Its running LibreChat v0.8.8 bundle now
+  has one `k: 20` per-file query and one 20-passage merged cap; no 10-passage
+  merge cap remains.
+- The candidate API is Docker-healthy; `/health` and `/login` returned HTTP
+  200 on three consecutive checks. Its login page is open in the Codex
+  in-app browser. Other local stacks and public services were left alone.
+- No user, agent, file, conversation, provider credential, or billing object
+  was changed and no model/embedding request was made. Candidate RAG still
+  has a placeholder embeddings credential. The next local acceptance step is
+  to configure a protected test credential, create a disposable evaluation
+  agent, upload these synthetic PDFs, then test member-visible answers,
+  citations, abstention, and UI deletion/reindex. This goal remains open.
