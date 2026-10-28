@@ -462,3 +462,7 @@ applicable gates above have evidence.
   provider billing. The next RAG gate is a member-side File Search test using
   a valid customer-owned embeddings credential; do not use the owner's key for
   customer traffic.
+- The fail-closed integration regression also passed again: a synthetic upload
+  against an unavailable loopback embeddings endpoint returned HTTP 500, stored
+  zero vectors, and the disposable Compose containers, networks, and volume
+  were removed.

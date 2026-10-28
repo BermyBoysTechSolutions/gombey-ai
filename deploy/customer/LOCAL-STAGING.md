@@ -832,3 +832,7 @@ confirmed revoked and replaced.
   UI, member-level citations, or customer-owned billing. Before production,
   configure a valid customer-owned embeddings key through the protected helper
   and repeat retrieval as a member through LibreChat.
+- The fail-closed regression integration suite was also rerun: its synthetic
+  upload returned HTTP 500 against an unavailable loopback embeddings endpoint,
+  zero vectors were stored, and the disposable Compose containers, networks,
+  and volume were removed.
