@@ -162,7 +162,7 @@ current local customer template and acceptance record. “Not verified” means
 the claim must not be presented as already proven; it may still be deliverable
 after the corresponding implementation and acceptance test.
 
-### Read-only public pricing and Stripe reconciliation (2026-10-27)
+### Read-only public pricing and Stripe reconciliation (2026-10-28)
 
 - The public page and the connected live Gombey Tech catalog currently agree
   on descriptive tier names and prices: Cloud Workspace ($2,500 standard /
@@ -198,6 +198,21 @@ after the corresponding implementation and acceptance test.
   available, so deferred billing and saved-payment-method consent had not been
   rehearsed. The first-three-deployments limit remains manually enforced
   across the three coupons.
+- A fresh read-only Stripe check on 2026-10-28 still finds three active
+  products, 15 active prices, three valid 12-month coupons (each capped at
+  three redemptions; none redeemed), and now three active Payment Links. The
+  links have no subscription data or `setup_future_usage`, and use
+  `payment_method_collection=if_required`; they do not schedule the first
+  recurring charge 30 days after accepted delivery or guarantee a saved method.
+  No billing objects were created or changed in this check.
+- All three live Payment Links currently have `automatic_tax.enabled=true`,
+  but Stripe returned zero active Tax registrations for the live account.
+  Stripe's documentation says it calculates tax only in jurisdictions where
+  an active registration exists; therefore, do not claim tax is being
+  automatically collected until the owner/accountant resolves registrations
+  and the exact tax treatment. No Tax or Payment Link setting was changed.
+  Only the live Stripe account is connected; a dedicated sandbox must be
+  connected before the deferred-billing rehearsal.
 
 | Public claim | Current evidence | Gate still open |
 |---|---|---|

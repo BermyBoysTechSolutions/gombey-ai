@@ -42,6 +42,13 @@ sale-to-deployment workflow.
   amounts, monthly amount, promotion duration, cancellation terms, and tax
   treatment before making test objects. Do not change the live catalog as part
   of this rehearsal.
+- The live account's three existing Payment Links have automatic tax enabled,
+  while the live account currently has zero active Tax registrations. Stripe
+  documents that it calculates tax only in jurisdictions with an active
+  registration. Have the owner/accountant resolve the live tax treatment before
+  sending a live link or describing tax as configured; do not add or remove
+  registrations as part of this sandbox rehearsal. [Stripe Tax and Payment
+  Links](https://docs.stripe.com/tax/payment-links).
 - The three current live Payment Links collect only the 50% founding kickoff
   installment. They do not create a subscription, schedule a later charge, or
   accept extra promotion codes. They are not a complete customer signup flow;
