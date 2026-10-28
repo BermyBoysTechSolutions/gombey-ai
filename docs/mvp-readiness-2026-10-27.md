@@ -2935,3 +2935,62 @@ applicable gates above have evidence.
   onboarding runbook still requires applying and verifying it on each fresh
   customer database after the first admin is provisioned. No global YAML
   switches were changed, and no production account or deployment was touched.
+
+## Continued pre-VPS, offer, and billing audit — 2026-10-28 18:02 EDT
+
+- The owner reconfirmed the intended hardware/deployment ladder: Plus is a
+  dedicated VPS with cloud inference; Pro is an on-site SER5 Mini PC with
+  cloud inference; Max is a locally validated Mac Studio, DGX Spark, or
+  Strix Halo-class workstation. This is intentional tier differentiation,
+  not an offer mismatch.
+- A fresh read-only fetch of `gombeytech.com` matched the three Stripe product
+  descriptions and published pricing: Cloud Workspace ($2,500 standard / $1,995
+  launch setup; $399 / $349 monthly), Workspace Appliance ($4,500 / $3,995;
+  $699 / $599 monthly), and Private Local AI ($7,500 / $6,995; $1,499 / $1,299
+  monthly). Founding monthly rates are advertised for the first 12 months;
+  hardware for the upper tiers is separately quoted/acceptance-gated. The
+  page remains call-first and its customer launch link targets
+  `chat.gombeytech.com`.
+- The public chat hostname now resolves to the Gombey AI page and returned
+  HTTPS HTTP 200; the prior Cloudflare 1033 error did not recur. This checks
+  current reachability only, not customer account onboarding or production
+  VPS isolation.
+- A fresh read-only Stripe audit found only the live Gombey Tech account
+  available in this session. The three active setup links map to the correct
+  products and collect only the 50% launch kickoff installments
+  ($997.50/$1,997.50/$3,497.50); `payment_method_collection` is `if_required`,
+  and the links have no subscription data or saved-payment-method setup for a
+  later off-session charge. Three inactive monthly links use the standard
+  recurring prices, require payment-method collection, and have a 30-day trial;
+  they remain separate from the setup links. A subscription checkout completed
+  at accepted delivery can start a 30-day trial then, but the setup purchase
+  itself does not schedule that enrollment or charge.
+- The active setup links report automatic tax enabled, while the live account
+  currently returns zero active Tax registrations. Do not represent these
+  links as tax-ready or send them until the owner/tax advisor confirms the
+  applicable jurisdictions and Stripe configuration. Tax and coupon/trial
+  behavior still require a dedicated sandbox rehearsal.
+- Stripe CLI authentication is absent and no test/sandbox account is connected
+  to the Stripe API session. The account-management authorization page was
+  queued in the Codex native browser to let the owner add a separate blank
+  sandbox. No live products, prices, links, tax settings, invoices, or charges
+  were changed.
+- Regression checks passed: customer initialization, production/local
+  preflight, encrypted-backup safety, 16 Python tests, 10 Node tests, and
+  `git diff --check`. The isolated fail-closed RAG integration returned HTTP
+  500 for a synthetic upload against an unreachable loopback embeddings
+  endpoint, stored zero vectors, and removed its disposable containers,
+  network, and volume. The current-branch staging `/health` and `/login` then
+  returned HTTP 200 without a service restart.
+- During the integration run, the Mac reported about 15.9 of 16 GiB swap in
+  use and the staging API used about 1.69 of its 2 GiB container limit. A
+  transient host-published health-probe timeout recovered on the next check;
+  no container was restarted. This is a local resource-pressure warning, not
+  evidence that the production VPS will behave the same way. Avoid running
+  unnecessary staging stacks/builds concurrently during user-facing tests.
+- Still open: connect a blank Stripe sandbox and rehearse checkout/trial/tax;
+  complete authenticated member UX in the native browser; verify customer-owned
+  provider/embeddings billing; secure or remove legacy plaintext synthetic
+  snapshots before any real data is used; commission the actual SER5/local
+  hardware for those tiers; and run public VPS/DNS/TLS/firewall/backup/restore
+  acceptance only after hostname and exact spend are explicitly approved.
