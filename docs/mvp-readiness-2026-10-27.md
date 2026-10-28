@@ -3126,3 +3126,26 @@ applicable gates above have evidence.
   coupon-duration, tax-calculation, webhook, or failure-recovery test ran.
   No live product, price, coupon, link, invoice, payment, or account setting was
   changed.
+
+## Continued local MVP runtime and regression recheck — 2026-10-28
+
+- All four dedicated local customer-test Compose projects were still running:
+  staging on 3083, backup-restore on 3084, branch candidate on 3085, and the
+  current MVP branch on 3086. The app APIs are bound to loopback. Their `/`,
+  `/health`, `/login`, and `/api/config` routes returned HTTP 200; the
+  unauthenticated `/api/user`, `/api/agents`, and `/api/models` routes returned
+  HTTP 401. No container was started, stopped, or restarted.
+- The read-only isolation checker passed between the current MVP project and
+  each of staging, backup-restore, and branch-candidate. It confirmed disjoint
+  Docker networks and persistent data roots, successful own-service DNS,
+  blocked cross-project private-service DNS/TCP in both directions, and no
+  host-published MongoDB, Meilisearch, pgvector, or RAG ports. This is local
+  deployment isolation evidence, not a VPS or public-firewall test.
+- Re-ran the customer initializer, customer preflight regression cases,
+  encrypted-backup safety tests, all 16 Python unit tests, and all 10 Node
+  unit tests; all passed. These tests used temporary synthetic fixtures and
+  did not read or write the untracked `tmp/` user data.
+- The earlier member-side shared File Search test remains the evidence for
+  two member accounts using the admin-owned knowledge agent. This runtime
+  recheck did not exercise a browser login, provider-side billing, production
+  Stripe checkout, or the Hostinger VPS. All of those gates remain explicit.
