@@ -12,9 +12,20 @@ price, or payment method was created. Do not use a live account for this test.
 3. Start recurring monthly service 30 days after accepted delivery, using the
    customer's explicitly authorized saved payment method.
 4. Apply the approved launch rate for its agreed term, then bill the normal
-   monthly rate. Confirm the launch offer's eligibility and exact amounts from
-   the signed proposal and the approved catalog; do not infer them from this
-   document. The live offer/catalog amounts and names have unresolved history.
+   monthly rate. The current live catalog and public page were read-only
+   reconciled on 2026-10-28; use the signed proposal to confirm which tier and
+   founding offer apply to a particular customer:
+
+   | Tier | Setup standard | Setup founding | Each 50% setup installment | Monthly standard | Monthly founding (first 12 months) |
+   |---|---:|---:|---:|---:|---:|
+   | Cloud Workspace | $2,500 | $1,995 | $997.50 / $997.50 | $399 | $349 |
+   | Workspace Appliance | $4,500 | $3,995 | $1,997.50 / $1,997.50 | $699 | $599 |
+   | Private Local AI | $7,500 | $6,995 | $3,497.50 / $3,497.50 | $1,499 | $1,299 |
+
+   The founding offer is advertised for the first three deployments total; the
+   Stripe coupon/promotion-code limits are per tier, so the operator must
+   enforce the cross-tier cap manually. Re-check current catalog and signed
+   proposal immediately before each test or customer invoice.
 
 The initial pilot should be operator-managed in Stripe Dashboard. Gombey does
 not currently have billing code, webhook processing, or account provisioning
@@ -31,6 +42,10 @@ sale-to-deployment workflow.
   amounts, monthly amount, promotion duration, cancellation terms, and tax
   treatment before making test objects. Do not change the live catalog as part
   of this rehearsal.
+- The three current live Payment Links collect only the 50% founding kickoff
+  installment. They do not create a subscription, schedule a later charge, or
+  accept extra promotion codes. They are not a complete customer signup flow;
+  test the delivery installment and deferred monthly billing separately.
 - Identify the existing sandbox products/prices/coupons or create disposable
   test-only objects. Avoid copying live IDs into test mode; Stripe objects are
   mode-specific.
