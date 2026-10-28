@@ -1454,3 +1454,17 @@ applicable gates above have evidence.
   billing, visible-browser acceptance, Calendly write access, Stripe sandbox
   and tax/consent rehearsal, encrypted off-device recovery, and approved
   public VPS acceptance remain open.
+
+## Billing and Hostinger access recheck — 2026-10-28 08:48 EDT
+
+- Current Stripe account discovery exposes only Gombey Tech in live mode; no
+  sandbox account is connected to this session. The Stripe CLI is not
+  installed. I did not switch modes, inspect or mutate live billing objects,
+  create a sandbox, or create any payment/invoice/subscription.
+- Hostinger's read-only `vps_virtual-machines_list` request again timed out
+  after 300 seconds. No inventory result was returned and no VPS, DNS, or
+  billing write was issued. Do not infer that a VPS is or is not present.
+- The candidate environment file remains mode 600 with the embeddings value
+  set to a placeholder, and the running candidate RAG container has no
+  embeddings key. Positive File Search acceptance remains blocked until an
+  owner-approved test key is entered through a protected path.
