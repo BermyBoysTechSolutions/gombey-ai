@@ -556,3 +556,36 @@ provider-key UI and supply a separate embeddings key through the hidden-input
 helper. Run the single synthetic chat and full shared-document upload, semantic
 retrieval, citation, unsupported-answer, and deletion checks before any public
 VPS/DNS testing. Do not use the old OpenClaw profile until its key is rotated.
+
+## OpenRouter Qwen local integration smoke (2026-10-27)
+
+- Added `qwen/qwen3.5-9b` as an optional OpenRouter model and the named
+  `Qwen 3.5 9B (OpenRouter test)` model spec in `librechat.yaml`. It is
+  `user_provided`: each user must supply their own OpenRouter key. GPT-6 Luna
+  remains the default/shared-agent model; this change does not route the shared
+  agent through Qwen.
+- Direct synthetic OpenRouter smoke: the first very short response budget was
+  consumed by reasoning and produced no visible answer; retrying with reasoning
+  disabled returned the expected `RESULT=4`. The two direct test requests cost
+  $0.0000105 total. No secret value was printed, committed, or written to the
+  application config or `.env`.
+- Signed in to the staging UI as a disposable member and saved the OpenRouter
+  key only to that member's provider settings with a 12-hour expiry. A synthetic
+  Qwen chat through Gombey returned `RESULT=4`. A second disposable member,
+  without a key, was correctly stopped by the UI with the prompt to add their
+  own OpenRouter key; it did not inherit the first member's credential. This
+  verifies user-key separation for model chat, not tenant isolation of all
+  possible application data.
+- Deleted both disposable members through the account UI. A Mongo count query
+  confirmed zero remaining records for their exact synthetic emails; their
+  chats and saved key were removed with the accounts. The one-time loopback
+  key-entry helper is no longer running.
+- Revalidated the deployment Compose config using the protected, ignored
+  `deploy/customer/.env` (mode `600`), six RAG embedding-key tests, customer
+  init/preflight shell tests, and `git diff --check`; all passed. Staging health
+  is HTTP 200. Only `127.0.0.1:3083` is host-published; RAG, MongoDB, pgvector,
+  and Meilisearch have no published host ports.
+- This smoke did not re-test document retrieval, file upload, GPT-6 Luna
+  inference, or Qwen tool calls. No production VPS, public DNS/TLS, billing,
+  or customer data was involved. Changes were local to staging before this
+  isolated branch update.

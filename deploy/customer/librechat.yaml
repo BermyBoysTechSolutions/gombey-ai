@@ -41,6 +41,7 @@ endpoints:
         default:
           - "openai/gpt-4o-mini"
           - "deepseek/deepseek-v4-flash-0731"
+          - "qwen/qwen3.5-9b"
         fetch: true
       titleConvo: true
       titleModel: "openai/gpt-4o-mini"
@@ -73,3 +74,12 @@ modelSpecs:
       preset:
         endpoint: OpenRouter
         model: deepseek/deepseek-v4-flash-0731
+    - name: gombey-openrouter-qwen-3-5-9b
+      label: Qwen 3.5 9B (OpenRouter test)
+      description: Low-cost option for synthetic tests; requires the user's own OpenRouter key and does not replace the shared GPT-6 Luna agent.
+      group: OpenRouter
+      authType: user_provided
+      showInMenu: true
+      preset:
+        endpoint: OpenRouter
+        model: qwen/qwen3.5-9b
