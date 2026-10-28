@@ -2416,3 +2416,19 @@ applicable gates above have evidence.
   integration (or authorize a sandbox-capable Stripe CLI session), then run
   the test plan there. Live tax registration and product tax treatment also
   remain owner/accountant decisions; no tax settings were changed.
+
+## Candidate second-member shared-agent permission check — 2026-10-28 15:26 EDT
+
+- A disposable synthetic member authenticated against the loopback candidate.
+  The member's agent list contained the Juniper & Slate shared agent when
+  requesting VIEW access; the basic agent record returned HTTP 200 and the
+  expanded/edit configuration request returned HTTP 403 as intended.
+- The member was deleted through the authenticated self-delete endpoint
+  (HTTP 200). Mongo checks found zero records for the account across users,
+  conversations, messages, files, and API-key collections. No provider key was
+  added and no model request was made in this check.
+- This confirms candidate-side shared-agent visibility and the VIEW/EDIT
+  boundary for a second disposable member. It is an authenticated API check,
+  not a browser UX test or proof of cross-customer tenant isolation. The
+  intended deployment ladder remains Plus = customer VPS/cloud inference,
+  Pro = on-site SER5/cloud inference, Max = customer hardware/local inference.
