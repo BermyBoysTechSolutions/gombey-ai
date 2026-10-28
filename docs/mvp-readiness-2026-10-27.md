@@ -24,7 +24,7 @@ following cloud-workspace gates pass.
 - `scripts/test_customer_init.sh` passes.
 - `scripts/test_customer_preflight.sh` passes, including invalid hostname,
   reserved domain, short-secret, and duplicate-secret cases.
-- `python3 scripts/test_set_rag_embeddings_key.py` passes (6 tests).
+- `python3 scripts/test_set_rag_embeddings_key.py` passes (7 tests).
 - The customer Compose template parses successfully; the sample `.env` emits
   expected warnings for unset provider fields. A real API credential and live
   provider response are not validated by that parse check.
@@ -36,9 +36,11 @@ following cloud-workspace gates pass.
   command provisioned two additional synthetic `USER` accounts: the instance
   now has one `ADMIN` and four `USER` accounts (five total) while
   `ALLOW_REGISTRATION=false`; the restored UI remained HTTP 200. Generated
-  passwords were withheld and not recorded. This verifies provisioning
-  capacity only: the two additional users have not yet been signed in or run
-  through shared-agent/private-data authorization checks.
+  passwords were withheld and not recorded. Two `USER` principals then passed
+  read-only API checks for shared-agent list/basic view (HTTP 200) and were
+  denied expanded configuration/version history (HTTP 403). This confirms
+  their role-based agent viewer boundary, not password-based sign-in or a new
+  private-chat/file test for those accounts.
 - An isolated second deployment used separate secrets, network, database, and
   storage; a synthetic marker was absent across deployments. An isolated
   restore drill also completed.
@@ -67,24 +69,32 @@ following cloud-workspace gates pass.
   with a loopback-only unavailable embeddings endpoint returned HTTP 500 and
   left zero vectors in its dedicated disposable database. Four exact-match,
   idempotency, and source-drift unit tests pass. A corrected isolated
-  integration runner was also verified. The active staging RAG service is
-  healthy and its 101 existing synthetic vectors were unchanged.
+  integration runner was also verified. Before credential containment, the
+  staging vector database contained 101 synthetic vectors; those records were
+  not changed by containment. The staging RAG service is currently stopped, so
+  those vectors are not searchable through the app.
 - A staging embeddings credential was printed by an earlier diagnostic and
   must be treated as compromised. No provider request was made after that
-  diagnostic. Revoke and replace it before further embeddings-backed tests;
-  never copy the value into this document or chat. The credential was disabled
-  in the active staging and restore environment files; the active staging RAG
-  service was stopped, and the restore project's stateless RAG container was
-  removed. Application and database services remain running; document search
-  is paused until a fresh key is supplied.
+  diagnostic. It was replaced with the unconfigured placeholder in the active
+  staging and restore environment files; both were verified owner-owned and
+  mode `600`, without printing any credential. The active staging RAG service
+  is stopped, and the restore project's stateless RAG container was removed.
+  Application and database services remain running; document search is paused
+  until a fresh embeddings key is supplied through the hidden-input helper.
+  The owner reported rotating/adding a replacement OpenRouter key, but
+  revocation and exact placement were not independently verified. The staging
+  embeddings environment still contains the placeholder; a chat-provider key
+  does not by itself configure RAG embeddings.
 
 ## Remaining go/no-go gates for the cloud workspace
 
 1. Repeat grounded retrieval/citation as a second member with the agreed
    customer-owned provider/embedding credentials. Confirm the result and usage
    appear under the intended customer billing account. Do not use Gombey's or
-   the owner's subscription/API credentials for customer traffic. First
-   rotate the potentially exposed prior embeddings key; do not reuse it.
+   the owner's subscription/API credentials for customer traffic. The owner
+   reports rotating the potentially exposed prior OpenRouter key, but this was
+   not independently verified; do not reuse the prior value. The separate
+   staging embeddings setting remains a placeholder and needs a fresh key.
 2. Decide whether model keys are per-member BYOK or customer-managed centrally,
    then test the chosen flow end-to-end for both members.
 3. Reconcile the public site's read-only-connector claim. The current shared
@@ -177,3 +187,43 @@ after the corresponding implementation and acceptance test.
 No VPS purchase, invoice, checkout link, subscription, or customer charge is
 created by this readiness work. Do not mark the MVP complete until the
 applicable gates above have evidence.
+
+## Stripe sandbox rehearsal plan (2026-10-27)
+
+- Added `docs/STRIPE-BILLING-TEST-PLAN.md`. It specifies a sandbox-only
+  rehearsal for the 50% kickoff invoice, 50% accepted-delivery invoice,
+  explicit consent and saved payment method, monthly charge 30 days after
+  accepted delivery, launch-rate period, and standard-price renewal.
+- Stripe's connected account access in this session was live-only; no test
+  customer or billing objects were created and no live settings changed. The
+  exact pricing/name conflict documented above remains unresolved, so the plan
+  requires the currently approved signed offer and sandbox catalog rather than
+  guessing or changing prices.
+- The recommended test uses a future-start subscription schedule or an
+  equivalent Stripe-supported deferred start, then advances a test clock to
+  verify the first charge and launch-to-standard transition. Exact invoice
+  dates and amounts must pass before this is described as automated. Gombey
+  currently has no billing webhook integration; pilot billing remains
+  operator-managed until that exists and is tested.
+
+## Member authorization and local deployment-isolation recheck (2026-10-27)
+
+- Two existing member-role accounts in the isolated restored copy each listed
+  and viewed the shared agent (HTTP 200), and each received HTTP 403 for
+  expanded configuration and version history. The role ACL is view-only; the
+  admin-only `manage:agents` capability does not apply to `USER`. No write
+  requests or model/provider calls were made.
+- A previous Node-based request harness was rejected by LibreChat's browser
+  User-Agent gate and returned an SSE `Illegal request` envelope with HTTP
+  200. The corrected Chromium-User-Agent GET checks above are the valid result;
+  the earlier 200 was not evidence of an ACL bypass.
+- Staging and restored-copy MongoDB and pgvector paths are separate. A unique
+  temporary marker written only to the restored MongoDB was absent from
+  staging, and its probe collection was removed afterward. This demonstrates
+  local per-deployment data-store separation, not shared-instance tenant
+  isolation.
+- Local regression checks passed again: customer init, customer preflight,
+  7 embeddings-key helper tests, and 4 RAG fail-closed patch tests. Shared-doc
+  semantic retrieval remains blocked while RAG is stopped and the embeddings
+  key is a placeholder. No production VPS or Stripe live/test objects were
+  changed.

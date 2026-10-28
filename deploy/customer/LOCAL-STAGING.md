@@ -12,12 +12,15 @@
   synthetic text to a loopback dead port, verifies HTTP 500, and confirms zero
   vectors were written. Its dedicated Docker project, database, networks, and
   volume were removed afterward.
-- The active staging RAG API is healthy and the UI remains loopback-only. The
-  three existing synthetic manuals remain indexed; no successful embedding or
-  customer data was sent during this failure-path test.
-- Before any semantic retrieval test, rotate the potentially exposed
-  embeddings credential and enter a fresh low-limit customer-owned key through
-  the secure helper. Do not reuse the prior credential.
+- At the time of this earlier failure-path test, the active staging RAG API was
+  healthy and the UI was loopback-only. The three existing synthetic manuals
+  remained indexed; no successful embedding or customer data was sent during
+  that failure-path test.
+- The potentially exposed embeddings credential must not be reused. A later
+  containment step replaced it with the unconfigured placeholder and stopped
+  the RAG service, as recorded below. The user has since reported rotating and
+  adding an OpenRouter key; the staging embeddings environment is still
+  unconfigured, so this does not yet restore semantic search.
 
 This procedure runs the customer template as a separate, loopback-only Docker
 Compose project. It does not turn the Mac mini into a public VPS and does not
@@ -570,12 +573,15 @@ reboot/restore checks remain intentionally out of scope until local gates pass.
   viewer access plus private-chat and file metadata/preview isolation. No
   existing password was changed for this recheck.
 
-Remaining hard gate: rotate the potentially exposed OpenRouter credential,
-then have the owner enter a fresh low-limit key through the staging account's
-provider-key UI and supply a separate embeddings key through the hidden-input
-helper. Run the single synthetic chat and full shared-document upload, semantic
+The owner later reported rotating/adding a replacement OpenRouter key; its
+revocation and exact destination have not been independently verified. Do not
+reuse any previously exposed value. The current staging RAG environment still
+has the embeddings-key placeholder, so a separate fresh customer-owned key
+must be entered through the hidden-input helper before semantic retrieval.
+Then rerun the single synthetic chat and full shared-document upload, semantic
 retrieval, citation, unsupported-answer, and deletion checks before any public
-VPS/DNS testing. Do not use the old OpenClaw profile until its key is rotated.
+VPS/DNS testing. Do not use the old OpenClaw profile unless its credential is
+confirmed revoked and replaced.
 
 ## OpenRouter Qwen local integration smoke (2026-10-27)
 
@@ -682,3 +688,63 @@ VPS/DNS testing. Do not use the old OpenClaw profile until its key is rotated.
   Cloud connector promise and gate appliance/local claims on technical
   validation. Prices and live Stripe data were not changed, and no website
   deployment was triggered.
+
+## MVP goal continuation status (2026-10-27)
+
+- Current local Docker status: the staging chat API at `127.0.0.1:3083` and
+  isolated restore chat API at `127.0.0.1:3084` are healthy, with their MongoDB,
+  vector database, and search services running. The staging RAG API is stopped;
+  the restore RAG container was removed. This is intentional containment, not
+  a healthy retrieval state.
+- The three generated synthetic evaluation manuals (31, 36, and 31 pages) and
+  their staging upload copies are present on the external SSD. The restored
+  database still contains only synthetic test data. Existing vector rows are
+  not considered a current retrieval pass while the RAG service is stopped.
+- Both protected `deploy/customer/.env` files were checked without printing
+  values: each is owner-owned, mode `600`, contains exactly one embeddings-key
+  entry, and that entry is the unconfigured placeholder. Do not start the RAG
+  API or make an embeddings-provider call until a newly rotated, customer-owned
+  key has been entered through `scripts/set_rag_embeddings_key.py`.
+- The isolated RAG integration regression test was rerun with a unique Docker
+  project and a deliberately unavailable loopback embeddings endpoint. The
+  synthetic upload returned HTTP 500, the disposable vector database stayed
+  empty, and the test removed its own containers, network, and volume. No
+  provider call was made.
+- The Stripe test-mode procedure is documented in
+  `docs/STRIPE-BILLING-TEST-PLAN.md`. The connected Stripe context available
+  during this continuation was live-only; no Stripe objects or live settings
+  were changed. The plan is not a substitute for the sandbox rehearsal.
+
+## MVP member authorization and deployment-boundary recheck (2026-10-27)
+
+- Two existing `USER` principals in the isolated restored copy were checked
+  with short-lived local test tokens and read-only GET requests. Each listed
+  and viewed the shared agent (HTTP 200); each was denied the expanded agent
+  configuration and version history (HTTP 403). The member role has agent
+  `USE`, but no `CREATE`; the shared agent's role ACL is view-only (`permBits`
+  1), while `manage:agents` is granted to `ADMIN`. No chat, file, provider
+  credential, or account data was changed, and no model/provider request was
+  made.
+- The first in-container Node fetch attempt returned LibreChat's `Illegal
+  request` SSE envelope with HTTP 200 because `uaParser` rejects non-browser
+  User-Agent strings. Repeating the same GET checks with a Chromium User-Agent
+  produced the authorization results above. Treat the earlier HTTP 200/plain
+  response from that harness as a client-test artifact, not an ACL pass or
+  leak.
+- Staging and restored-copy MongoDB and pgvector data roots are distinct. A
+  unique marker inserted into a temporary collection in the restored MongoDB
+  was absent from staging and the temporary collection was dropped. This
+  verifies separation between these local deployment data stores; it does not
+  establish pooled multi-tenant isolation inside one deployment.
+- Registration remains disabled in the restored UI. An attempted direct
+  synthetic account creation failed before creating an account; no temporary
+  account remains. The read-only checks used two existing `USER` records and
+  did not expose their identifiers or other personal data.
+- The member-side semantic retrieval/citation check is still blocked: the RAG
+  API is stopped and both protected environment files contain the unconfigured
+  embeddings placeholder. The owner reported rotating/adding a replacement
+  OpenRouter key, but neither revocation nor its staging destination has been
+  independently verified. No key value was read or used in this continuation.
+- Current local tests pass: customer init, customer preflight, 7 embeddings-key
+  helper tests, and 4 fail-closed RAG patch tests. No production VPS, DNS/TLS,
+  Stripe sandbox objects, live billing changes, or customer data were involved.
