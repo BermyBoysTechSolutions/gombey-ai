@@ -3083,3 +3083,46 @@ applicable gates above have evidence.
 - The Vercel project should also be brought under source control before it is
   treated as maintainable production infrastructure. No live deployment or
   customer data was touched during this audit.
+
+## Fresh live Stripe catalog and tax-state audit — 2026-10-28
+
+- Read the live Gombey Tech Stripe account's active Prices and expanded Product
+  records, then compared them to the currently published pricing page. The
+  offer names, regular monthly prices, regular setup totals, founding setup
+  totals, and 50/50 installment amounts align:
+
+  | Public offer | Regular setup | Founding setup | Each setup installment | Regular monthly | Founding monthly for 12 months |
+  |---|---:|---:|---:|---:|---:|
+  | Cloud Workspace (Plus deployment mode) | $2,500 | $1,995 | $997.50 twice | $399 | $349 |
+  | Workspace Appliance (SER5 / Pro deployment mode) | $4,500 | $3,995 | $1,997.50 twice | $699 | $599 |
+  | Private Local AI (Max deployment mode) | $7,500 | $6,995 | $3,497.50 twice | $1,499 | $1,299 |
+
+- The current offer is not a $1,000 setup-only reduction: setup is reduced by
+  $505, and the published monthly rate is also reduced for the first 12 paid
+  months. The combined savings across setup and the first 12 paid monthly
+  periods are $1,105, $1,705, and $2,905 respectively. Do not describe the
+  older setup-only discount as the current offer. The monthly founding
+  amounts rely on the existing product-scoped promotion-code/coupon setup;
+  the exact 30-day-trial interaction still needs
+  the dedicated sandbox rehearsal in `docs/STRIPE-BILLING-TEST-PLAN.md`.
+- The Stripe product descriptions preserve the intentional deployment ladder:
+  Cloud Workspace uses a customer-dedicated VPS with cloud inference;
+  Workspace Appliance deploys the workspace on a Beelink SER5 but still uses
+  cloud inference; and Private Local AI uses a workload-benchmarked Mac Studio,
+  DGX Spark, or Strix Halo for local inference. These are the intended entry,
+  middle, and highest hardware tiers, not mismatched offers.
+- Read-only Stripe Tax inspection found live Tax Settings `pending` because
+  `head_office` is missing, and the Tax Registrations list is empty. Stripe's
+  threshold-monitoring response had no locations and no `computed_at` freshness
+  timestamp; it is not a legal determination and cannot establish that no tax
+  obligations exist. Previously documented active kickoff links have
+  `automatic_tax` enabled, so do not send them or claim tax collection is
+  configured until the merchant/accountant resolves tax treatment and Stripe
+  is verified with the appropriate settings and registrations. No tax address
+  or registration was created or changed.
+- Only the live Gombey Tech account was available through the Stripe
+  connector; the Stripe CLI is not installed in this execution environment.
+  Therefore no isolated sandbox checkout, saved-payment consent, trial timing,
+  coupon-duration, tax-calculation, webhook, or failure-recovery test ran.
+  No live product, price, coupon, link, invoice, payment, or account setting was
+  changed.

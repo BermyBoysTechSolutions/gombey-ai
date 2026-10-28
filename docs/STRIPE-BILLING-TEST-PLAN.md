@@ -42,6 +42,12 @@ verified yet.
    | Workspace Appliance | $4,500 | $3,995 | $1,997.50 / $1,997.50 | $699 | $599 |
    | Private Local AI | $7,500 | $6,995 | $3,497.50 / $3,497.50 | $1,499 | $1,299 |
 
+   The founding setup price is $505 below standard for each offer; the
+   published monthly founding rate is also discounted for the first 12 paid
+   periods. Combined savings over setup plus those 12 paid periods are $1,105
+   for Cloud Workspace, $1,705 for Workspace Appliance, and $2,905 for Private
+   Local AI. This is the current offer; it is not a $1,000 setup-only discount.
+
    The founding offer is advertised for the first three deployments total; the
    Stripe coupon/promotion-code limits are per tier, so the operator must
    enforce the cross-tier cap manually. Re-check current catalog and signed
@@ -112,7 +118,13 @@ use.
   tax disabled. Stripe documents that it calculates tax only in jurisdictions
   with an active registration. Have the owner/accountant resolve live tax
   treatment before sending any live link or describing tax as configured; do
-  not add or remove registrations as part of this sandbox rehearsal. [Stripe
+  not add or remove registrations as part of this sandbox rehearsal. A fresh
+  read-only check found live Tax Settings are `pending` because the head-office
+  address is missing; the registrations list is empty. The threshold-monitoring
+  response returned no locations and no `computed_at` timestamp, so it provides
+  neither a fresh signal nor a legal conclusion. Do not enter the head-office
+  address or add a registration until the owner/accountant confirms the
+  appropriate business details and tax treatment. [Stripe
   Tax and Payment Links](https://docs.stripe.com/tax/payment-links).
 - The three current active live Payment Links collect only the 50% founding
   kickoff installment; they do not create a subscription, save a future-use
