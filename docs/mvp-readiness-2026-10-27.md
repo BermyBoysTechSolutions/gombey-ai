@@ -1244,3 +1244,15 @@ applicable gates above have evidence.
   approved secure path; existing OpenClaw secrets remain non-exported.
 - Both local stacks remain healthy on loopback ports 3083/3084. No Docker,
   customer data, Stripe, website, VPS, or DNS state changed.
+
+## Public offer copy deployment — 2026-10-28 07:11 EDT
+
+- Deployed website source commit `08b1f93` to Vercel production as
+  `dpl_8JK19dxJYuU6i1a2MDnQDjZX2K66`; Vercel reports Ready and the aliases
+  include `https://gombeytech.com` and `https://www.gombeytech.com`.
+- Read-only live HTML checks passed for title, one-workflow/shared-assistant
+  boundary, ordinary-chat retrieval limitation, separate subscription
+  checkout, trial-start timing, removal of the old automatic-start wording,
+  and unchanged $1,995 founding setup price.
+- No Stripe settings/products, prices, VPS, DNS, customer data, or application
+  runtime were changed. Website source stays on its feature branch; no merge.
