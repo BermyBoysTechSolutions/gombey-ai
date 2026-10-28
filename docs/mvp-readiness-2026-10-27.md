@@ -272,9 +272,18 @@ separately quoted and acceptance-gated.
    Purchase/production setup requires owner approval of exact plan and spend,
    hostname, and DNS control.
 
-The read-only Hostinger VPS inventory request timed out again on 2026-10-28;
-no VPS inventory or current price was confirmed, and no VPS was purchased or
-changed.
+The read-only Hostinger account-inventory request timed out again on
+2026-10-28, so no existing account VPS was confirmed. Hostinger's public USD
+pricing page, checked the same day, lists KVM 2 at 2 vCPU / 8 GB RAM / 100 GB
+NVMe and KVM 4 at 4 vCPU / 16 GB RAM / 200 GB NVMe. The displayed promotional
+24-month totals are $210.96 for KVM 2 (renewal $14.99/month) and $311.76 for
+KVM 4 (renewal $28.99/month); plans are paid upfront, so the advertised
+monthly promo rate is not month-to-month billing. For the full app/RAG/search
+stack, KVM 4 is the safer provisional VPS acceptance target; this is an
+engineering inference, not a completed benchmark. Account-specific monthly
+checkout pricing and availability remain unconfirmed. See
+[Hostinger VPS pricing](https://www.hostinger.com/vps-hosting?lang=en). No VPS
+was purchased or changed.
 
 ## Public-offer claims mapped to evidence
 
