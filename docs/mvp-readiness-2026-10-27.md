@@ -952,3 +952,14 @@ applicable gates above have evidence.
 - Current live monthly links remain inactive, launch coupons lack product
   restrictions, and Tax has zero active registrations. These are hard no-go
   conditions for live charges. No production or customer state changed.
+
+## Staging RAG synthetic smoke — 2026-10-28 05:07 EDT
+
+- Ran `scripts/customer-rag-smoke.py` against the isolated primary staging RAG
+  service. Synthetic embedding and exact-marker retrieval passed; the marker
+  was visible only in its own entity scope, absent from an unrelated scope,
+  and the synthetic vector was deleted and confirmed absent afterward.
+- This proves the RAG service's configured embedding/query path and basic
+  entity scoping only. It does not prove shared-agent permissions, long-PDF
+  retrieval, member-facing citations, or provider privacy. No corpus or
+  customer data was uploaded; no production services changed.
