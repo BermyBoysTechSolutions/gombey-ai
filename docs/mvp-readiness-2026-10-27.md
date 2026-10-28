@@ -1117,3 +1117,21 @@ applicable gates above have evidence.
 - Corrected the pilot scope's stale statement about coupon eligibility and
   updated the readiness matrix with the latest member/API evidence and its
   limits. `git diff --check` passed; no app or customer runtime state changed.
+
+## Post-resume regression check — 2026-10-28 06:22 EDT
+
+- Re-ran customer-init, customer-preflight, backup-safety, seven embeddings-key
+  helper tests, and four fail-closed patch tests; all passed. The primary and
+  restore-copy loopback login pages both returned HTTP 200.
+- Re-ran the isolated fail-closed RAG integration using a generated synthetic
+  environment on the external SSD, an intentionally invalid provider key, and
+  a loopback-only endpoint. The upload correctly returned HTTP 500 and stored
+  zero vectors; the disposable app/database containers, network, and volume
+  were removed. No external provider request or customer data was used.
+- Stripe's connected-account list still exposes only Gombey Tech in live mode,
+  and the Stripe CLI is not installed. No sandbox was created and no live
+  billing objects or settings were changed. A dedicated test environment and
+  its billing rehearsal remain open.
+- The existing untracked `tmp/` was preserved. These local checks do not close
+  the authenticated member UI, customer-owned provider billing, Stripe
+  sandbox/tax/consent, or approved production VPS acceptance gates.
