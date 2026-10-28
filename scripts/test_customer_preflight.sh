@@ -52,6 +52,25 @@ chmod 600 "$VALID_ENV.tmp"
 mv "$VALID_ENV.tmp" "$VALID_ENV"
 GOMBEY_CUSTOMER_ENV_PATH="$VALID_ENV" bash "$PREFLIGHT_SCRIPT" >/dev/null
 
+# The template patches LibreChat/RAG internals, so an unreviewed image change
+# must fail before deployment. In particular, v0.8.7 has a required database
+# migration and is not interchangeable with the validated v0.8.8 image.
+OLD_LIBRECHAT_ENV="$TEST_ROOT/old-librechat.env"
+sed 's|^LIBRECHAT_IMAGE=.*|LIBRECHAT_IMAGE=ghcr.io/librechat-ai/librechat:v0.8.7|' "$VALID_ENV" > "$OLD_LIBRECHAT_ENV"
+chmod 600 "$OLD_LIBRECHAT_ENV"
+if GOMBEY_CUSTOMER_ENV_PATH="$OLD_LIBRECHAT_ENV" bash "$PREFLIGHT_SCRIPT" > "$TEST_ROOT/old-librechat.out" 2>&1; then
+  fail "preflight accepted LibreChat v0.8.7 instead of the validated image"
+fi
+grep -Fq "api image differs from the validated template" "$TEST_ROOT/old-librechat.out" || fail "unvalidated LibreChat image failed for the wrong reason"
+
+UNPINNED_RAG_ENV="$TEST_ROOT/unpinned-rag.env"
+sed 's|^RAG_API_IMAGE=.*|RAG_API_IMAGE=registry.librechat.ai/librechat-ai/librechat-rag-api-dev-lite:latest|' "$VALID_ENV" > "$UNPINNED_RAG_ENV"
+chmod 600 "$UNPINNED_RAG_ENV"
+if GOMBEY_CUSTOMER_ENV_PATH="$UNPINNED_RAG_ENV" bash "$PREFLIGHT_SCRIPT" > "$TEST_ROOT/unpinned-rag.out" 2>&1; then
+  fail "preflight accepted an unpinned RAG base image"
+fi
+grep -Fq "RAG base image differs from the validated digest" "$TEST_ROOT/unpinned-rag.out" || fail "unverified RAG base image failed for the wrong reason"
+
 # Validate the production Compose stack as well as the loopback-only local
 # overlay. Both checks use generated synthetic configuration and start no
 # containers.

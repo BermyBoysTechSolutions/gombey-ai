@@ -3007,3 +3007,27 @@ applicable gates above have evidence.
   snapshots before any real data is used; commission the actual SER5/local
   hardware for those tiers; and run public VPS/DNS/TLS/firewall/backup/restore
   acceptance only after hostname and exact spend are explicitly approved.
+
+## Public build-version and customer image-pin gate — 2026-10-28 18:11 EDT
+
+- The public chat API configuration reports LibreChat `v0.8.7` (commit
+  `9e74cc0`), while the acceptance-tested customer template pins
+  `ghcr.io/librechat-ai/librechat:v0.8.8` and a specific RAG base-image digest.
+  This is a release-alignment item, not evidence that the public chat is broken
+  and not a tier mismatch. The customer README requires backing up and running
+  LibreChat's tenant-index migration before upgrading an existing v0.8.7
+  database to v0.8.8; fresh customer deployments use the v0.8.8 template. No
+  public deployment was upgraded or changed.
+- Hardened `scripts/customer-preflight.sh` to reject overrides of the
+  acceptance-tested LibreChat, RAG, Caddy, MongoDB, Meilisearch, and pgvector
+  images, and to verify the exact pinned RAG base digest. Its tests now prove
+  that a v0.8.7 API image and an unpinned RAG base fail before deployment.
+- Validation passed after the change: customer initializer tests, production
+  preflight (including both new negative cases), encrypted-backup safety,
+  16 Python unit tests, 10 Node tests, and `git diff --check`. Compose checks
+  rendered configuration only; no containers were started or changed.
+- Rechecked Stripe setup for a safe billing rehearsal: the connector exposes
+  only the live Gombey Tech account and the installed CLI reports
+  `authenticated=false`, with no test-mode key. No sandbox was created and no
+  live account or billing object was modified. Test-mode checkout, consent,
+  trial timing, and tax remain unverified.

@@ -117,6 +117,37 @@ import sys
 
 config = json.load(sys.stdin)
 services = config.get("services", {})
+expected_images = {
+    "api": "ghcr.io/librechat-ai/librechat:v0.8.8",
+    "caddy": "caddy:2.10.2-alpine",
+    "mongodb": "mongo:8.0.20",
+    "meilisearch": "getmeili/meilisearch:v1.35.1",
+    "vectordb": "pgvector/pgvector:0.8.0-pg15-trixie",
+    "rag_api": "gombey-ai/rag-api-fail-closed:0.8.8-gombey1",
+}
+for name, expected in expected_images.items():
+    actual = services.get(name, {}).get("image")
+    if actual != expected:
+        print(
+            f"Customer deployment preflight failed: {name} image differs from the validated template; "
+            "review the upgrade and migration plan before changing pinned images.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
+expected_rag_base = (
+    "registry.librechat.ai/librechat-ai/librechat-rag-api-dev-lite:latest"
+    "@sha256:3577689eedb1a74d4de69d70cee70b4cd42a9375ad74cdd5238ffc19a97392e3"
+)
+rag_build_args = services.get("rag_api", {}).get("build", {}).get("args", {})
+if rag_build_args.get("UPSTREAM_RAG_IMAGE") != expected_rag_base:
+    print(
+        "Customer deployment preflight failed: RAG base image differs from the validated digest; "
+        "review the compatibility patch before changing it.",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
 published = {name for name, service in services.items() if service.get("ports")}
 if published != {"caddy"}:
     print("Customer deployment preflight failed: only Caddy may publish host ports.", file=sys.stderr)

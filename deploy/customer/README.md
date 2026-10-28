@@ -19,6 +19,14 @@ This template uses the published LibreChat v0.8.8 image with its RAG API and Pos
 
 The pinned RAG image has one additional compatibility patch. Its ingestion helper catches vector-store exceptions and returns a truthy error object, while upload handlers treat any truthy result as success; this can tell a user a file is ready when no chunks were indexed. Compose builds a tiny derived image from the pinned RAG digest and runs `patches/rag-fail-closed.py` before starting the API. The patch changes only that exact upstream error return to a falsey value, refuses an unexpected source shape, and makes failed uploads return HTTP 500. Run `python3 scripts/test_rag_fail_closed_patch.py` for source-shape tests and `scripts/test_rag_fail_closed_integration.sh` for an isolated disposable database test. Revalidate both whenever upgrading the RAG image.
 
+The production preflight verifies the exact LibreChat, RAG-base, and supporting
+service image references used by this acceptance-tested template. Do not
+override them in a customer `.env`: update the pinned versions and rerun the
+compatibility, migration, isolation, and backup/restore checks as a reviewed
+upgrade before changing the preflight allowlist. In particular, an existing
+v0.8.7 database requires the documented tenant-index migration before moving
+to v0.8.8; a fresh customer database initialized by this template does not.
+
 The Compose template runs one API replica per customer and enables the single-process scheduler guard so schedule writes work on a dedicated VPS without Redis. Do not scale the API beyond one replica unless Redis Streams are configured and `SCHEDULES_SINGLE_PROCESS` is disabled; otherwise each replica could disagree about active jobs.
 
 ## Workspace and isolation model
