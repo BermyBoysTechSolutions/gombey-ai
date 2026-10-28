@@ -1,6 +1,6 @@
 # Gombey AI MVP readiness
 
-Status snapshot: 2026-10-27. This is a validation checklist, not a claim that
+Status snapshot: 2026-10-28. This is a validation checklist, not a claim that
 the service is ready for unrestricted production use.
 
 ## Proposed first-sale boundary
@@ -65,6 +65,13 @@ following cloud-workspace gates pass.
   disposable user. A second account without a provider key did not inherit the
   first account's key. This does not prove retrieval or tool calling through
   Qwen.
+- On 2026-10-28, the loopback overlay was set to `OPENROUTER_KEY=user_provided`
+  and a fresh synthetic member's user-scoped OpenRouter key completed a
+  Qwen 3.5 9B chat through Gombey's normal chat API with the exact expected
+  answer. The member and associated key/chat records were deleted and verified
+  absent. This was an authenticated API harness check, not a visible-browser
+  UX check. The RAG API is healthy, but its current embeddings key remains a
+  placeholder; this run did not exercise file retrieval or citations.
 - The RAG upload failure path is now fail-closed: an isolated synthetic upload
   with a loopback-only unavailable embeddings endpoint returned HTTP 500 and
   left zero vectors in its dedicated disposable database. Four exact-match,

@@ -34,6 +34,9 @@ services:
       DOMAIN_CLIENT: "http://localhost:${LOCAL_PORT:-3083}"
       DOMAIN_SERVER: "http://localhost:${LOCAL_PORT:-3083}"
       ALLOW_REGISTRATION: ${LOCAL_BOOTSTRAP:-false}
+      # Exercise per-user BYOK in the synthetic local stack; never inject an
+      # operator-owned provider credential as a shared server key here.
+      OPENROUTER_KEY: "user_provided"
     volumes:
       - type: bind
         source: "${GOMBEY_LOCAL_DATA_ROOT:?Set GOMBEY_LOCAL_DATA_ROOT to the external SSD staging folder}/app_data"

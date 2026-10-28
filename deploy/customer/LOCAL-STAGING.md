@@ -777,3 +777,32 @@ confirmed revoked and replaced.
   the secure provider/hidden-input path and the expected account is confirmed.
 - The production VPS gate and Stripe test-mode delayed-subscription/consent
   rehearsal remain open. No customer data or billing event was created.
+
+## Per-member Qwen provider check (2026-10-28)
+
+- The primary local-only Compose overlay now sets `OPENROUTER_KEY=user_provided`,
+  so members must use their own provider credential rather than inheriting an
+  operator-wide OpenRouter key. The production customer template was not
+  changed by this local test.
+- LibreChat's custom-provider key setting expects its JSON envelope
+  (`{"apiKey":"…","baseURL":""}`); a raw string is rejected as an
+  invalid user key before it reaches the provider. The test credential was
+  stored only on a synthetic member and was never printed or put in source or
+  deployment configuration.
+- An authenticated synthetic-member chat through the staging app, using
+  `qwen/qwen3.5-9b`, completed with HTTP 200 and returned the requested exact
+  answer `4`. The terminal stream event was received. This validates ordinary
+  user-scoped text inference, not Qwen tool use or document grounding.
+- The test member was deleted through LibreChat's account-deletion route.
+  Follow-up Mongo checks found zero matching user, provider-key, message, and
+  conversation records. The earlier CLI deletion attempt was safely aborted
+  because shared Redis coordination was unavailable; no data was removed by
+  that attempt.
+- A Node-based direct harness was used for this request, not a visible browser
+  UI session. Its first attempt was rejected by the app's browser User-Agent
+  filter; the successful retry used a Chromium User-Agent. Do not treat that
+  filter artifact as a provider failure or claim this specific Qwen request
+  verified the visual UI flow.
+- The RAG API is healthy, but its embeddings key is still a placeholder and
+  the request above did not invoke embeddings. Current semantic retrieval and
+  citation behavior remain a separate staging gate.
