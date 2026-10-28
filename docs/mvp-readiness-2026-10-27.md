@@ -82,16 +82,19 @@ following cloud-workspace gates pass.
   idempotency, and source-drift unit tests pass. A corrected isolated
   integration runner was also verified. Before credential containment, the
   staging vector database contained 101 synthetic vectors; those records were
-  not changed by containment. The staging RAG service is currently stopped, so
-  those vectors are not searchable through the app.
+  not changed by containment. The persistent staging RAG service is now running
+  and healthy, but its embeddings setting remains a placeholder, so normal app
+  File Search is still not ready.
 - A staging embeddings credential was printed by an earlier diagnostic and
   must be treated as compromised. No provider request was made after that
   diagnostic. It was replaced with the unconfigured placeholder in the active
   staging and restore environment files; both were verified owner-owned and
-  mode `600`, without printing any credential. The active staging RAG service
-  is stopped, and the restore project's stateless RAG container was removed.
-  Application and database services remain running; document search is paused
-  until a fresh embeddings key is supplied through the hidden-input helper.
+  mode `600`, without printing any credential. At containment time, the active
+  staging RAG service was stopped, and the restore project's stateless RAG
+  container was removed. The staging RAG service has since been restarted and
+  is healthy; its persistent embeddings key remains the placeholder, so
+  document search through the app is still paused until a customer-owned key is
+  supplied through the protected helper.
   The owner reported rotating/adding a replacement OpenRouter key, but
   revocation and exact placement were not independently verified. The staging
   embeddings environment still contains the placeholder; a chat-provider key
@@ -467,3 +470,19 @@ applicable gates above have evidence.
   against an unavailable loopback embeddings endpoint returned HTTP 500, stored
   zero vectors, and the disposable Compose containers, networks, and volume
   were removed.
+
+## Direct shared-agent RAG scope check (2026-10-28)
+
+- A disposable RAG API process used the configured OpenClaw OpenRouter key
+  transiently, without changing persistent staging settings. Read-only queries
+  against the existing three synthetic shared-agent vectors returned the known
+  QA owner (Morgan Ellis), written client approver (Jamie Rivera), and the
+  Alder & Finch version 6 HOLD/pending-approval state.
+- The same delivery query with an unrelated agent entity ID returned no
+  matching client/project facts; the real agent's scoped vector count remained
+  three. The temporary RAG process was removed, and both local UI deployments
+  remained HTTP 200.
+- This is direct RAG retrieval plus vector entity-scope evidence only. It is
+  not a member-authenticated LibreChat agent chat, citation/UI proof, a
+  customer-owned billing test, or proof of isolation between separate customer
+  deployments. The first go/no-go gate below remains open.

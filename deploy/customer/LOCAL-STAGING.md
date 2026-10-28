@@ -837,3 +837,22 @@ confirmed revoked and replaced.
   upload returned HTTP 500 against an unavailable loopback embeddings endpoint,
   zero vectors were stored, and the disposable Compose containers, networks,
   and volume were removed.
+
+## Existing shared-agent vector-scope retrieval check (2026-10-28)
+
+- A short-lived RAG API container used the configured OpenClaw OpenRouter
+  credential only in its runtime environment; the credential was not printed,
+  written to either staging `.env`, or committed. The persistent staging
+  embeddings configuration was not changed.
+- Read-only `/query` calls against the existing three synthetic, agent-scoped
+  vectors returned HTTP 200 and the expected facts: Morgan Ellis owns internal
+  QA; Jamie Rivera owns written client approval; Alder & Finch version 6 is on
+  HOLD / awaiting approval.
+- Repeating the delivery query with a deliberately unrelated agent entity ID
+  returned HTTP 200 but no Alder & Finch, Jamie Rivera, Morgan Ellis, or HOLD
+  content. The existing agent's scoped vector count remained three.
+- The temporary service was removed. The normal staging and restored UI routes
+  both returned HTTP 200 afterward. This validates direct RAG semantic retrieval
+  and entity scoping over existing synthetic vectors; it does not validate
+  member-authenticated LibreChat File Search, visible citations, or customer-
+  owned billing. Those acceptance gates remain open.
