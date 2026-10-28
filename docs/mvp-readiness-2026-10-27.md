@@ -467,6 +467,12 @@ applicable gates above have evidence.
   Private Local AI (customer workstation + local inference). The product
   descriptions explicitly distinguish the SER5 from a local-inference
   promise, and all three products have an image.
+- A fresh read-only fetch of the live offer page confirms the same three
+  deployment paths and pricing matrix: dedicated VPS/cloud inference,
+  on-site SER5/cloud inference, and a customer workstation/local inference.
+  The page explicitly gates the appliance scope on device validation and the
+  local tier on workload benchmarking/data-path review; this is intentional
+  tier differentiation, not a tier mismatch.
 - Their default recurring prices are the standard monthly rates ($399, $699,
   and $1,499). The three active Payment Links each contain only the matching
   tier's founding kickoff installment ($997.50, $1,997.50, and $3,497.50).
