@@ -227,10 +227,14 @@ separately quoted and acceptance-gated.
 1. Repeat grounded retrieval/citation as a second member with the agreed
    customer-owned provider/embedding credentials. Confirm the result and usage
    appear under the intended customer billing account. Do not use Gombey's or
-   the owner's subscription/API credentials for customer traffic. The primary
-   local staging RAG service now has the owner's rotated OpenRouter key for
-   synthetic validation only; this is not a customer credential and must not be
-   carried into a customer deployment.
+   the owner's subscription/API credentials for customer traffic. The latest
+   synthetic request to the normal candidate RAG service failed at the
+   OpenRouter embeddings call with HTTP 401 (`Missing Authentication header`).
+   Its health endpoint still returns HTTP 200, so health alone is not proof
+   that embeddings work. No currently working embeddings credential is verified
+   on this persistent stack; enter a fresh authorized test/customer credential
+   through the protected setup path and rerun the member flow before passing
+   this gate.
 2. Decide whether model keys are per-member BYOK or customer-managed centrally,
    then test the chosen flow end-to-end for both members.
 3. Keep connectors outside the base Cloud offer. The current shared agent has
@@ -2132,3 +2136,39 @@ applicable gates above have evidence.
   billing, Stripe sandbox rehearsal, and public VPS acceptance remain open.
 - No production VPS, live billing object, DNS, customer data, or production
   deployment was changed.
+
+## Member shared-agent long-document regression and cleanup — 2026-10-28
+
+- On the loopback candidate, a synthetic member signed in, opened the
+  admin-owned, Viewer-shared Juniper & Slate agent, and completed grounded
+  File Search questions against the three generated 31–33-page PDFs using
+  Qwen 3.5 9B. The tested behaviors included exact-date retrieval, cross-file
+  approval/workflow synthesis, abstention when the documents did not contain
+  an answer, and refusal to claim that it had published or sent anything.
+  Responses included document/page citations. A final-page prompt also
+  correctly treated calendar/MCP write access as unavailable and approval-
+  gated rather than taking an external action.
+- Account-boundary checks passed: the member could read their own conversation
+  and use the shared agent, while an admin request for the member's private
+  conversation returned 404. The member could not enumerate or manage the
+  admin-owned source files directly; the shared assistant performed retrieval.
+  These are authenticated API checks, not a visible-browser acceptance run.
+- The member's temporary OpenRouter chat key was deleted through the supported
+  key endpoint and verified absent. A temporary synthetic smoke file was also
+  deleted. The three generated PDFs remain attached to the shared test agent;
+  no answer key or customer data was uploaded.
+- After removing the temporary evaluator service and reconnecting the normal
+  candidate RAG service to its intended networks, both its health endpoint and
+  the candidate app health check returned HTTP 200. However, a live synthetic
+  embeddings request through that persistent RAG configuration returned HTTP
+  401 (`Missing Authentication header`). Thus the successful member File Search
+  run used a temporary evaluator with a working test credential; it does not
+  prove the persistent candidate RAG/provider path is ready. Refresh the
+  authorized test credential through the protected setup path and repeat the
+  member retrieval test on the normal candidate before closing this gate.
+- The verified offer ladder remains intentional: entry is VPS-hosted cloud
+  inference, the middle tier deploys a Beelink SER5 Mini PC with cloud
+  inference, and the highest tier offers an on-device local-inference system
+  such as Mac Studio, DGX Spark, or Strix Halo, with hardware/site scope quoted
+  separately. No public prices, Stripe products, payment links, DNS, or
+  production services were changed during these checks.
