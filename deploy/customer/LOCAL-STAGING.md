@@ -809,3 +809,26 @@ confirmed revoked and replaced.
   RAG environment. The RAG API is healthy, but its configured embeddings key
   remains a placeholder; this direct provider check did not exercise the RAG
   service, file search, or citations.
+
+## Ephemeral RAG pipeline smoke (2026-10-28)
+
+- The running staging RAG service was healthy, but its configured embeddings
+  credential failed against OpenRouter with HTTP 401 (`Missing Authentication
+  header`). Its value was not printed or changed. Earlier notes describing the
+  service as stopped or its value as a placeholder are historical snapshots;
+  do not treat the persistent staging RAG configuration as verified.
+- To isolate the path, a short-lived RAG container joined the staging networks
+  and exposed only `127.0.0.1:38117`. The OpenClaw OpenRouter credential was
+  injected into that process at runtime; it was not written to the repository
+  or either deployment `.env`. Only a small synthetic text and unique test
+  owner/file IDs were used.
+- The RAG `/embed` request returned HTTP 200, `/query` returned HTTP 200 and
+  contained the expected synthetic marker, and scoped deletion returned HTTP
+  200. A follow-up `/ids` check found zero vectors for the test owner; the
+  disposable container was stopped and removed. The normal staging stack was
+  left running and unchanged.
+- This proves the RAG API's OpenRouter upload/query/delete path with an owner
+  test credential. It does not prove LibreChat File Search through the visible
+  UI, member-level citations, or customer-owned billing. Before production,
+  configure a valid customer-owned embeddings key through the protected helper
+  and repeat retrieval as a member through LibreChat.

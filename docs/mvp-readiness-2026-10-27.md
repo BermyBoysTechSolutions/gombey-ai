@@ -441,3 +441,24 @@ applicable gates above have evidence.
   and tax behaviors remain untested in a sandbox. Do not mark the live billing
   flow production-ready or send live checkout links until the sandbox
   acceptance test and tax review are complete.
+
+## Ephemeral RAG pipeline smoke (2026-10-28)
+
+- State correction to earlier snapshots: the main local staging RAG API was
+  running and healthy in this check, but its configured embeddings credential
+  failed with OpenRouter HTTP 401 (`Missing Authentication header`). The
+  credential value was never printed or changed; the persistent staging RAG
+  configuration is not a verified working setup.
+- A disposable RAG container used the OpenClaw OpenRouter credential injected
+  only at runtime, without writing it into the repository or deployment
+  `.env`. With a unique synthetic owner/file scope, upload returned HTTP 200,
+  retrieval returned HTTP 200 with the expected marker, and scoped deletion
+  returned HTTP 200. A follow-up check found zero remaining vectors, and the
+  disposable container was removed. The existing staging stack was left
+  unchanged.
+- This passes the RAG API embedding/retrieval/deletion path with an owner test
+  credential and synthetic text. It does not validate the user-facing
+  LibreChat File Search flow, member-level citations, or customer-owned
+  provider billing. The next RAG gate is a member-side File Search test using
+  a valid customer-owned embeddings credential; do not use the owner's key for
+  customer traffic.
