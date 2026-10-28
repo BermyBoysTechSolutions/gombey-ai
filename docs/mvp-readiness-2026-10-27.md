@@ -2208,3 +2208,17 @@ applicable gates above have evidence.
   run; no mode switch, checkout, invoice, subscription, charge, catalog, link,
   or tax setting was changed. Connect a dedicated sandbox before rehearsing
   the deferred subscription and payment-method-consent flow.
+
+## Public launch-route and Hostinger access follow-up — 2026-10-28
+
+- A fresh HTTP GET to `https://chat.gombeytech.com/` returned HTTP 200 and
+  Gombey AI page content. The earlier Cloudflare 1033 was not reproduced, and
+  the live landing-page launch links target this hostname. This confirms the
+  public login destination is reachable, not that a customer can authenticate
+  or that a deployment's acceptance checks passed. No DNS or tunnel settings
+  were changed.
+- Retried the read-only Hostinger `vps_virtual-machines_list` operation once;
+  the tool timed out after 300 seconds without returning inventory. Two earlier
+  attempts also timed out. No VPS was created or changed; stop retrying this
+  inventory call for now and obtain any required account/server details from a
+  successful Hostinger read or the owner before production provisioning.
