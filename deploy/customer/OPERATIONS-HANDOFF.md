@@ -67,13 +67,18 @@ them on the website, in an email signature, or in a reusable campaign template.
 3. Configure DNS and firewall only after approved. Publish only Caddy on 80/443;
    keep application, MongoDB, Meilisearch, PostgreSQL, and RAG service ports
    private. Restrict SSH to the operator's address where practical.
-4. Bootstrap the customer owner through loopback and an SSH tunnel, disable
-   bootstrap signup, then create member accounts with the supported prompt.
-   Public registration and unauthenticated password reset remain disabled.
-5. Configure one Company Knowledge Assistant with File Search only. The owner
+4. Bootstrap the customer owner through loopback and an SSH tunnel, then stop
+   the bootstrap stack and start the normal deployment. Public registration
+   and unauthenticated password reset remain disabled.
+5. Before creating employees, run `python3 scripts/apply_member_role.py` from
+   the operator checkout. Sign in with the customer's ADMIN account; the helper
+   applies and verifies the least-privilege USER profile without saving the
+   password or session token. Then create each employee account with the
+   supported prompt and verify their individual sign-ins.
+6. Configure one Company Knowledge Assistant with File Search only. The owner
    uploads approved sources and shares it with the authenticated `USER` role
    as Viewer. Do not add MCP tools or write actions in the base pilot.
-6. Have the owner configure the agreed customer-owned model provider and the
+7. Have the owner configure the agreed customer-owned model provider and the
    separately customer-owned embeddings key. Confirm which provider is billed.
 
 ## Delivery and customer handoff

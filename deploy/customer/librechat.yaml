@@ -16,8 +16,8 @@ interface:
     externalUrl: "https://gombeytech.com/terms"
     openNewTab: true
   # These are instance-wide capability switches. They do not disable agent
-  # creation for USER alone. Before adding employees, use the Agents side-panel
-  # Admin Settings to set USER to Use=on, Create/Share/Public Share=off.
+  # creation for USER alone. Before adding employees, run
+  # scripts/apply_member_role.py to apply and verify the USER role profile.
   # Neither role can publish an agent to the instance.
   agents:
     use: true

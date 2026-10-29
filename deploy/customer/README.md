@@ -119,10 +119,27 @@ The normal `.env` keeps `ALLOW_REGISTRATION=false`, and the normal Compose file 
 
 The YAML setting `interface.agents.public: false` prevents instance-wide
 publishing, but it does not disable agent creation for the `USER` role. On a
-fresh database, sign in as the customer `ADMIN`, open the Agents side panel,
-and choose **Admin Settings** in its footer. Select the `USER` role and save
-the least-privilege profile below. The base cloud workspace is a shared,
+fresh database, first sign in to the normal HTTPS deployment as the customer
+`ADMIN`, then run the helper from the operator checkout before creating any
+employee accounts:
+
+```bash
+python3 scripts/apply_member_role.py
+```
+
+It prompts for the deployment origin, ADMIN email, and password (password and
+optional two-factor code are hidden). It signs in through the same-origin
+LibreChat API, applies the `USER` role profile through LibreChat's supported
+admin endpoint, and verifies the profile in the returned role record. It does
+not save credentials, and it refuses to send a password over non-loopback
+HTTP. For an isolated local test, a loopback URL such as
+`http://127.0.0.1:3085` is allowed. The base cloud workspace is a shared,
 admin-managed File Search assistant; it is not an automation or connector tier.
+
+The same settings can still be reviewed in the Agents side panel → **Admin
+Settings** → `USER`; the dashboard is the recovery path if the helper reports
+an error. Do not add employees until the command reports PASS and you have
+completed the member acceptance checks below.
 
 - **Use agents:** on (members need to use the shared Company Knowledge Assistant)
 - **Create agents:** off
@@ -143,7 +160,7 @@ execution, or web search only when that customer's scope explicitly includes
 them and they have been separately tested. Do not set a global
 `interface.agents.create: false`, which would also block the administrator.
 
-The equivalent supported admin API is `PATCH
+The helper sends the supported admin API request `PATCH
 /api/admin/roles/USER/permissions` with this body:
 
 ```json
@@ -161,9 +178,10 @@ The equivalent supported admin API is `PATCH
 }
 ```
 
-Use an authenticated admin session for role changes; never place its bearer
-token in a saved command or shared log. Verify the saved settings and exercise
-the shared-agent routes as a `USER` member before inviting employees.
+The helper keeps the short-lived bearer token only in process memory and never
+prints it. After the command succeeds, exercise the shared-agent routes as a
+`USER` member before inviting employees. Re-run after a fresh database seed,
+restore, or upgrade, then repeat those member checks.
 
 For local staging, chat-provider BYOK keys are entered by each authorized test
 user in LibreChat; do not put personal or future-client chat keys in the shared
